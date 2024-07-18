@@ -18,7 +18,7 @@ async function run() {
     core.info(`Fetching fork parent repo info for: ${repoFullName}`);
     const forkStatus = await fetchForkParentRepoInfo(repoFullName, token, excludedRepos);
 
-    if (forkStatus !== "" && forkStatus !== null) {
+    if (forkStatus !== '{}') {
       core.info(`Creating PR for repo: ${repoFullName} with fork status: ${forkStatus}`);
       const { url: prUrl, number: prNumber, status_code, upstreamFileAlreadyExists, openPrExists } = await createPr(repoFullName, forkStatus, token, octokit, upstreamFilePath, newBranchName, targetBranchToMergeTo, botCommitMessage);
       if(openPrExists) {
@@ -63,21 +63,21 @@ async function fetchForkParentRepoInfo(repoFullName, token, excludedRepos) {
     const parentName = data.parent.full_name;
     core.info(`Repo is a fork. Parent repo is: ${parentName}`);
     if (excludedRepos.includes(repoFullName)) {
-      return "";
+      return '{}';
     } else {
       if(data.private) {
         return `git@github.com:${parentName}.git`;
       } else {
         return `https://github.com/${parentName}.git`;
       }
-
+      
     }
   }
   core.info('Repo is not a fork.');
-  return "";
+  return '{}';
 }
 
-async function createPr(repoFullName, forkStatus, token, octokit, upstreamFilePath,
+async function createPr(repoFullName, forkStatus, token, octokit, upstreamFilePath, 
   newBranchName, targetBranchToMergeTo, botCommitMessage) {
   // Split the full repository name into owner and repo
   const [owner, repo] = repoFullName.split('/');
@@ -132,10 +132,10 @@ async function createPr(repoFullName, forkStatus, token, octokit, upstreamFilePa
       state: 'open',
       base: targetBranch,
     });
-
+    
     // Step 2: Filter by Title
     const matchingPRs = pullRequests.filter(pr => pr.title === commitMessage);
-
+    
     // Debugging: Log the filtered PRs
     core.info(`Matching PRs with title '${commitMessage}':`, matchingPRs);
 
@@ -223,7 +223,7 @@ async function updateOtherPrs(owner, repo, excludedPrNumber, newBlockRefNum, oct
           } else {
             existingBlockMessages = pr.body.match(blockedByRegex);
           }
-
+        
         core.info(`Existing block message match for PR #${pr.number}: ${existingBlockMessages}`);
 
         if (existingBlockMessages && existingBlockMessages.length > 0) {
