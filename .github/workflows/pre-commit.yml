@@ -1,0 +1,26 @@
+---
+name: pre-commit
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions: read-all
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: pre-commit-run
+        uses: pre-commit/action@v3.0.1
+        env:
+          SKIP: ${{ env.SKIP }}

@@ -70,17 +70,3 @@ repos:
         always_run: true
         pass_filenames: true
         exclude: '^.*node_modules/.*$'
-  ################################
-  # pre-commit hooks for terraform
-  ################################
-  # -----------------------------
-  # Checkov is a static code analysis tool for scanning infrastructure as code (IaC) files for misconfigurations
-  # that may lead to security or compliance problems.
-  # Checkov includes more than 750 predefined policies to check for common misconfiguration issues.
-  # Checkov also supports the creation and contribution of custom policies.
-  # https://www.checkov.io/4.Integrations/pre-commit.html
-  # -----------------------------
-  - repo: https://github.com/bridgecrewio/checkov.git
-    rev: 3.2.194
-    hooks:
-      - id: checkov

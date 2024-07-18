@@ -70,14 +70,14 @@ async function fetchForkParentRepoInfo(repoFullName, token, excludedRepos) {
       } else {
         return `https://github.com/${parentName}.git`;
       }
-      
+
     }
   }
   core.info('Repo is not a fork.');
   return '{}';
 }
 
-async function createPr(repoFullName, forkStatus, token, octokit, upstreamFilePath, 
+async function createPr(repoFullName, forkStatus, token, octokit, upstreamFilePath,
   newBranchName, targetBranchToMergeTo, botCommitMessage) {
   // Split the full repository name into owner and repo
   const [owner, repo] = repoFullName.split('/');
@@ -132,10 +132,10 @@ async function createPr(repoFullName, forkStatus, token, octokit, upstreamFilePa
       state: 'open',
       base: targetBranch,
     });
-    
+
     // Step 2: Filter by Title
     const matchingPRs = pullRequests.filter(pr => pr.title === commitMessage);
-    
+
     // Debugging: Log the filtered PRs
     core.info(`Matching PRs with title '${commitMessage}':`, matchingPRs);
 
@@ -223,7 +223,7 @@ async function updateOtherPrs(owner, repo, excludedPrNumber, newBlockRefNum, oct
           } else {
             existingBlockMessages = pr.body.match(blockedByRegex);
           }
-        
+
         core.info(`Existing block message match for PR #${pr.number}: ${existingBlockMessages}`);
 
         if (existingBlockMessages && existingBlockMessages.length > 0) {
