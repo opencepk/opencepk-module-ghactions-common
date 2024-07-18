@@ -1,5 +1,5 @@
 ---
-name: 'Check PR for Blockage'
+name: 'git-upstream-set-check-pr-block'
 description: 'Fail if the first PR comment contains a blockage notice'
 runs:
   using: 'node20'
