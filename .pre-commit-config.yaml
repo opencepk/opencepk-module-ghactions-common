@@ -8,6 +8,32 @@ repos:
   # -----------------------------
   # Standard pre-commit-hooks for general all-purpose formatting and validation
   # -----------------------------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-merge-conflict
+        exclude: 'node_modules/'
+      - id: check-added-large-files
+        args: [--maxkb=500]
+        exclude: 'node_modules/'
+      - id: trailing-whitespace
+        exclude: 'node_modules/'
+      - id: detect-private-key
+        exclude: 'node_modules/'
+      - id: end-of-file-fixer
+        exclude: 'node_modules/'
+      - id: fix-encoding-pragma
+        exclude: 'node_modules/'
+      - id: file-contents-sorter
+        exclude: 'node_modules/'
+      - id: check-case-conflict
+        exclude: 'node_modules/'
+      - id: mixed-line-ending
+        args: [--fix=lf]
+        exclude: 'node_modules/'
+  # -----------------------------
+  # Standard pre-commit-hooks for general all-purpose formatting and validation
+  # -----------------------------
   - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
     rev: v9.16.0
     hooks:

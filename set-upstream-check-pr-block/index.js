@@ -49,7 +49,7 @@ async function run() {
     if (!isBlocked) {
       core.info('PR is not blocked by any PR mentioned in comments.');
     }
-    
+
   } catch (error) {
     core.setFailed(`Action failed with error ${error}`);
   }
