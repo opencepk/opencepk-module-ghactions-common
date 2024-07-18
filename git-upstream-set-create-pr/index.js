@@ -66,9 +66,9 @@ async function fetchForkParentRepoInfo(repoFullName, token, excludedRepos) {
       return '{}';
     } else {
       if(data.private) {
-        return `git@github.com:${parentName}.git`;
+        return `git@github.com:${parentName}.git\n`;
       } else {
-        return `https://github.com/${parentName}.git`;
+        return `https://github.com/${parentName}.git\n`;
       }
 
     }
