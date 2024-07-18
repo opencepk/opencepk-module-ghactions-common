@@ -1,0 +1,48 @@
+---
+
+################################
+# See https://pre-commit.com for more information - see https://pre-commit.com/hooks.html for more hooks
+################################
+
+repos:
+  # -----------------------------
+  # Standard pre-commit-hooks for general all-purpose formatting and validation
+  # -----------------------------
+  - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
+    rev: v9.16.0
+    hooks:
+      - id: commitlint
+        stages: [commit-msg]
+  # -----------------------------
+  # Gitleaks SAST tool for detecting and preventing hardcoded secrets like passwords, api keys, and tokens in git repos
+  # -----------------------------
+  # If you are knowingly committing something that is not a secret and gitleaks is catching it,
+  # you can add an inline comment of '# gitleaks:allow' to the end of that line in your file.
+  # This will instructs gitleaks to ignore that secret - example:
+  #   some_non_secret_value = a1b2c3d4e5f6g7h8i9j0 # gitleaks:allow
+  # -----------------------------
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.4
+    hooks:
+      - id: gitleaks
+  # -----------------------------
+  # GitHub Actions Workflow Linting on .github/workflows/*.yml files
+  # -----------------------------
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.1
+    hooks:
+      - id: actionlint
+  ################################
+  # pre-commit hooks for terraform
+  ################################
+  # -----------------------------
+  # Checkov is a static code analysis tool for scanning infrastructure as code (IaC) files for misconfigurations
+  # that may lead to security or compliance problems.
+  # Checkov includes more than 750 predefined policies to check for common misconfiguration issues.
+  # Checkov also supports the creation and contribution of custom policies.
+  # https://www.checkov.io/4.Integrations/pre-commit.html
+  # -----------------------------
+  - repo: https://github.com/bridgecrewio/checkov.git
+    rev: 3.2.194
+    hooks:
+      - id: checkov
