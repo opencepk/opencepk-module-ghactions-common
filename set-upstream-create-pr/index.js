@@ -18,7 +18,7 @@ async function run() {
     core.info(`Fetching fork parent repo info for: ${repoFullName}`);
     const forkStatus = await fetchForkParentRepoInfo(repoFullName, token, excludedRepos);
 
-    if (forkStatus !== '{}') {
+    if (forkStatus !== "" && forkStatus !== null) {
       core.info(`Creating PR for repo: ${repoFullName} with fork status: ${forkStatus}`);
       const { url: prUrl, number: prNumber, status_code, upstreamFileAlreadyExists, openPrExists } = await createPr(repoFullName, forkStatus, token, octokit, upstreamFilePath, newBranchName, targetBranchToMergeTo, botCommitMessage);
       if(openPrExists) {
@@ -63,7 +63,7 @@ async function fetchForkParentRepoInfo(repoFullName, token, excludedRepos) {
     const parentName = data.parent.full_name;
     core.info(`Repo is a fork. Parent repo is: ${parentName}`);
     if (excludedRepos.includes(repoFullName)) {
-      return '{}';
+      return "";
     } else {
       if(data.private) {
         return `git@github.com:${parentName}.git`;
@@ -74,7 +74,7 @@ async function fetchForkParentRepoInfo(repoFullName, token, excludedRepos) {
     }
   }
   core.info('Repo is not a fork.');
-  return '{}';
+  return "";
 }
 
 async function createPr(repoFullName, forkStatus, token, octokit, upstreamFilePath, 
