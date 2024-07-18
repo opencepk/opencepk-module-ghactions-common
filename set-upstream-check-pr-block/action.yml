@@ -1,3 +1,4 @@
+---
 name: 'Check PR for Blockage'
 description: 'Fail if the first PR comment contains a blockage notice'
 runs:

@@ -58,6 +58,18 @@ repos:
     rev: v1.7.1
     hooks:
       - id: actionlint
+  # -----------------------------
+  # YAML Linting on yaml files for pre-commit and github actions
+  # -----------------------------
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        name: Check YAML syntax with yamllint
+        args: [--strict, -c=.yamllint.yaml]
+        always_run: true
+        pass_filenames: true
+        exclude: '^.*node_modules/.*$'
   ################################
   # pre-commit hooks for terraform
   ################################
