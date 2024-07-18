@@ -1,0 +1,32 @@
+name: 'Check Fork Status and Create PR'
+description: 'Checks if the repository is a fork and creates a PR with fork status.'
+runs:
+  using: 'node20'
+  main: 'index.js'
+inputs:
+  github-token:
+    description: 'GitHub token for authentication'
+    required: true
+  excluded-repos:
+    description: 'Comma-separated list of repositories to exclude'
+    required: true
+    default: ''
+  upstream-file-path:
+    description: 'Path to the file containing the UPSTREAM file'
+    required: false
+    default: '.github/UPSTREAM'
+  new-branch-name:
+    description: 'Name of the new branch to create'
+    required: false
+    default: 'update-fork-status2'
+  target-branch:
+    description: 'Name of the target branch to create the PR against'
+    required: false
+    default: 'main'
+  bot-commit-message:
+    description: 'Commit message for the bot commit'
+    required: false
+    default: 'Automatically add UPSTREAM file'
+outputs:
+  pr-url:
+    description: 'URL of the created Pull Request'
