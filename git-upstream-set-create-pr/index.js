@@ -1,14 +1,25 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
+const core = require("@actions/core");
+const github = require("@actions/github");
 
 async function run() {
   try {
-    const token = core.getInput('github-token', { required: true });
-    const excludedRepos = core.getInput('excluded-repos').split(',').map(repo => repo.trim());
-    const upstreamFilePath = core.getInput('upstream-file-path')? core.getInput('upstream-file-path') : '.github/UPSTREAM';
-    const newBranchName = core.getInput('new-branch-name')? core.getInput('new-branch-name') : 'update-fork-status2';
-    const targetBranchToMergeTo = core.getInput('target-branch')? core.getInput('target-branch') : 'main';
-    const botCommitMessage = core.getInput('bot-commit-message')? core.getInput('bot-commit-message') : 'Automatically add UPSTREAM file';
+    const token = core.getInput("github-token", { required: true });
+    const excludedRepos = core
+      .getInput("excluded-repos")
+      .split(",")
+      .map((repo) => repo.trim());
+    const upstreamFilePath = core.getInput("upstream-file-path")
+      ? core.getInput("upstream-file-path")
+      : ".github/UPSTREAM";
+    const newBranchName = core.getInput("new-branch-name")
+      ? core.getInput("new-branch-name")
+      : "update-fork-status2";
+    const targetBranchToMergeTo = core.getInput("target-branch")
+      ? core.getInput("target-branch")
+      : "main";
+    const botCommitMessage = core.getInput("bot-commit-message")
+      ? core.getInput("bot-commit-message")
+      : "Automatically add UPSTREAM file";
     const octokit = github.getOctokit(token);
     const { owner, repo } = github.context.repo;
 
@@ -16,30 +27,62 @@ async function run() {
 
     const repoFullName = `${owner}/${repo}`;
     core.info(`Fetching fork parent repo info for: ${repoFullName}`);
-    const forkStatus = await fetchForkParentRepoInfo(repoFullName, token, excludedRepos);
-
-    if (forkStatus !== '{}') {
-      core.info(`Creating PR for repo: ${repoFullName} with fork status: ${forkStatus}`);
-      const { url: prUrl, number: prNumber, status_code, upstreamFileAlreadyExists, openPrExists } = await createPr(repoFullName, forkStatus, 
-        token, octokit, upstreamFilePath, newBranchName, targetBranchToMergeTo, botCommitMessage);
-      if(openPrExists) {
-        core.info(`PR to update upstream already exists: ${prUrl}`);
+    const forkStatus = await fetchForkParentRepoInfo(
+      repoFullName,
+      token,
+      excludedRepos
+    );
+    let prNeededStatus = {};
+    if (forkStatus !== "{}") {
+      prNeededStatus = await checkIfPrNeeded(
+        repoFullName,
+        forkStatus,
+        octokit,
+        upstreamFilePath
+      );
+      if (prNeededStatus.failed) {
+        core.setFailed(prNeededStatus.failureMessage);
+        return;
       }
-      else if (prUrl && prNumber) {
-        core.setOutput('pr-url', prUrl);
+      if (prNeededStatus.upstreamFileAlreadyExists) {
+        core.info(
+          ".github/UPSTREAM file already exists in the target branch. No PR created."
+        );
+        return;
+      }
+      core.info(
+        `Creating PR for repo: ${repoFullName} with fork status: ${forkStatus}`
+      );
+      const {
+        url: prUrl,
+        number: prNumber,
+        openPrExists,
+      } = await createPr(
+        repoFullName,
+        forkStatus,
+        token,
+        octokit,
+        upstreamFilePath,
+        newBranchName,
+        targetBranchToMergeTo,
+        botCommitMessage,
+        prNeededStatus.existingFileSha,
+        prNeededStatus.upstreamFileContentOutdated
+      );
+      if (openPrExists) {
+        core.info(`PR to update upstream already exists: ${prUrl}`);
+      } else if (prUrl && prNumber) {
+        core.setOutput("pr-url", prUrl);
         core.info(`PR created: ${prUrl}`);
         const blockMessage = `Blocked by #${prNumber}`;
         await updateOtherPrs(owner, repo, prNumber, blockMessage, octokit);
-      } else if (upstreamFileAlreadyExists) {
-        core.info('.github/UPSTREAM file already exists in the target branch. No PR created.');
-      } else if (status_code && status_code === 409) {
-        core.info('PR already exists please review and merge the existing one.');
-      }
-      else {
-        core.error('Failed to create PR due to an error.');
+      } else {
+        core.error("Failed to create PR due to an error.");
       }
     } else {
-      core.info('Repository is not a fork or is the specified repository. No PR created.');
+      core.info(
+        "Repository is not a fork or is the specified repository. No PR created."
+      );
     }
   } catch (error) {
     core.error(`Action failed with error: ${error}`);
@@ -48,15 +91,15 @@ async function run() {
 }
 
 async function fetchForkParentRepoInfo(repoFullName, token, excludedRepos) {
-  const fetch = (await import('node-fetch')).default;
+  const fetch = (await import("node-fetch")).default;
   const api_url = `https://api.github.com/repos/${repoFullName}`;
   core.info(`Fetching repo info from GitHub API: ${api_url}`);
 
   const response = await fetch(api_url, {
     headers: {
-      Accept: 'application/vnd.github+json',
+      Accept: "application/vnd.github+json",
       Authorization: `Bearer ${token}`,
-      'X-GitHub-Api-Version': '2022-11-28',
+      "X-GitHub-Api-Version": "2022-11-28",
     },
   });
   const data = await response.json();
@@ -64,32 +107,35 @@ async function fetchForkParentRepoInfo(repoFullName, token, excludedRepos) {
     const parentName = data.parent.full_name;
     core.info(`Repo is a fork. Parent repo is: ${parentName}`);
     if (excludedRepos.includes(repoFullName)) {
-      return '{}';
+      return "{}";
     } else {
-      if(data.private) {
+      if (data.private) {
         return `git@github.com:${parentName}.git\n`;
       } else {
         return `https://github.com/${parentName}.git\n`;
       }
-
     }
   }
-  core.info('Repo is not a fork.');
-  return '{}';
+  core.info("Repo is not a fork.");
+  return "{}";
 }
 
-async function createPr(repoFullName, forkStatus, token, octokit, upstreamFilePath,
-  newBranchName, targetBranchToMergeTo, botCommitMessage) {
+async function checkIfPrNeeded(
+  repoFullName,
+  forkStatus,
+  octokit,
+  upstreamFilePath
+) {
   // Split the full repository name into owner and repo
-  const [owner, repo] = repoFullName.split('/');
-  const newBranch = newBranchName;
+  const [owner, repo] = repoFullName.split("/");
   const fileName = upstreamFilePath;
   const targetBranch = targetBranchToMergeTo;
-  const commitMessage = botCommitMessage;
   let upstreamFileContentOutdated = false;
   let existingFileSha;
-  // Check if the file exists in the target branch
-  core.info(`Checking if ${fileName} exists in ${targetBranch} branch of ${repoFullName}`);
+
+  core.info(
+    `Checking if ${fileName} exists in ${targetBranch} branch of ${repoFullName}`
+  );
   try {
     const response = await octokit.rest.repos.getContent({
       owner,
@@ -97,49 +143,116 @@ async function createPr(repoFullName, forkStatus, token, octokit, upstreamFilePa
       path: fileName,
       ref: targetBranch,
     });
-    core.info(`${fileName} already exists in ${targetBranch} branch with content: ${response.data.content}`);
+    core.info(
+      `${fileName} already exists in ${targetBranch} branch with content: ${response.data.content}`
+    );
     // Decode the content from base64
-    const existingContent = Buffer.from(response.data.content, 'base64').toString('utf-8');
+    const existingContent = Buffer.from(
+      response.data.content,
+      "base64"
+    ).toString("utf-8");
     existingFileSha = response.data.sha;
 
     if (existingContent.trim() === forkStatus.trim()) {
-      core.info(`The content of ${fileName} in ${targetBranch} branch is the same as the provided content. No PR will be created.`);
-      core.info(`Checking if ${fileName} exists in the current branch of ${repoFullName}`);
+      core.info(
+        `The content of ${fileName} in ${targetBranch} branch is the same as the provided content. No PR will be created.`
+      );
+      core.info(
+        `Checking if ${fileName} exists in the current branch of ${repoFullName}`
+      );
       try {
         const responseCurrentBranch = await octokit.rest.repos.getContent({
           owner,
           repo,
-          path: fileName, 
+          path: fileName,
           // No ref provided, assuming it checks the current branch
         });
-        const existingContentInCurrentBranch = Buffer.from(responseCurrentBranch.data.content, 'base64').toString('utf-8');
-        if(existingContent.trim() === existingContentInCurrentBranch.trim()){
-          core.debug(`${fileName} already exists in the current branch with content ${existingContentInCurrentBranch} and target branch with content ${responseCurrentBranch.data.content} so exiting without creating a PR.`);
-          return { url: null, number: null, upstreamFileAlreadyExists: true };
+        const existingContentInCurrentBranch = Buffer.from(
+          responseCurrentBranch.data.content,
+          "base64"
+        ).toString("utf-8");
+        if (existingContent.trim() === existingContentInCurrentBranch.trim()) {
+          core.debug(
+            `${fileName} already exists in the current branch with content ${existingContentInCurrentBranch} and target branch with content ${responseCurrentBranch.data.content} so exiting without creating a PR.`
+          );
+          return {
+            url: null,
+            number: null,
+            upstreamFileAlreadyExists: true,
+            failed: false,
+            upstreamFileContentOutdated: upstreamFileContentOutdated,
+            existingFileSha: existingFileSha,
+          };
         } else {
-          core.error(`${fileName} exist in the current branch but not synched with target branch. Please sync with  remote target branch and push the changes again.`);
-          core.setFailed(`Your branch needs to be synced with main to get the latest ${fileName}.`);
+          core.error(
+            `${fileName} exist in the current branch but not synched with target branch. Please sync with  remote target branch and push the changes again.`
+          );
+          // core.setFailed(`Your branch needs to be synced with main to get the latest ${fileName}.`);
+          return {
+            failed: true,
+            failureMessage: `Your branch needs to be synced with main to get the latest ${fileName}.`,
+          };
         }
-
       } catch {
-        core.error(`${fileName} does not exist in the current branch but it exists in the target branch. Please sync with  remote target branch and push the changes again.`);
-        core.setFailed(`Your branch needs to be synced with main to get the latest ${fileName}.`);
+        core.error(
+          `${fileName} does not exist in the current branch but it exists in the target branch. Please sync with  remote target branch and push the changes again.`
+        );
+        // core.setFailed(`Your branch needs to be synced with main to get the latest ${fileName}.`);
+        return {
+          failed: true,
+          failureMessage: `Your branch needs to be synced with main to get the latest ${fileName}.`,
+        };
       }
     } else {
       upstreamFileContentOutdated = true;
-      core.info(`The content of ${fileName} in ${targetBranch} branch is different. Proceeding with update and upstreamFileContentOutdated is set to ${upstreamFileContentOutdated}.`);
-
+      core.info(
+        `The content of ${fileName} in ${targetBranch} branch is different. Proceeding with update and upstreamFileContentOutdated is set to ${upstreamFileContentOutdated}.`
+      );
+      return {
+        failed: false,
+        upstreamFileContentOutdated: upstreamFileContentOutdated,
+        existingFileSha: existingFileSha,
+      };
     }
   } catch (error) {
     if (error.status === 404) {
-      core.info(`${fileName} does not exist in ${targetBranch} branch. Proceeding with PR creation.`);
+      core.info(
+        `${fileName} does not exist in ${targetBranch} branch. Proceeding with PR creation.`
+      );
+      return {
+        failed: false,
+        upstreamFileContentOutdated: upstreamFileContentOutdated,
+      };
     } else {
-      throw error;
+      core.error(`Unknown error: ${JSON.stringify(error)}`);
+      return { failed: true, failureMessage: `${JSON.stringify(error)}` };
     }
   }
+}
 
-  // Check for the existence of the new branch and any open PRs from it to the target branch
-  core.info(`Checking if ${newBranch} exists and if there's an open PR from ${newBranch} to ${targetBranch}`);
+async function createPr(
+  repoFullName,
+  forkStatus,
+  token,
+  octokit,
+  upstreamFilePath,
+  newBranchName,
+  targetBranchToMergeTo,
+  botCommitMessage,
+  existingFileSha,
+  upstreamFileContentOutdated
+) {
+  // Split the full repository name into owner and repo
+  const [owner, repo] = repoFullName.split("/");
+  const newBranch = newBranchName;
+  const fileName = upstreamFilePath;
+  const targetBranch = targetBranchToMergeTo;
+  const commitMessage = botCommitMessage;
+  let upstreamFileContentOutdated = false;
+
+  core.info(
+    `Checking if ${newBranch} exists and if there's an open PR from ${newBranch} to ${targetBranch}`
+  );
   try {
     await octokit.rest.repos.getBranch({
       owner,
@@ -150,21 +263,30 @@ async function createPr(repoFullName, forkStatus, token, octokit, upstreamFilePa
     const { data: pullRequests } = await octokit.rest.pulls.list({
       owner,
       repo,
-      state: 'open',
+      state: "open",
       base: targetBranch,
     });
 
     // Step 2: Filter by Title
-    const matchingPRs = pullRequests.filter(pr => pr.title === commitMessage);
+    const matchingPRs = pullRequests.filter((pr) => pr.title === commitMessage);
 
     // Debugging: Log the filtered PRs
     core.info(`Matching PRs with title '${commitMessage}':`, matchingPRs);
 
     if (matchingPRs.length > 0 && !upstreamFileContentOutdated) {
-      core.info(`An open PR from ${newBranch} to ${targetBranch} already exists. No further action taken.`);
-      return { url: matchingPRs[0].html_url, number: matchingPRs[0].number, branchExists: true, openPrExists: true };
+      core.info(
+        `An open PR from ${newBranch} to ${targetBranch} already exists. No further action taken.`
+      );
+      return {
+        url: matchingPRs[0].html_url,
+        number: matchingPRs[0].number,
+        branchExists: true,
+        openPrExists: true,
+      };
     } else {
-      core.info(`No open PR from ${newBranch} to ${targetBranch}. Deleting and recreating ${newBranch} from ${targetBranch}.`);
+      core.info(
+        `No open PR from ${newBranch} to ${targetBranch}. Deleting and recreating ${newBranch} from ${targetBranch}.`
+      );
       await octokit.rest.git.deleteRef({
         owner,
         repo,
@@ -195,7 +317,7 @@ async function createPr(repoFullName, forkStatus, token, octokit, upstreamFilePa
   core.info(`Branch ${newBranch} created successfully from ${targetBranch}.`);
 
   // Create or update the file in the new branch
-  const contentEncoded = Buffer.from(forkStatus).toString('base64');
+  const contentEncoded = Buffer.from(forkStatus).toString("base64");
   await octokit.rest.repos.createOrUpdateFileContents({
     owner,
     repo,
@@ -203,7 +325,7 @@ async function createPr(repoFullName, forkStatus, token, octokit, upstreamFilePa
     message: commitMessage,
     content: contentEncoded,
     branch: newBranch,
-    sha: existingFileSha
+    sha: existingFileSha,
   });
 
   // Create a pull request from the new branch to the target branch
@@ -220,13 +342,18 @@ async function createPr(repoFullName, forkStatus, token, octokit, upstreamFilePa
   return { url: pr.html_url, number: pr.number };
 }
 
-
-async function updateOtherPrs(owner, repo, excludedPrNumber, newBlockRefNum, octokit) {
+async function updateOtherPrs(
+  owner,
+  repo,
+  excludedPrNumber,
+  newBlockRefNum,
+  octokit
+) {
   try {
     const { data: prs } = await octokit.rest.pulls.list({
       owner,
       repo,
-      state: 'open',
+      state: "open",
     });
 
     const newBlockMessage = `Blocked by #${excludedPrNumber}`;
@@ -239,27 +366,31 @@ async function updateOtherPrs(owner, repo, excludedPrNumber, newBlockRefNum, oct
         const blockedByRegex = /Blocked by *#\s*\d+/g;
         let existingBlockMessages = null;
         core.info(`PR body is: ${pr.body}`);
-        if(!pr.body || pr.body === '') {
+        if (!pr.body || pr.body === "") {
           existingBlockMessages = false;
-          } else {
-            existingBlockMessages = pr.body.match(blockedByRegex);
-          }
+        } else {
+          existingBlockMessages = pr.body.match(blockedByRegex);
+        }
 
-        core.info(`Existing block message match for PR #${pr.number}: ${existingBlockMessages}`);
+        core.info(
+          `Existing block message match for PR #${pr.number}: ${existingBlockMessages}`
+        );
 
         if (existingBlockMessages && existingBlockMessages.length > 0) {
           core.info(`Adding new block message: ${newBlockMessage}`);
           core.info(`PR body exists and is : ${pr.body}`);
           // Replace the first occurrence of the block message
-          core.info(`Replacing ${existingBlockMessages} with ${newBlockMessage}`);
+          core.info(
+            `Replacing ${existingBlockMessages} with ${newBlockMessage}`
+          );
           newBody = pr.body.replace(existingBlockMessages, newBlockMessage);
           // Remove any additional block messages that might exist
-          newBody = newBody.replace(new RegExp(existingBlockMessages, 'g'), '');
+          newBody = newBody.replace(new RegExp(existingBlockMessages, "g"), "");
         } else {
           core.info(`Adding new block message: ${newBlockMessage}`);
           core.info(`PR body is : ${pr.body}`);
-          if(!pr.body || pr.body === '') {
-          newBody = `${newBlockMessage}`;
+          if (!pr.body || pr.body === "") {
+            newBody = `${newBlockMessage}`;
           } else {
             newBody = `${pr.body}\n\n${newBlockMessage}`;
           }
@@ -268,7 +399,13 @@ async function updateOtherPrs(owner, repo, excludedPrNumber, newBlockRefNum, oct
         core.info(`Updating PR #${pr.number} body to: ${newBody}`);
         await updatePrBody(owner, repo, pr.number, newBody, octokit);
         core.info(`Updated PR #${pr.number} body.`);
-        await postCommentToPr(owner, repo, pr.number, `This PR is now ${newBlockMessage}.`, octokit);
+        await postCommentToPr(
+          owner,
+          repo,
+          pr.number,
+          `This PR is now ${newBlockMessage}.`,
+          octokit
+        );
       }
     }
   } catch (error) {
