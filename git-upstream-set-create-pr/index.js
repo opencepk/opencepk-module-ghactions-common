@@ -248,7 +248,6 @@ async function createPr(
   const fileName = upstreamFilePath;
   const targetBranch = targetBranchToMergeTo;
   const commitMessage = botCommitMessage;
-  let upstreamFileContentOutdated = false;
 
   core.info(
     `Checking if ${newBranch} exists and if there's an open PR from ${newBranch} to ${targetBranch}`
