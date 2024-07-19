@@ -26,7 +26,7 @@ export default [
       'no-unused-expressions': 'warn', // Warns about unused expressions which have no effect
       'prefer-const': 'warn', // Suggests using const declaration for variables that are never reassigned after declared
       'arrow-spacing': ['error', { before: true, after: true }], // Enforces consistent spacing before and after the arrow in arrow functions
-      indent: ['error', 2], // Enforces a consistent indentation style (2 spaces in this example)
+      indent: ['error', 2], // Enforces a consistent indentation style
       semi: ['error', 'always'], // Requires semicolons at the end of statements
     },
   },
