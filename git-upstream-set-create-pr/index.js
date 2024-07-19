@@ -11,6 +11,7 @@ async function run() {
     const upstreamFilePath = core.getInput("upstream-file-path")
       ? core.getInput("upstream-file-path")
       : ".github/UPSTREAM";
+    const githubCurrentBranch = core.getInput("github-current-branch")
     const newBranchName = core.getInput("new-branch-name")
       ? core.getInput("new-branch-name")
       : "update-fork-status2";
@@ -39,7 +40,8 @@ async function run() {
         forkStatus,
         octokit,
         upstreamFilePath,
-        targetBranchToMergeTo
+        targetBranchToMergeTo,
+        githubCurrentBranch
       );
       if (prNeededStatus.failed) {
         core.setFailed(prNeededStatus.failureMessage);
@@ -126,7 +128,8 @@ async function checkIfPrNeeded(
   forkStatus,
   octokit,
   upstreamFilePath,
-  targetBranchToMergeTo
+  targetBranchToMergeTo,
+  githubCurrentBranch
 ) {
   // Split the full repository name into owner and repo
   const [owner, repo] = repoFullName.split("/");
@@ -167,7 +170,7 @@ async function checkIfPrNeeded(
           owner,
           repo,
           path: fileName,
-          ref: "feat/gh-action-test"
+          ref: githubCurrentBranch
         });
         console.log(`responseCurrentBranch: ${JSON.stringify(responseCurrentBranch)}`);
         const existingContentInCurrentBranch = Buffer.from(
