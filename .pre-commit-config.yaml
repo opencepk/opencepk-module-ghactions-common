@@ -74,10 +74,13 @@ repos:
     hooks:
       - id: npm-install
         name: npm install
-        entry: npm install
-        files: '^package\.json$'  # This regex matches a package.json at the root of the repository
-        exclude: '.*/.*/package\.json'  # This regex is used to exclude package.json files in any subdirectories
+        # Use a shell command to run npm install and then stage any changes.
+        entry: bash -c 'npm install'
         language: system
+        # This regex matches a package.json at the root of the repository.
+        files: '^package\.json$'
+        # This regex is used to exclude package.json files in any subdirectories.
+        exclude: '.*/.*/package\.json'
       - id: eslint
         name: ESLint
         entry: npx eslint
