@@ -167,7 +167,7 @@ async function checkIfPrNeeded(
           owner,
           repo,
           path: fileName,
-          // No ref provided, assuming it checks the current branch
+          ref: "feat/gh-action-test"
         });
         console.log(`responseCurrentBranch: ${JSON.stringify(responseCurrentBranch)}`);
         const existingContentInCurrentBranch = Buffer.from(
