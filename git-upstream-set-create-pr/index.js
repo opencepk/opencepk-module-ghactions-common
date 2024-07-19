@@ -11,7 +11,7 @@ async function run() {
     const upstreamFilePath = core.getInput("upstream-file-path")
       ? core.getInput("upstream-file-path")
       : ".github/UPSTREAM";
-    const githubCurrentBranch = core.getInput("github-current-branch")
+    const githubCurrentBranch = core.getInput("github-current-branch");
     const newBranchName = core.getInput("new-branch-name")
       ? core.getInput("new-branch-name")
       : "update-fork-status2";
@@ -170,16 +170,16 @@ async function checkIfPrNeeded(
           owner,
           repo,
           path: fileName,
-          ref: githubCurrentBranch
+          ref: githubCurrentBranch,
         });
-        console.log(`responseCurrentBranch: ${JSON.stringify(responseCurrentBranch)}`);
+        core.info(
+          `${fileName} already exists in the ${githubCurrentBranch} branch.`
+        );
         const existingContentInCurrentBranch = Buffer.from(
           responseCurrentBranch.data.content,
           "base64"
         ).toString("utf-8");
-        console.log(`existingContentInCurrentBranch: ${existingContentInCurrentBranch}`);
         if (existingContent.trim() === existingContentInCurrentBranch.trim()) {
-          console.log(`existingContent: ${existingContent}`);
           core.debug(
             `${fileName} already exists in the current branch with content ${existingContentInCurrentBranch} and target branch with content ${responseCurrentBranch.data.content} so exiting without creating a PR.`
           );
@@ -192,7 +192,6 @@ async function checkIfPrNeeded(
             existingFileSha: existingFileSha,
           };
         } else {
-          console.log(`existingContentxxxxxxxxx: ${existingContent}`);
           core.error(
             `${fileName} exist in the current branch but not synched with target branch. Please sync with  remote target branch and push the changes again.`
           );
@@ -202,10 +201,10 @@ async function checkIfPrNeeded(
             failureMessage: `Your branch needs to be synced with main to get the latest ${fileName}.`,
           };
         }
-      } catch(e) {
-        console.log(`${e}`)
+      } catch (e) {
         core.error(
-          `${fileName} does not exist in the current branch but it exists in the target branch. Please sync with remote target branch and push the changes again.`
+          `${fileName} does not exist in the current branch but it exists in the target branch. 
+          Please sync with remote target branch and push the changes again. ${JSON.stringify(e)}`
         );
         // core.setFailed(`Your branch needs to be synced with main to get the latest ${fileName}.`);
         return {
@@ -418,7 +417,7 @@ async function updateOtherPrs(
       }
     }
   } catch (error) {
-    console.error(`Failed to update other PRs: ${error.message}`);
+    core.error(`Failed to update other PRs: ${error.message}`);
     core.setFailed(`Failed to update other PRs: ${error.message}`);
   }
 }
