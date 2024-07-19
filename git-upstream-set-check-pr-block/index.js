@@ -7,7 +7,6 @@ async function run() {
     const octokit = github.getOctokit(token);
 
     const { owner, repo, number: currentPRNumber } = github.context.issue;
-
     // Fetch all comments of the PR
     const { data: comments } = await octokit.rest.issues.listComments({
       owner,
@@ -49,7 +48,6 @@ async function run() {
     if (!isBlocked) {
       core.info('PR is not blocked by any PR mentioned in comments.');
     }
-
   } catch (error) {
     core.setFailed(`Action failed with error ${error}`);
   }
