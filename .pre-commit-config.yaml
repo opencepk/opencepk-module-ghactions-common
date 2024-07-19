@@ -72,14 +72,18 @@ repos:
         exclude: '^.*node_modules/.*$'
   - repo: local
     hooks:
+      - id: npm-install
+        name: npm install
+        entry: npm install
+        files: '^package\.json$'  # This regex matches a package.json at the root of the repository
+        exclude: '.*/.*/package\.json'  # This regex is used to exclude package.json files in any subdirectories
+        language: system
       - id: eslint
         name: ESLint
         entry: npx eslint
         language: system
         types: [javascript]
         exclude: '^.*/?node_modules/.*$'
-  - repo: local
-    hooks:
       - id: prettier
         name: Prettier
         entry: npx prettier --write
