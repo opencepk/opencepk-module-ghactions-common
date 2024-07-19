@@ -78,3 +78,11 @@ repos:
         language: system
         types: [javascript]
         exclude: '^.*/?node_modules/.*$'
+  - repo: local
+    hooks:
+      - id: prettier
+        name: Prettier
+        entry: npx prettier --write
+        language: system
+        files: '\.(js|css|html)$'
+        exclude: '^.*/?node_modules/.*$'
