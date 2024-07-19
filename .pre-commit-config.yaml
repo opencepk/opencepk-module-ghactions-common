@@ -70,3 +70,11 @@ repos:
         always_run: true
         pass_filenames: true
         exclude: '^.*node_modules/.*$'
+  - repo: local
+    hooks:
+      - id: eslint
+        name: ESLint
+        entry: npx eslint
+        language: system
+        types: [javascript]
+        exclude: '^.*/?node_modules/.*$'

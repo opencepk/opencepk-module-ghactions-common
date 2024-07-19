@@ -195,7 +195,6 @@ async function checkIfPrNeeded(
           core.error(
             `${fileName} exist in the current branch but not synched with target branch. Please sync with  remote target branch and push the changes again.`
           );
-          // core.setFailed(`Your branch needs to be synced with main to get the latest ${fileName}.`);
           return {
             failed: true,
             failureMessage: `Your branch needs to be synced with main to get the latest ${fileName}.`,
@@ -203,10 +202,9 @@ async function checkIfPrNeeded(
         }
       } catch (e) {
         core.error(
-          `${fileName} does not exist in the current branch but it exists in the target branch. 
+          `${fileName} does not exist in the current branch but it exists in the target branch.
           Please sync with remote target branch and push the changes again. ${JSON.stringify(e)}`
         );
-        // core.setFailed(`Your branch needs to be synced with main to get the latest ${fileName}.`);
         return {
           failed: true,
           failureMessage: `Your branch needs to be synced with main to get the latest ${fileName}.`,

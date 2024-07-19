@@ -2,8 +2,8 @@ import js from "@eslint/js";
 
 export default [
   js.configs.recommended,
-
   {
+   ignores: ["eslint.config.js"], // Excludes eslint.config.js from being linted
    languageOptions: {
       globals: {
         require: "readonly",
@@ -27,7 +27,6 @@ export default [
       "prefer-const": "warn", // Suggests using const declaration for variables that are never reassigned after declared
       "arrow-spacing": ["error", { before: true, after: true }], // Enforces consistent spacing before and after the arrow in arrow functions
       indent: ["error", 2], // Enforces a consistent indentation style (2 spaces in this example)
-      quotes: ["error", "single"], // Enforces the use of single quotes for strings
       semi: ["error", "always"], // Requires semicolons at the end of statements
     },
   },
