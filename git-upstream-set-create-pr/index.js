@@ -38,7 +38,8 @@ async function run() {
         repoFullName,
         forkStatus,
         octokit,
-        upstreamFilePath
+        upstreamFilePath,
+        targetBranchToMergeTo
       );
       if (prNeededStatus.failed) {
         core.setFailed(prNeededStatus.failureMessage);
@@ -124,7 +125,8 @@ async function checkIfPrNeeded(
   repoFullName,
   forkStatus,
   octokit,
-  upstreamFilePath
+  upstreamFilePath,
+  targetBranchToMergeTo
 ) {
   // Split the full repository name into owner and repo
   const [owner, repo] = repoFullName.split("/");
