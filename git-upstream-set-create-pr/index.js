@@ -20,7 +20,8 @@ async function run() {
 
     if (forkStatus !== '{}') {
       core.info(`Creating PR for repo: ${repoFullName} with fork status: ${forkStatus}`);
-      const { url: prUrl, number: prNumber, status_code, upstreamFileAlreadyExists, openPrExists } = await createPr(repoFullName, forkStatus, token, octokit, upstreamFilePath, newBranchName, targetBranchToMergeTo, botCommitMessage);
+      const { url: prUrl, number: prNumber, status_code, upstreamFileAlreadyExists, openPrExists } = await createPr(repoFullName, forkStatus, 
+        token, octokit, upstreamFilePath, newBranchName, targetBranchToMergeTo, botCommitMessage);
       if(openPrExists) {
         core.info(`PR to update upstream already exists: ${prUrl}`);
       }
@@ -97,13 +98,33 @@ async function createPr(repoFullName, forkStatus, token, octokit, upstreamFilePa
       ref: targetBranch,
     });
     core.info(`${fileName} already exists in ${targetBranch} branch with content: ${response.data.content}`);
-      // Decode the content from base64
+    // Decode the content from base64
     const existingContent = Buffer.from(response.data.content, 'base64').toString('utf-8');
     existingFileSha = response.data.sha;
 
     if (existingContent.trim() === forkStatus.trim()) {
       core.info(`The content of ${fileName} in ${targetBranch} branch is the same as the provided content. No PR will be created.`);
-      return { url: null, number: null, upstreamFileAlreadyExists: true };
+      core.info(`Checking if ${fileName} exists in the current branch of ${repoFullName}`);
+      try {
+        const responseCurrentBranch = await octokit.rest.repos.getContent({
+          owner,
+          repo,
+          path: fileName, 
+          // No ref provided, assuming it checks the current branch
+        });
+        const existingContentInCurrentBranch = Buffer.from(responseCurrentBranch.data.content, 'base64').toString('utf-8');
+        if(existingContent.trim() === existingContentInCurrentBranch.trim()){
+          core.debug(`${fileName} already exists in the current branch with content ${existingContentInCurrentBranch} and target branch with content ${responseCurrentBranch.data.content} so exiting without creating a PR.`);
+          return { url: null, number: null, upstreamFileAlreadyExists: true };
+        } else {
+          core.error(`${fileName} exist in the current branch but not synched with target branch. Please sync with  remote target branch and push the changes again.`);
+          core.setFailed(`Your branch needs to be synced with main to get the latest ${fileName}.`);
+        }
+
+      } catch {
+        core.error(`${fileName} does not exist in the current branch but it exists in the target branch. Please sync with  remote target branch and push the changes again.`);
+        core.setFailed(`Your branch needs to be synced with main to get the latest ${fileName}.`);
+      }
     } else {
       upstreamFileContentOutdated = true;
       core.info(`The content of ${fileName} in ${targetBranch} branch is different. Proceeding with update and upstreamFileContentOutdated is set to ${upstreamFileContentOutdated}.`);
