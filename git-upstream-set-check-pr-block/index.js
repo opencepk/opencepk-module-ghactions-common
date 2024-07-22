@@ -7,7 +7,6 @@ async function run() {
     const octokit = github.getOctokit(token);
 
     const { owner, repo, number: currentPRNumber } = github.context.issue;
-
     // Fetch all comments of the PR
     const { data: comments } = await octokit.rest.issues.listComments({
       owner,
@@ -37,11 +36,15 @@ async function run() {
         });
 
         if (!(pr.merged || pr.state === 'closed')) {
-          core.setFailed(`PR is blocked by an unmerged PR #${blockingPRNumber}.`);
+          core.setFailed(
+            `PR is blocked by an unmerged PR #${blockingPRNumber}.`,
+          );
           isBlocked = true;
           break; // Exit the loop as we found a blocker
         } else {
-          core.info(`Found a blocking comment: PR is blocked by #${blockingPRNumber} but it is closed. So it is not blocking.`);
+          core.info(
+            `Found a blocking comment: PR is blocked by #${blockingPRNumber} but it is closed. So it is not blocking.`,
+          );
         }
       }
     }
@@ -49,10 +52,8 @@ async function run() {
     if (!isBlocked) {
       core.info('PR is not blocked by any PR mentioned in comments.');
     }
-
   } catch (error) {
     core.setFailed(`Action failed with error ${error}`);
   }
 }
-
 run();

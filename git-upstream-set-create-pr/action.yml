@@ -28,6 +28,10 @@ inputs:
     description: 'Commit message for the bot commit'
     required: false
     default: 'Automatically add UPSTREAM file'
+  github-current-branch:
+    description: 'GitHub ref'
+    required: false
+    default: ''
 outputs:
   pr-url:
     description: 'URL of the created Pull Request'
