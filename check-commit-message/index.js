@@ -1,123 +1,120 @@
-const core = require("@actions/core");
-const exec = require("@actions/exec");
-const github = require("@actions/github");
+const core = require('@actions/core');
+const exec = require('@actions/exec');
+const github = require('@actions/github');
 
 async function run() {
   try {
     const defaultPattern =
-      /^(feat|fix|build|breaking|chore|ci|docs|perf|refactor|revert|test)(\/[\w-]+)*(:\s+)?(.+)?$/;
-    const patternInput = core.getInput("commit-pattern");
+      /^(feat|fix|build|breaking|chore|ci|docs|perf|refactor|revert|test)\/([\w-]+)*(:\s+)?(.+)?$/;
+    const patternInput = core.getInput('commit-pattern');
     const pattern = patternInput ? new RegExp(patternInput) : defaultPattern;
 
-    let commitHashes = "";
+    let commitHashes = '';
     const options = {
       listeners: {
-        stdout: (data) => {
+        stdout: data => {
           commitHashes += data.toString();
         },
       },
     };
     const baseRef = github.context.payload.pull_request.base.ref;
-    const upstreamRepo = "git@github.com:tucowsinc/cepk-template-base.git";
+    const upstreamRepo = 'git@github.com:tucowsinc/cepk-template-base.git';
 
     // Fetch the latest changes from the origin repository
-    await exec.exec("git", ["fetch", "origin"]);
+    await exec.exec('git', ['fetch', 'origin']);
 
     // Check if the upstream remote is set
     let upstreamExists = false;
-    await exec.exec("git", ["remote"], {
+    await exec.exec('git', ['remote'], {
       listeners: {
-        stdout: (data) => {
-          upstreamExists = data.toString().includes("upstream");
+        stdout: data => {
+          upstreamExists = data.toString().includes('upstream');
         },
       },
     });
 
     // If upstream remote is not set, add it
     if (!upstreamExists) {
-      await exec.exec("git", ["remote", "add", "upstream", upstreamRepo]);
+      await exec.exec('git', ['remote', 'add', 'upstream', upstreamRepo]);
     }
 
     // Fetch the latest changes from the upstream repository
-    await exec.exec("git", ["fetch", "upstream"]);
+    await exec.exec('git', ['fetch', 'upstream']);
 
     // Get the list of commits that are unique to the current branch compared to the upstream base branch
     await exec.exec(
-      "git",
-      ["rev-list", `HEAD`, `^upstream/${baseRef}`],
-      options
+      'git',
+      ['rev-list', `HEAD`, `^upstream/${baseRef}`],
+      options,
     );
-
-    const hashesArray = commitHashes.split("\n").filter(Boolean);
-
+    const hashesArray = commitHashes.split('\n').filter(Boolean);
     // Get the list of commits from the base repository
-    let baseCommitHashes = "";
-    await exec.exec(
-      "git",
-      ["rev-list", `upstream/${baseRef}`],
-      {
-        listeners: {
-          stdout: (data) => {
-            baseCommitHashes += data.toString();
-          },
+    let baseCommitHashes = '';
+    await exec.exec('git', ['rev-list', `upstream/${baseRef}`], {
+      listeners: {
+        stdout: data => {
+          baseCommitHashes += data.toString();
         },
-      }
-    );
+      },
+    });
 
-    const baseHashesArray = baseCommitHashes.split("\n").filter(Boolean);
+    const baseHashesArray = baseCommitHashes.split('\n').filter(Boolean);
     const baseHashesSet = new Set(baseHashesArray);
 
     // Get the list of commits from the main branch in the origin repository
-    let mainCommitHashes = "";
-    await exec.exec(
-      "git",
-      ["rev-list", `origin/main`],
-      {
-        listeners: {
-          stdout: (data) => {
-            mainCommitHashes += data.toString();
-          },
+    let mainCommitHashes = '';
+    await exec.exec('git', ['rev-list', `origin/main`], {
+      listeners: {
+        stdout: data => {
+          mainCommitHashes += data.toString();
         },
-      }
-    );
+      },
+    });
 
-    const mainHashesArray = mainCommitHashes.split("\n").filter(Boolean);
+    const mainHashesArray = mainCommitHashes.split('\n').filter(Boolean);
     const mainHashesSet = new Set(mainHashesArray);
 
     let nonConformingCommits = [];
     let earliestNonConformingIndex = -1;
 
     for (let i = 0; i < hashesArray.length; i++) {
-      if (baseHashesSet.has(hashesArray[i]) || mainHashesSet.has(hashesArray[i])) {
+      if (
+        baseHashesSet.has(hashesArray[i]) ||
+        mainHashesSet.has(hashesArray[i])
+      ) {
         // Ignore commits that exist in the base repository or main branch in origin
         continue;
       }
 
-      let commitMsg = "";
+      let commitMsg = '';
       await exec.exec(
-        "git",
-        ["log", "--format=%B", "-n", "1", hashesArray[i]],
+        'git',
+        ['log', '--format=%B', '-n', '1', hashesArray[i]],
         {
           listeners: {
-            stdout: (data) => {
+            stdout: data => {
               commitMsg += data.toString().trim();
             },
           },
-        }
+        },
       );
 
-      commitMsg = commitMsg.replace(/\s+/g, " ");
+      commitMsg = commitMsg.replace(/\s+/g, ' ');
 
       if (
         !pattern.test(commitMsg) &&
-        !commitMsg.includes("chore(release)") &&
-        !commitMsg.startsWith("Merge") &&
-        !commitMsg.startsWith("Bump the")
+        !commitMsg.includes('chore(release)') &&
+        !commitMsg.startsWith('Merge') &&
+        !commitMsg.startsWith('Bump the')
       ) {
         nonConformingCommits.push({ hash: hashesArray[i], message: commitMsg });
         earliestNonConformingIndex = i;
       }
     }
+
+    console.log('xxxxxxxxxxx'); // Log the commit hashes
+    console.log('Commit hashes:', JSON.stringify(nonConformingCommits)); // Log the commit hashes
+    console.log('nonConformingCommits.length :', nonConformingCommits.length); // Log the commit hashes
 
     if (nonConformingCommits.length > 0) {
       const numberOfCommitsToSquash = earliestNonConformingIndex + 1;
@@ -146,7 +143,7 @@ async function run() {
         `;
       core.setFailed(errorMessage);
     } else {
-      core.info("All commit messages follow the required pattern.");
+      core.info('All commit messages follow the required pattern.');
     }
   } catch (error) {
     core.setFailed(error.message);
