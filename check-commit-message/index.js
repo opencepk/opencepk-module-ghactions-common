@@ -112,9 +112,7 @@ async function run() {
       }
     }
 
-    console.log('xxxxxxxxxxx'); // Log the commit hashes
-    console.log('Commit hashes:', JSON.stringify(nonConformingCommits)); // Log the commit hashes
-    console.log('nonConformingCommits.length :', nonConformingCommits.length); // Log the commit hashes
+    core.info(`Number of commits which do not follow the proper format: ${nonConformingCommits.length}`); // Log the commit hashes
 
     if (nonConformingCommits.length > 0) {
       const numberOfCommitsToSquash = earliestNonConformingIndex + 1;
@@ -123,7 +121,7 @@ async function run() {
         errorMessage += `- Commit ${hash} does not follow the required format. Message: "${message}"\n`;
       });
       errorMessage +=
-        `ERROR: Some commits do not follow the required format. Please follow the instructions to squash your commits:\n` +
+        `Please squash the last ${numberOfCommitsToSquash} commits into a single commit with a proper commit message.\n` +
         `Method 1 (in case during rebase you encounter difficulty please abort and follow method 2):\n` +
         `1. git rebase -i HEAD~${numberOfCommitsToSquash}\n` +
         `2. Your default text editor will open with a list of the last ${numberOfCommitsToSquash} commits, each starting with the word "pick".\n` +
@@ -138,7 +136,7 @@ async function run() {
         `Please ensure your commit messages follow the required pattern.\n` +
         `Method 2 (if you don't want to squash commits):\n` +
         `1. git reset --soft HEAD~${numberOfCommitsToSquash} \n` +
-        `2. git commit -m "feat: Combined commit message for feature progress"\n` +
+        `2. commit with proper format such as git commit -m "feat/YOUR_JIRA_TICKET: Combined commit message for feature progress"\n` +
         `3. git push --force\n
         `;
       core.setFailed(errorMessage);
