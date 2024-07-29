@@ -1,0 +1,6 @@
+name: 'Update Release Notes'
+description: 'Generate release notes between the last two tags and update the latest release'
+inputs: {}
+runs:
+  using: 'node20'
+  main: 'index.js'
