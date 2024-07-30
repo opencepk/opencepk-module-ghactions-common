@@ -1,3 +1,4 @@
+---
 name: 'Commit Message Check'
 description: 'Check commit messages for a specific pattern'
 inputs:

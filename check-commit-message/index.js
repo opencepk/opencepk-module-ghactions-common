@@ -74,7 +74,7 @@ async function run() {
     const mainHashesArray = mainCommitHashes.split('\n').filter(Boolean);
     const mainHashesSet = new Set(mainHashesArray);
 
-    let nonConformingCommits = [];
+    const nonConformingCommits = [];
     let earliestNonConformingIndex = -1;
 
     for (let i = 0; i < hashesArray.length; i++) {
@@ -112,7 +112,9 @@ async function run() {
       }
     }
 
-    core.info(`Number of commits which do not follow the proper format: ${nonConformingCommits.length}`); // Log the commit hashes
+    core.info(
+      `Number of commits which do not follow the proper format: ${nonConformingCommits.length}`,
+    ); // Log the commit hashes
 
     if (nonConformingCommits.length > 0) {
       const numberOfCommitsToSquash = earliestNonConformingIndex + 1;

@@ -7,6 +7,7 @@ async function run() {
     const octokit = github.getOctokit(token);
     const context = github.context;
 
+    // eslint-disable-next-line eqeqeq
     if (context.payload.pull_request == null) {
       core.setFailed('No pull request found in the context.');
       return;
@@ -19,7 +20,7 @@ async function run() {
       owner: context.repo.owner,
       repo: context.repo.repo,
       pull_number: prNumber,
-      title: headBranch
+      title: headBranch,
     });
 
     core.info(`Pull request title updated to: ${headBranch}`);

@@ -86,11 +86,11 @@ async function run() {
       core.info('Release updated successfully.');
     } else {
       const errorMessage = `Release for tag ${latestTag} not found.`;
-      console.error(errorMessage);
+      core.error(errorMessage);
       core.setFailed(errorMessage);
     }
   } catch (error) {
-    console.error(`Error: ${error.message}`);
+    core.error(`Error: ${error.message}`);
     core.setFailed(error.message);
   }
 }
