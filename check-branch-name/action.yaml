@@ -1,4 +1,4 @@
-name: 'Check Branch Name'
+name: 'check-branch-name'
 description: 'Verify if the branch name follows the specified pattern'
 inputs:
   github-token:
