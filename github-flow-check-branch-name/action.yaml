@@ -1,0 +1,10 @@
+---
+name: 'github-flow-check-branch-name'
+description: 'Verify if the branch name follows the specified pattern'
+inputs:
+  github-token:
+    description: 'GitHub token'
+    required: true
+runs:
+  using: 'node20'
+  main: 'index.js'
