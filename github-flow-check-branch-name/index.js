@@ -15,7 +15,7 @@ try {
   // Check if the branch name matches the pattern
   if (!branchPattern.test(branchName)) {
     core.setFailed(
-      `Branch name "${branchName}" does not follow the required format.`,
+      `Branch name "${branchName}" does not follow the required format such as feat/ice-123 ({type}/{issue_number}). Please rename the branch using git branch -m <oldname> <newname>`,
     );
   } else {
     core.info(`Branch name "${branchName}" is valid.`);
