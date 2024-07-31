@@ -16,6 +16,10 @@ runs:
       with:
         node-version: '20'
 
+    - name: Debug - List files in working directory
+      run: ls -la
+      shell: bash
+
     - name: Install dependencies
       run: npm install
       shell: bash
