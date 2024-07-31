@@ -8,4 +8,4 @@ inputs:
     default: '^(feat|fix|build|breaking|chore|ci|docs|perf|refactor|revert|test)(\/[\w-]+)*(:\s+)?(.+)?$'
 runs:
   using: 'node20'
-  main: 'index.js'
+  main: 'dist/index.js'
