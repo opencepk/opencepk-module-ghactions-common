@@ -17,7 +17,7 @@ runs:
         node-version: '20'
 
     - name: Install dependencies
-      run: npm install --prefix ./my-composite-action
+      run: npm install --prefix ${{ github.workspace }}/my-composite-action
       shell: bash
 
     - name: Run JavaScript script
