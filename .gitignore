@@ -14,7 +14,8 @@ logs/
 # Local History for Visual Studio Code
 .history/
 # /node_modules/
-/node_modules/
+# /node_modules/
+**/node_modules/
 # Built Visual Studio Code Extensions
 *.vsix
 
