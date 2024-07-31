@@ -5,7 +5,7 @@
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import * as github from '@actions/github';
-import { logger } from '../common/logger.js';
+import * as logger from '../common/logger.js';
 
 // ANSI escape codes for red color
 const red = '\x1b[31m';
