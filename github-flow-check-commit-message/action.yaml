@@ -19,11 +19,11 @@ runs:
     - name: Install dependencies
       run: npm install
       shell: bash
-      working-directory: ./github-flow-check-commit-message
+      working-directory: ./opencepk-module-ghactions-common/github-flow-check-commit-message
 
     - name: Run commit message check
       run: node index.js
       shell: bash
-      working-directory: ./github-flow-check-commit-message
+      working-directory: ./opencepk-module-ghactions-common/github-flow-check-commit-message
       env:
         COMMIT_PATTERN: ${{ inputs.commit-pattern }}
