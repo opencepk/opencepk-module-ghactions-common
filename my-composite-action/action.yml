@@ -1,41 +1,5 @@
-name: "My Composite Action"
-description: "A composite action that checks out code, sets up Node.js, and runs a script"
-inputs:
-  script-path:
-    description: "Path to the JavaScript script to run"
-    required: true
-    default: "./my-composite-action/my-script.js"
+name: 'My Composite Action'
+description: 'A description of my composite action'
 runs:
-  using: "composite"
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-
-    - name: echo xxxxxx
-      run: ls /home/runner/work/cepk-test-ghactions -la
-      shell: bash
-
-    - name: echo
-      run: echo ${{ github.workspace }}
-      shell: bash
-
-    - name: path of current 
-      run: pwd
-      shell: bash
-
-    - name: files in current directory
-      run: ls ${{ github.workspace }} -la
-      shell: bash
-
-    - name: Install dependencies
-      run: npm install --prefix ${{ github.workspace }}/my-composite-action
-      shell: bash
-
-    - name: Run JavaScript script
-      run: node ${{ inputs.script-path }}
-      shell: bash
+  using: 'node12'
+  main: 'dist/index.js'
