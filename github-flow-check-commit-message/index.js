@@ -1,9 +1,36 @@
 const core = require('@actions/core');
 const exec = require('@actions/exec');
 const github = require('@actions/github');
+const logger = require('../common/logger');
+
+// ANSI escape codes for red color
+const red = '\x1b[31m';
+const blue = '\x1b[34m';
+const green = '\x1b[32m';
+const reset = '\x1b[0m';
+
+// eslint-disable-next-line no-unused-vars
+function error(message) {
+  core.error(`${red}${message}${reset}`);
+}
+
+function info(message) {
+  core.info(`${blue}${message}${reset}`);
+}
+
+// eslint-disable-next-line no-unused-vars
+function debug(message) {
+  core.debug(`${green}${message}${reset}`);
+}
+
+function setFailed(message) {
+  core.setFailed(`${red}${message}${reset}`);
+}
 
 async function run() {
+
   try {
+    logger.info('xxxxxxxxxxxxxxxxxxxxxxx Running github-flow-check-commit-message action');
     const defaultPattern =
       /^(feat|fix|build|breaking|chore|ci|docs|perf|refactor|revert|test)\/([\w-]+)*(:\s+)?(.+)?$/;
     const patternInput = core.getInput('commit-pattern');
@@ -112,7 +139,7 @@ async function run() {
       }
     }
 
-    core.info(
+    info(
       `Number of commits which do not follow the proper format: ${nonConformingCommits.length}`,
     ); // Log the commit hashes
 
@@ -141,12 +168,12 @@ async function run() {
         `2. commit with proper format such as git commit -m "feat/YOUR_JIRA_TICKET: Combined commit message for feature progress"\n` +
         `3. git push --force\n
         `;
-      core.setFailed(errorMessage);
+      setFailed(errorMessage);
     } else {
-      core.info('All commit messages follow the required pattern.');
+      info('All commit messages follow the required pattern.');
     }
   } catch (error) {
-    core.setFailed(error.message);
+    setFailed(error.message);
   }
 }
 
