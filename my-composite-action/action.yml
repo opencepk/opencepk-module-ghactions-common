@@ -16,6 +16,10 @@ runs:
       with:
         node-version: '20'
 
+    - name: echo xxxxxx
+      run: ls /home/runner/work/cepk-test-ghactions -la
+      shell: bash
+
     - name: echo
       run: echo ${{ github.workspace }}
       shell: bash
