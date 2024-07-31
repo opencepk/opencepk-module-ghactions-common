@@ -5,7 +5,7 @@
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import * as github from '@actions/github';
-import logger from '../common/logger.js';
+// import logger from '../common/logger.js';
 
 // ANSI escape codes for red color
 const red = '\x1b[31m';
@@ -34,7 +34,7 @@ function setFailed(message) {
 async function run() {
 
   try {
-    logger.info('xxxxxxxxxxxxxxxxxxxxxxx Running github-flow-check-commit-message action');
+    // logger.info('xxxxxxxxxxxxxxxxxxxxxxx Running github-flow-check-commit-message action');
     const defaultPattern =
       /^(feat|fix|build|breaking|chore|ci|docs|perf|refactor|revert|test)\/([\w-]+)*(:\s+)?(.+)?$/;
     const patternInput = core.getInput('commit-pattern');
