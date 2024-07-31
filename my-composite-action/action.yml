@@ -4,7 +4,7 @@ inputs:
   script-path:
     description: "Path to the JavaScript script to run"
     required: true
-    default: ".//my-composite-action/my-script.js"
+    default: "./my-composite-action/my-script.js"
 runs:
   using: "composite"
   steps:
@@ -15,6 +15,18 @@ runs:
       uses: actions/setup-node@v4
       with:
         node-version: '20'
+
+    - name: echo
+      run: echo ${{ github.workspace }}
+      shell: bash
+
+    - name: path of current 
+      run: pwd
+      shell: bash
+
+    - name: files in current directory
+      run: ls ${{ github.workspace }} -la
+      shell: bash
 
     - name: Install dependencies
       run: npm install --prefix ${{ github.workspace }}/my-composite-action
