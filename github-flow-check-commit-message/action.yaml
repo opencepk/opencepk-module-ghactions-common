@@ -1,33 +1,11 @@
 ---
-name: 'Check Commit Messages'
-description: 'Checks commit messages against a specified pattern'
+name: 'github-flow-check-commit-message'
+description: 'Check commit messages for a specific pattern'
 inputs:
   commit-pattern:
-    description: 'The commit message pattern to check against'
-    required: true
+    description: 'The regex pattern to validate commit messages'
+    required: false
+    default: '^(feat|fix|build|breaking|chore|ci|docs|perf|refactor|revert|test)(\/[\w-]+)*(:\s+)?(.+)?$'
 runs:
-  using: "composite"
-  steps:
-    # - name: Checkout repository
-    #   uses: actions/checkout@v4
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-
-    - name: Debug - List files in working directory
-      run: ls -la
-      shell: bash
-
-    - name: Install dependencies
-      run: npm install
-      shell: bash
-      working-directory: github-flow-check-commit-message
-
-    - name: Run commit message check
-      run: node index.js
-      shell: bash
-      working-directory: github-flow-check-commit-message
-      env:
-        COMMIT_PATTERN: ${{ inputs.commit-pattern }}
+  using: 'node20'
+  main: 'index.js'
