@@ -8,7 +8,20 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Run composite action
-      uses: ./composite-action.yml
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
       with:
-        commit-pattern: ${{ inputs.commit-pattern }}
+        node-version: '20'
+
+    - name: Install dependencies
+      run: npm install
+      working-directory: ./github-flow-check-commit-message
+
+    - name: Run commit message check
+      run: node index.js
+      working-directory: ./github-flow-check-commit-message
+      env:
+        COMMIT_PATTERN: ${{ inputs.commit-pattern }}
