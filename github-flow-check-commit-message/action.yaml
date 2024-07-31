@@ -1,11 +1,14 @@
 ---
-name: 'github-flow-check-commit-message'
-description: 'Check commit messages for a specific pattern'
+name: 'Check Commit Messages'
+description: 'Checks commit messages against a specified pattern'
 inputs:
   commit-pattern:
-    description: 'The regex pattern to validate commit messages'
-    required: false
-    default: '^(feat|fix|build|breaking|chore|ci|docs|perf|refactor|revert|test)(\/[\w-]+)*(:\s+)?(.+)?$'
+    description: 'The commit message pattern to check against'
+    required: true
 runs:
-  using: 'node20'
-  main: 'index.js'
+  using: "composite"
+  steps:
+    - name: Run composite action
+      uses: ./composite-action.yml
+      with:
+        commit-pattern: ${{ inputs.commit-pattern }}
