@@ -1,5 +1,0 @@
-name: 'My Composite Action'
-description: 'A description of my composite action'
-runs:
-  using: 'node12'
-  main: 'dist/index.js'

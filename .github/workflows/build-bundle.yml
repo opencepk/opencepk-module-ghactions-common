@@ -1,4 +1,4 @@
-name: Build and Commit Dist
+name: build-bundle
 
 on:
   pull_request:
@@ -16,7 +16,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20'  # Adjust the Node.js version as needed
+        node-version: '20'
 
     - name: Install dependencies and build
       run: npm run install-and-build-all
@@ -27,6 +27,6 @@ jobs:
       run: |
         git config user.name "${{ github.actor }}"
         git config user.email "${{ github.actor }}@users.noreply.github.com"
-        git add common/dist git-upstream-set-check-pr-block/dist git-upstream-set-create-pr/dist github-flow-check-branch-name/dist github-flow-check-commit-message/dist github-flow-update-pr-title/dist github-flow-update-release-notes/dist
+        git add */dist
         git commit -m 'Build dist folders [skip ci]'
         git push origin ${{ github.head_ref }}
