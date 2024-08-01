@@ -31185,10 +31185,6 @@ const { execSync } = __nccwpck_require__(2081);
 const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
 
-// import { execSync } from 'child_process';
-// import * as github from '@actions/github';
-// import * as logger from '../dist/logger.js';
-
 async function run() {
   try {
     const { Octokit } = await __nccwpck_require__.e(/* import() */ 286).then(__nccwpck_require__.bind(__nccwpck_require__, 2372));

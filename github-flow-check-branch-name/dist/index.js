@@ -29188,14 +29188,6 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 342:
-/***/ ((module) => {
-
-module.exports = eval("require")("../dist");
-
-
-/***/ }),
-
 /***/ 9491:
 /***/ ((module) => {
 
@@ -31088,33 +31080,31 @@ var __webpack_exports__ = {};
 (() => {
 const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
-const logger = __nccwpck_require__(342);
 
 // import * as github from '@actions/github';
 // import * as logger from '../dist/logger.js';
 
 try {
-  logger.debug('xxxxxxxxxxxx    Checking branch name...');
   // Get the pull request event payload
   const pullRequest = github.context.payload.pull_request;
 
   // Extract the branch name from the pull request event
   const branchName = pullRequest.head.ref;
-  logger.info(`Branch name: ${branchName}`);
+  core.info(`Branch name: ${branchName}`);
   // Define the branch name pattern
   const branchPattern =
     /^(feat|fix|build|breaking|chore|ci|docs|perf|refactor|revert|test)\/[a-zA-Z0-9-]+$/;
 
   // Check if the branch name matches the pattern
   if (!branchPattern.test(branchName)) {
-    logger.setFailed(
+    core.setFailed(
       `Branch name "${branchName}" does not follow the required format such as feat/ice-123 ({type}/{issue_number}). Please rename the branch using git branch -m ${branchName} <newname>`,
     );
   } else {
-    logger.info(`Branch name "${branchName}" is valid.`);
+    core.info(`Branch name "${branchName}" is valid.`);
   }
 } catch (error) {
-  logger.setFailed(error.message);
+  core.setFailed(error.message);
 }
 
 })();

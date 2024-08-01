@@ -31081,10 +31081,6 @@ var __webpack_exports__ = {};
 const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
 
-// import * as github from '@actions/github';
-// import * as logger from '../dist/logger.js';
-// import * as core from '@actions/core';
-
 async function run() {
   try {
     const token = core.getInput('github-token');

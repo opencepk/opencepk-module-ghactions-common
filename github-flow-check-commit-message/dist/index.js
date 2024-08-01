@@ -32328,7 +32328,6 @@ var __webpack_exports__ = {};
 const core = __nccwpck_require__(2186);
 const exec = __nccwpck_require__(1514);
 const github = __nccwpck_require__(5438);
-// const logger = require('../dist/logger.js');
 
 async function run() {
   try {
