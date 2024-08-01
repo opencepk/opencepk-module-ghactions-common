@@ -12,25 +12,25 @@ repos:
     rev: v4.6.0
     hooks:
       - id: check-merge-conflict
-        exclude: 'node_modules/'
+        exclude: '(^|/)node_modules/|(^|/)dist/'
       - id: check-added-large-files
         args: [--maxkb=500]
-        exclude: 'node_modules/'
+        exclude: '(^|/)node_modules/|(^|/)dist/'
       - id: trailing-whitespace
-        exclude: 'node_modules/'
+        exclude: '(^|/)node_modules/|(^|/)dist/'
       - id: detect-private-key
-        exclude: 'node_modules/'
+        exclude: '(^|/)node_modules/|(^|/)dist/'
       - id: end-of-file-fixer
-        exclude: 'node_modules/'
+        exclude: '(^|/)node_modules/|(^|/)dist/'
       - id: fix-encoding-pragma
-        exclude: 'node_modules/'
+        exclude: '(^|/)node_modules/|(^|/)dist/'
       - id: file-contents-sorter
-        exclude: 'node_modules/'
+        exclude: '(^|/)node_modules/|(^|/)dist/'
       - id: check-case-conflict
-        exclude: 'node_modules/'
+        exclude: '(^|/)node_modules/|(^|/)dist/'
       - id: mixed-line-ending
         args: [--fix=lf]
-        exclude: 'node_modules/'
+        exclude: '(^|/)node_modules/|(^|/)dist/'
   # -----------------------------
   # Standard pre-commit-hooks for general all-purpose formatting and validation
   # -----------------------------
@@ -86,10 +86,10 @@ repos:
         entry: npx eslint
         language: system
         types: [javascript]
-        exclude: '^.*/?node_modules/.*$'
+        exclude: '(^|/)node_modules/|(^|/)dist/'
       - id: prettier
         name: Prettier
         entry: npx prettier --write
         language: system
         files: '\.(js|css|html)$'
-        exclude: '^.*/?node_modules/.*$'
+        exclude: '(^|/)node_modules/|(^|/)dist/'
