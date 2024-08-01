@@ -5,7 +5,7 @@
   "main": "logger.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "ncc build logger.js -o dist"
+    "build": "rm -rf dist && ncc build logger.js -o dist"
   },
   "keywords": [],
   "author": "",
