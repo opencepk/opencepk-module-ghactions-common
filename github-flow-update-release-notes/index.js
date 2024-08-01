@@ -1,6 +1,10 @@
-const { execSync } = require('child_process');
-const core = require('@actions/core');
-const github = require('@actions/github');
+// const { execSync } = require('child_process');
+// const core = require('@actions/core');
+// const github = require('@actions/github');
+
+import { execSync } from 'child_process';
+import * as github from '@actions/github';
+import * as logger from '../dist/logger.js';
 
 async function run() {
   try {
@@ -9,7 +13,7 @@ async function run() {
     const octokit = new Octokit({ auth: token });
     const { owner, repo } = github.context.repo;
 
-    core.info(`Repository: ${owner}/${repo}`);
+    logger.info(`Repository: ${owner}/${repo}`);
 
     // Fetch the latest two tags
     const tags = execSync('git tag --sort=-creatordate')
@@ -19,8 +23,8 @@ async function run() {
     const latestTag = tags[0];
     const previousTag = tags[1];
 
-    core.info(`Latest tag: ${latestTag}`);
-    core.info(`Previous tag: ${previousTag}`);
+    logger.info(`Latest tag: ${latestTag}`);
+    logger.info(`Previous tag: ${previousTag}`);
 
     // Generate release notes between the two tags
     const compare = await octokit.repos.compareCommits({
@@ -55,8 +59,8 @@ async function run() {
     const changes = Array.from(uniqueCommits).join('\n');
     const contributors = Array.from(uniqueContributors).join('\n');
 
-    core.info(`Changes:\n${changes}`);
-    core.info(`Contributors:\n${contributors}`);
+    logger.info(`Changes:\n${changes}`);
+    logger.info(`Contributors:\n${contributors}`);
 
     // Construct the release notes string carefully
     const releaseNotes = [
@@ -67,7 +71,7 @@ async function run() {
       `**Full Changelog**: https://github.com/${owner}/${repo}/compare/${previousTag}...${latestTag}`,
     ].join('\n\n');
 
-    core.info(`Release Notes:\n${releaseNotes}`);
+    logger.info(`Release Notes:\n${releaseNotes}`);
 
     // Update the latest release with the generated notes
     const releases = await octokit.repos.listReleases({ owner, repo });
@@ -76,22 +80,22 @@ async function run() {
     );
 
     if (latestRelease) {
-      core.info(`Updating release with ID: ${latestRelease.id}`);
+      logger.info(`Updating release with ID: ${latestRelease.id}`);
       await octokit.repos.updateRelease({
         owner,
         repo,
         release_id: latestRelease.id,
         body: releaseNotes,
       });
-      core.info('Release updated successfully.');
+      logger.info('Release updated successfully.');
     } else {
       const errorMessage = `Release for tag ${latestTag} not found.`;
-      core.error(errorMessage);
-      core.setFailed(errorMessage);
+      logger.error(errorMessage);
+      logger.setFailed(errorMessage);
     }
   } catch (error) {
-    core.error(`Error: ${error.message}`);
-    core.setFailed(error.message);
+    logger.error(`Error: ${error.message}`);
+    logger.setFailed(error.message);
   }
 }
 
