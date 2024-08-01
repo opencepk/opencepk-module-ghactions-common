@@ -1,7 +1,7 @@
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import * as github from '@actions/github';
-import * as logger from '../common/logger.js';
+import * as logger from '../dist/logger.js';
 
 async function run() {
   try {
