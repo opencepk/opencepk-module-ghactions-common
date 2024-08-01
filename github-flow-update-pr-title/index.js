@@ -1,9 +1,9 @@
-// const core = require('@actions/core');
-// const github = require('@actions/github');
+const core = require('@actions/core');
+const github = require('@actions/github');
 
-import * as github from '@actions/github';
-import * as logger from '../dist/logger.js';
-import * as core from '@actions/core';
+// import * as github from '@actions/github';
+// import * as logger from '../dist/logger.js';
+// import * as core from '@actions/core';
 
 async function run() {
   try {
@@ -13,7 +13,7 @@ async function run() {
 
     // eslint-disable-next-line eqeqeq
     if (context.payload.pull_request == null) {
-      logger.setFailed('No pull request found in the context.');
+      core.setFailed('No pull request found in the context.');
       return;
     }
 
@@ -27,9 +27,9 @@ async function run() {
       title: headBranch,
     });
 
-    logger.info(`Pull request title updated to: ${headBranch}`);
+    core.info(`Pull request title updated to: ${headBranch}`);
   } catch (error) {
-    logger.setFailed(`Action failed with error: ${error.message}`);
+    core.setFailed(`Action failed with error: ${error.message}`);
   }
 }
 

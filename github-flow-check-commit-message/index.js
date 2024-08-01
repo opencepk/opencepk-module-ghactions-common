@@ -1,7 +1,7 @@
-import * as core from '@actions/core';
-import * as exec from '@actions/exec';
-import * as github from '@actions/github';
-import * as logger from '../dist/logger.js';
+const core = require('@actions/core');
+const exec = require('@actions/exec');
+const github = require('@actions/github');
+// const logger = require('../dist/logger.js');
 
 async function run() {
   try {
@@ -113,7 +113,7 @@ async function run() {
       }
     }
 
-    logger.info(
+    core.info(
       `Number of commits which do not follow the proper format: ${nonConformingCommits.length}`,
     ); // Log the commit hashes
 
@@ -142,12 +142,12 @@ async function run() {
         `2. commit with proper format such as git commit -m "feat/YOUR_JIRA_TICKET: Combined commit message for feature progress"\n` +
         `3. git push --force\n
         `;
-      logger.setFailed(errorMessage);
+      core.setFailed(errorMessage);
     } else {
-      logger.info('All commit messages follow the required pattern.');
+      core.info('All commit messages follow the required pattern.');
     }
   } catch (error) {
-    logger.setFailed(error.message);
+    core.setFailed(error.message);
   }
 }
 
