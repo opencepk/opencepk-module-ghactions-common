@@ -30,8 +30,9 @@ module.exports = {
   error,
   info,
   debug,
-  setFailed
+  setFailed,
 };
+
 
 /***/ }),
 
