@@ -1,7 +1,6 @@
 const core = require('@actions/core');
 const exec = require('@actions/exec');
 const github = require('@actions/github');
-// const logger = require('../dist/logger.js');
 
 async function run() {
   try {

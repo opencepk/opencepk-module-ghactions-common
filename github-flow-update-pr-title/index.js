@@ -1,10 +1,6 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 
-// import * as github from '@actions/github';
-// import * as logger from '../dist/logger.js';
-// import * as core from '@actions/core';
-
 async function run() {
   try {
     const token = core.getInput('github-token');

@@ -2,10 +2,6 @@ const { execSync } = require('child_process');
 const core = require('@actions/core');
 const github = require('@actions/github');
 
-// import { execSync } from 'child_process';
-// import * as github from '@actions/github';
-// import * as logger from '../dist/logger.js';
-
 async function run() {
   try {
     const { Octokit } = await import('@octokit/rest');
