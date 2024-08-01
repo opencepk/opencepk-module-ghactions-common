@@ -1,7 +1,6 @@
-"use strict";
-exports.id = 286;
-exports.ids = [286];
-exports.modules = {
+export const id = 286;
+export const ids = [286];
+export const modules = {
 
 /***/ 2372:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
@@ -3573,4 +3572,3 @@ const dist_src_Octokit = Octokit.plugin(requestLog, legacyRestEndpointMethods, p
 /***/ })
 
 };
-;
