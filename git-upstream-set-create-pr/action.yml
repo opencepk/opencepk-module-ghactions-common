@@ -3,7 +3,7 @@ name: 'git-upstream-set-create-pr'
 description: 'Checks if the repository is a fork and creates a PR with fork status.'
 runs:
   using: 'node20'
-  main: 'index.js'
+  main: 'dist/index.js'
 inputs:
   github-token:
     description: 'GitHub token for authentication'
