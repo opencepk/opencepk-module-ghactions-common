@@ -1,0 +1,10 @@
+---
+name: 'github-flow-update-pr-title'
+description: 'A custom action to set the pull request title to the branch name'
+inputs:
+  github-token:
+    description: 'GitHub token'
+    required: true
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
