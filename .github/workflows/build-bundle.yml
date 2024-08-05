@@ -40,6 +40,6 @@ jobs:
             echo "No changes to commit"
             exit 0
           else
-            git commit -m 'chores/update-dist: Build dist folders'
-            git push origin $HEAD_REF
+            git commit -m 'chores/update-dist: Build dist folders' || true
+            git push origin $HEAD_REF || true
           fi
