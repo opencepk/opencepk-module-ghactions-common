@@ -77,9 +77,22 @@ async function run() {
     // Merge the changes from the upstream repository
     execSync(`git remote add upstream ../upstream-repo`);
     execSync('git fetch upstream');
-    execSync('git merge upstream/main --allow-unrelated-histories');
+    try {
+      execSync('git merge upstream/main --allow-unrelated-histories');
+    } catch (e) {
+      core.debug(`xxxxxxxxxxxxx`);
+      core.debug(JSON.stringify(e));
+      if (e.message.includes('No commits between')) {
+        core.info('No new commits to create a pull request.');
+        return;
+      } else {
+        throw e;
+      }
+    }
     // Check if there are any commits between the branches
-    const commitDiff = execSync(`git log origin/main..${branchName} --oneline`).toString().trim();
+    const commitDiff = execSync(`git log origin/main..${branchName} --oneline`)
+      .toString()
+      .trim();
     if (!commitDiff) {
       core.info('No new commits to create a pull request.');
       return;
