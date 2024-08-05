@@ -3,6 +3,7 @@ name: build-bundle
 
 on:
   pull_request:
+  push:
 
 jobs:
   build-and-commit:
