@@ -7,7 +7,7 @@ const path = require('path');
 async function run() {
   try {
     core.info('Starting the sync process...');
-
+    console.log('Starting the sync process...');
     const token = core.getInput('github_token');
     const octokit = github.getOctokit(token);
     const context = github.context;
@@ -15,7 +15,7 @@ async function run() {
     const owner = context.repo.owner;
 
     core.info(`Repository: ${owner}/${repo}`);
-
+    console.log(`Repository: ${owner}/${repo}`);
     // Read the UPSTREAM file
     const upstreamFilePath = path.join('.github', 'UPSTREAM');
     core.info(`Reading UPSTREAM file from: ${upstreamFilePath}`);
@@ -108,14 +108,14 @@ async function run() {
     }
 
     // Check if there are any commits between the branches
-    core.info('Checking for new commits between branches...');
-    const commitDiff = execSync(`git log origin/main..${branchName} --oneline`)
-      .toString()
-      .trim();
-    if (!commitDiff) {
-      core.info('No new commits to create a pull request.');
-      return;
-    }
+    // core.info('Checking for new commits between branches...');
+    // const commitDiff = execSync(`git log origin/main..${branchName} --oneline`)
+    //   .toString()
+    //   .trim();
+    // if (!commitDiff) {
+    //   core.info('No new commits to create a pull request.');
+    //   return;
+    // }
 
     // Push the new branch to the private repository
     core.info(`Pushing the new branch: ${branchName}`);
