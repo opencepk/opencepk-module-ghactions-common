@@ -75,9 +75,10 @@ async function run() {
     execSync('git config --global user.name "github-actions[bot]"');
 
     // Merge the changes from the upstream repository
-    execSync(`git remote add upstream ../upstream-repo`);
-    execSync('git fetch upstream');
+
     try {
+      execSync(`git remote add upstream ../upstream-repo`);
+      execSync('git fetch upstream');
       execSync('git merge upstream/main --allow-unrelated-histories');
     } catch (e) {
       core.debug(`xxxxxxxxxxxxx`);
