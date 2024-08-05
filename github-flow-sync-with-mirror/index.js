@@ -22,18 +22,24 @@ async function run() {
 
     // Fetch the latest changes from the upstream repository
     execSync('git fetch origin');
-    const upstreamCommit = execSync('git rev-parse origin/main').toString().trim();
+    const upstreamCommit = execSync('git rev-parse origin/main')
+      .toString()
+      .trim();
 
     // Go back to the original repository
     process.chdir('..');
 
     // Clone the private repository
-    execSync(`git clone https://x-access-token:${token}@github.com/${owner}/${repo}.git private-repo`);
+    execSync(
+      `git clone https://x-access-token:${token}@github.com/${owner}/${repo}.git private-repo`,
+    );
     process.chdir('private-repo');
 
     // Fetch the latest changes from the private repository
     execSync('git fetch origin');
-    const privateCommit = execSync('git rev-parse origin/main').toString().trim();
+    const privateCommit = execSync('git rev-parse origin/main')
+      .toString()
+      .trim();
 
     // Check if there are new changes in the upstream repository
     if (upstreamCommit === privateCommit) {
@@ -63,7 +69,9 @@ async function run() {
     execSync(`git checkout -b ${branchName}`);
 
     // Configure Git user globally
-    execSync('git config --global user.email "github-actions[bot]@users.noreply.github.com"');
+    execSync(
+      'git config --global user.email "github-actions[bot]@users.noreply.github.com"',
+    );
     execSync('git config --global user.name "github-actions[bot]"');
 
     // Merge the changes from the upstream repository
@@ -73,18 +81,24 @@ async function run() {
 
     // Push the new branch to the private repository
     execSync(`git push origin ${branchName}`);
-
-    // Create a new pull request with the changes
-    const { data: newPr } = await octokit.pulls.create({
-      owner,
-      repo,
-      title: 'Sync with upstream',
-      head: branchName,
-      base: 'main',
-      body: 'This PR brings in the latest changes from the upstream repository.',
-    });
-
-    console.log(`Created new PR #${newPr.number}`);
+    try {
+      // Create a new pull request with the changes
+      const { data: newPr } = await octokit.pulls.create({
+        owner,
+        repo,
+        title: 'Sync with upstream',
+        head: branchName,
+        base: 'main',
+        body: 'This PR brings in the latest changes from the upstream repository.',
+      });
+      core.info(`Created new PR #${newPr.number}`);
+    } catch (e) {
+      if (e.message.includes('No commits between')) {
+        core.info('No new commits to create a pull request.');
+      } else {
+        throw e;
+      }
+    }
   } catch (error) {
     core.setFailed(error.message);
   }
