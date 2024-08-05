@@ -7,7 +7,6 @@ const path = require('path');
 async function run() {
   try {
     core.info('Starting the sync process...');
-    console.log('Starting the sync process...');
     const token = core.getInput('github_token');
     const octokit = github.getOctokit(token);
     const context = github.context;
@@ -15,7 +14,6 @@ async function run() {
     const owner = context.repo.owner;
 
     core.info(`Repository: ${owner}/${repo}`);
-    console.log(`Repository: ${owner}/${repo}`);
     // Read the UPSTREAM file
     const upstreamFilePath = path.join('.github', 'UPSTREAM');
     core.info(`Reading UPSTREAM file from: ${upstreamFilePath}`);
