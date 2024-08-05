@@ -1,0 +1,9 @@
+name: Sync with Upstream
+description: Checks for new changes in the upstream repository and creates a new PR with the changes.
+inputs:
+  github_token:
+    description: 'GitHub token'
+    required: true
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
