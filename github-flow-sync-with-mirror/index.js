@@ -78,7 +78,12 @@ async function run() {
     execSync(`git remote add upstream ../upstream-repo`);
     execSync('git fetch upstream');
     execSync('git merge upstream/main --allow-unrelated-histories');
-
+    // Check if there are any changes to commit
+    const changes = execSync('git status --porcelain').toString().trim();
+    if (!changes) {
+      core.info('No changes to commit after merging upstream.');
+      return;
+    }
     // Push the new branch to the private repository
     execSync(`git push origin ${branchName}`);
     try {
