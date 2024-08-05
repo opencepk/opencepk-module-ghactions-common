@@ -38,6 +38,7 @@ jobs:
           git add */dist
           if git diff-index --quiet HEAD --; then
             echo "No changes to commit"
+            exit 0
           else
             git commit -m 'chores/update-dist: Build dist folders'
             git push origin $HEAD_REF
