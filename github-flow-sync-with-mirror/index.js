@@ -98,6 +98,8 @@ async function run() {
       });
       core.info(`Created new PR #${newPr.number}`);
     } catch (e) {
+      core.debug(`xxxxxxxxxxxxx`);
+      core.debug(JSON.stringify(e));
       if (e.message.includes('No commits between')) {
         core.info('No new commits to create a pull request.');
       } else {
