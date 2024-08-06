@@ -6,7 +6,8 @@
 
 const core = __nccwpck_require__(2186);
 const styles = __nccwpck_require__(6844);
-
+console.log('Styles:', styles); // Debug statement to check the import
+console.log('zxxxxx:', JSON.stringify(styles)); // Debug statement to check the import
 const red = '\x1b[31m';
 // const blue = '\x1b[34m';
 const blue = styles.color.ansi16m(...styles.hexToRgb('#abcdef'));
