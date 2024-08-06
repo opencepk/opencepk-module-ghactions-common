@@ -1,0 +1,15 @@
+name: 'Copy Public Repo to Private Repo'
+description: 'Creates a private repo in the organization and copies content from a public repo.'
+inputs:
+  public_repo_url:
+    description: 'The URL of the public repository'
+    required: true
+  github_token:
+    description: 'GitHub token for authentication'
+    required: true
+outputs:
+  private_repo_url:
+    description: 'The URL of the created private repository'
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
