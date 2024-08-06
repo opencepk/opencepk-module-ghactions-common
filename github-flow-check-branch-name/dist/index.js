@@ -5,11 +5,11 @@
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const core = __nccwpck_require__(4561);
-const style = __nccwpck_require__(8830);
+const styles = __nccwpck_require__(8830);
 
 const red = '\x1b[31m';
 // const blue = '\x1b[34m';
-const blue = style.color.ansi16m.hex('#abcdef');
+const blue = styles.color.ansi16m(...styles.hexToRgb('#abcdef'));
 const green = '\x1b[32m';
 const reset = '\x1b[0m';
 
