@@ -8,12 +8,12 @@ const green = '\x1b[32m';
 const reset = '\x1b[0m';
 
 function error(message) {
-  core.error(chalk.hex(blue)(message));
-  // core.error(`${red}${message}${reset}`);
+  core.error(`${red}${message}${reset}`);
 }
 
-function info(message) {
-  core.info(`${blue}${message}${reset}`);
+function info(message, color = '#FF0000') {
+  // core.info(`${blue}${message}${reset}`);
+  core.error(chalk.hex(color)(message));
 }
 
 function debug(message) {
