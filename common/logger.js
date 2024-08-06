@@ -1,6 +1,7 @@
 const core = require('@actions/core');
 const styles = require('ansi-styles');
-
+console.log('Styles:', styles); // Debug statement to check the import
+console.log('zxxxxx:', JSON.stringify(styles)); // Debug statement to check the import
 const red = '\x1b[31m';
 // const blue = '\x1b[34m';
 const blue = styles.color.ansi16m(...styles.hexToRgb('#abcdef'));
