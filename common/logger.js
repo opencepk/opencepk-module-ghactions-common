@@ -1,9 +1,9 @@
 const core = require('@actions/core');
-const style = require('ansi-styles');
+const styles = require('ansi-styles');
 
 const red = '\x1b[31m';
 // const blue = '\x1b[34m';
-const blue = style.color.ansi16m.hex('#abcdef');
+const blue = styles.color.ansi16m(...styles.hexToRgb('#abcdef'));
 const green = '\x1b[32m';
 const reset = '\x1b[0m';
 
