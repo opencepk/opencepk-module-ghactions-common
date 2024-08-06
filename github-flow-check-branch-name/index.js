@@ -1,10 +1,12 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
+const logger = require('../common/logger.js');
 
 // import * as github from '@actions/github';
 // import * as logger from '../dist/logger.js';
 
 try {
+  logger.info('xxxxxxxxxx Starting the branch name check...');
   // Get the pull request event payload
   const pullRequest = github.context.payload.pull_request;
 
