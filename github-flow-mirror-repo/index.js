@@ -1,16 +1,18 @@
-const core = require("@actions/core");
-const github = require("@actions/github");
-const { execSync } = require("child_process");
-const fs = require("fs");
-const path = require("path");
+const core = require('@actions/core');
+const github = require('@actions/github');
+const { execSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const logger = require('../common/logger.js');
+const { log } = require('console');
 
 async function run() {
   try {
-    const publicRepoUrl = core.getInput("public_repo_url");
-    const token = core.getInput("github_token");
+    const publicRepoUrl = core.getInput('public_repo_url');
+    const token = core.getInput('github_token');
     const octokit = github.getOctokit(token);
-    const org = "tucowsinc";
-    const repoName = publicRepoUrl.split("/").pop().replace(".git", "");
+    const org = 'tucowsinc';
+    const repoName = publicRepoUrl.split('/').pop().replace('.git', '');
 
     // Check if the private repository already exists
     try {
@@ -18,7 +20,7 @@ async function run() {
         owner: org,
         repo: repoName,
       });
-      core.setFailed(`Repository ${org}/${repoName} already exists.`);
+      logger.setFailed(`Repository ${org}/${repoName} already exists.`);
       return;
     } catch (error) {
       if (error.status !== 404) {
@@ -31,32 +33,35 @@ async function run() {
       org,
       name: repoName,
       // private: true,
-      visibility: "internal",
+      visibility: 'internal',
     });
 
     // Clone the public repository
     execSync(`git clone ${publicRepoUrl} public-repo`);
-    process.chdir("public-repo");
-
+    process.chdir('public-repo');
+    logger.info('Configured Git user');
     // Configure Git user
     execSync(
-      'git config user.email "41898282+github-actions[bot]@users.noreply.github.com"'
+      'git config user.email "41898282+github-actions[bot]@users.noreply.github.com"',
     );
     execSync('git config user.name "github-actions[bot]"');
 
     // Add UPSTREAM file
+    logger.info('Adding UPSTREAM file');
     const upstreamContent = `git@github.com:${
-      publicRepoUrl.split("https://github.com/")[1]
+      publicRepoUrl.split('https://github.com/')[1]
     }.git`;
-    const upstreamFilePath = path.join(".github", "UPSTREAM");
+    const upstreamFilePath = path.join('.github', 'UPSTREAM');
     fs.mkdirSync(path.dirname(upstreamFilePath), { recursive: true });
     fs.writeFileSync(upstreamFilePath, upstreamContent);
 
     // Commit the UPSTREAM file
-    execSync("git add .github/UPSTREAM");
+    logger.info('Committing UPSTREAM file');
+    execSync('git add .github/UPSTREAM');
     execSync('git commit -m "Add UPSTREAM file"');
 
     // Add the GitHub Actions workflow file
+    logger.info('Adding GitHub Actions workflow file');
     const workflowContent = `
 name: sync-with-mirror
 
@@ -85,25 +90,28 @@ jobs:
           github_token: \${{ secrets.GITHUB_TOKEN }}
     `;
     const workflowFilePath = path.join(
-      ".github",
-      "workflows",
-      "sync-with-mirror.yml"
+      '.github',
+      'workflows',
+      'sync-with-mirror.yml',
     );
     fs.mkdirSync(path.dirname(workflowFilePath), { recursive: true });
     fs.writeFileSync(workflowFilePath, workflowContent);
 
     // Commit the workflow file
-    execSync("git add .github/workflows/sync-with-mirror.yml");
+    logger.info('Committing workflow file');
+    execSync('git add .github/workflows/sync-with-mirror.yml');
     execSync('git commit -m "Add sync-with-mirror workflow"');
 
     // Set the remote URL with the token for authentication
+    logger.info('Setting remote URL with token for authentication');
     const remoteUrl = `https://x-access-token:${token}@github.com/${org}/${repoName}.git`;
     execSync(`git remote set-url origin ${remoteUrl}`);
-    execSync("git push origin main");
+    execSync('git push origin main');
 
-    core.setOutput("private_repo_url", privateRepo.html_url);
+    core.setOutput('private_repo_url', privateRepo.html_url);
   } catch (error) {
-    core.setFailed(error.message);
+    logger.error(`Error: ${JSON.stringify(error)}`);
+    logger.setFailed(error.message);
   }
 }
 
