@@ -57672,7 +57672,7 @@ try {
   logger.info(`Branch name: ${branchName}`);
   // Define the branch name pattern
   const branchPattern =
-    /^(feat|fix|build|breaking|chore|ci|docs|perf|refactor|revert|test)\/[a-zA-Z0-9-]+$/;
+    /^(feat|fix|build|breaking|chore|ci|docs|perf|refactor|revert|test|dependabot)\/[a-zA-Z0-9-_]+.*$/;
 
   // Check if the branch name matches the pattern
   if (!branchPattern.test(branchName)) {
