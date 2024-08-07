@@ -10,6 +10,9 @@ inputs:
   github_token:
     description: 'GitHub token for authentication'
     required: true
+  github_repos:
+    description: 'Lists of repositories to be copied'
+    required: true
 outputs:
   private_repo_url:
     description: 'The URL of the created private repository'
