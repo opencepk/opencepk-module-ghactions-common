@@ -15,5 +15,5 @@ runs:
   main: 'dist/index.js'
 
 branding:
-  icon: lock
-  color: green
+  icon: copy
+  color: blue
