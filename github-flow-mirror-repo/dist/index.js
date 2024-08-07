@@ -65364,8 +65364,10 @@ async function run() {
     const publicRepoUrl = core.getInput('public_repo_url');
     const org = core.getInput('git_org');
     const token = core.getInput('github_token');
+    const gitRepos = core.getInput('github_repos');
     const octokit = github.getOctokit(token);
     // const org = 'tucowsinc';
+    core.info(`gitRepos: ${JSON.parse(gitRepos)}`);
     const repoName = publicRepoUrl.split('/').pop().replace('.git', '');
 
     // Check if the private repository already exists
