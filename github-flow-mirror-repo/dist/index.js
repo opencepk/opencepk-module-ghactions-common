@@ -61062,9 +61062,10 @@ const { log } = __nccwpck_require__(6206);
 async function run() {
   try {
     const publicRepoUrl = core.getInput('public_repo_url');
+    const org = core.getInput('git_org');
     const token = core.getInput('github_token');
     const octokit = github.getOctokit(token);
-    const org = 'tucowsinc';
+    // const org = 'tucowsinc';
     const repoName = publicRepoUrl.split('/').pop().replace('.git', '');
 
     // Check if the private repository already exists
