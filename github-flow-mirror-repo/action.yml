@@ -4,6 +4,9 @@ inputs:
   public_repo_url:
     description: 'The URL of the public repository'
     required: true
+  git_org:
+    description: 'The organization where the private repository will be created'
+    required: true
   github_token:
     description: 'GitHub token for authentication'
     required: true
