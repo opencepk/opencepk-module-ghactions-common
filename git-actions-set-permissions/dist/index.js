@@ -57686,7 +57686,7 @@ var __webpack_exports__ = {};
 const core = __nccwpck_require__(2186);
 // const github = require('@actions/github');
 const logger = __nccwpck_require__(5568);
-const setGitActionAccess = __nccwpck_require__(1062);
+const {setGitActionAccess} = __nccwpck_require__(1062);
 
 
 async function run() {
