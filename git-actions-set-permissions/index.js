@@ -2,6 +2,7 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const logger = require('../common/logger.js');
 
+
 async function run() {
   try {
     const token = core.getInput('token');
