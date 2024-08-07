@@ -1,7 +1,7 @@
 const core = require('@actions/core');
 // const github = require('@actions/github');
 const logger = require('../common/logger.js');
-const setGitActionAccess = require('../common/set-github-access.js');
+const {setGitActionAccess} = require('../common/set-github-access.js');
 
 
 async function run() {
