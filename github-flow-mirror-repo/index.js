@@ -85,7 +85,7 @@ jobs:
 
       - name: Sync with Upstream
         # uses: opencepk-module-ghactions-common/sync-with-mirror
-        uses: opencepk/opencepk-module-ghactions-common/github-flow-sync-with-mirror@v2.0.9
+        uses: opencepk/opencepk-module-ghactions-common/github-flow-sync-with-mirror@feat/sync-mirror
         with:
           github_token: \${{ secrets.GITHUB_TOKEN }}
     `;
