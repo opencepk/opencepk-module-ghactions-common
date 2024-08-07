@@ -65359,66 +65359,58 @@ const path = __nccwpck_require__(1017);
 const logger = __nccwpck_require__(5568);
 const { setGitActionAccess } = __nccwpck_require__(1062);
 
-async function run() {
+async function processRepo(publicRepoUrl, org, token) {
+  const octokit = github.getOctokit(token);
+  const repoName = publicRepoUrl.split('/').pop().replace('.git', '');
+
+  // Check if the private repository already exists
   try {
-    const publicRepoUrl = core.getInput('public_repo_url');
-    const org = core.getInput('git_org');
-    const token = core.getInput('github_token');
-    const gitRepos = core.getInput('github_repos');
-    const octokit = github.getOctokit(token);
-    // const org = 'tucowsinc';
-    core.info(`gitRepos: ${JSON.parse(gitRepos)}`);
-    const repoName = publicRepoUrl.split('/').pop().replace('.git', '');
-
-    // Check if the private repository already exists
-    try {
-      await octokit.repos.get({
-        owner: org,
-        repo: repoName,
-      });
-      logger.setFailed(`Repository ${org}/${repoName} already exists.`);
-      return;
-    } catch (error) {
-      if (error.status !== 404) {
-        throw error;
-      }
-    }
-
-    // Create a private repository in the organization
-    const { data: privateRepo } = await octokit.repos.createInOrg({
-      org,
-      name: repoName,
-      // private: true,
-      visibility: 'internal',
+    await octokit.repos.get({
+      owner: org,
+      repo: repoName,
     });
+    logger.setFailed(`Repository ${org}/${repoName} already exists.`);
+    return;
+  } catch (error) {
+    if (error.status !== 404) {
+      throw error;
+    }
+  }
 
-    // Clone the public repository
-    execSync(`git clone ${publicRepoUrl} public-repo`);
-    process.chdir('public-repo');
-    logger.info('Configured Git user');
-    // Configure Git user
-    execSync(
-      'git config user.email "41898282+github-actions[bot]@users.noreply.github.com"',
-    );
-    execSync('git config user.name "github-actions[bot]"');
+  // Create a private repository in the organization
+  const { data: privateRepo } = await octokit.repos.createInOrg({
+    org,
+    name: repoName,
+    visibility: 'internal',
+  });
 
-    // Add UPSTREAM file
-    logger.info('Adding UPSTREAM file');
-    const upstreamContent = `git@github.com:${
-      publicRepoUrl.split('https://github.com/')[1]
-    }.git`;
-    const upstreamFilePath = path.join('.github', 'UPSTREAM');
-    fs.mkdirSync(path.dirname(upstreamFilePath), { recursive: true });
-    fs.writeFileSync(upstreamFilePath, upstreamContent);
+  // Clone the public repository
+  execSync(`git clone ${publicRepoUrl} public-repo`);
+  process.chdir('public-repo');
+  logger.info('Configured Git user');
+  // Configure Git user
+  execSync(
+    'git config user.email "41898282+github-actions[bot]@users.noreply.github.com"',
+  );
+  execSync('git config user.name "github-actions[bot]"');
 
-    // Commit the UPSTREAM file
-    logger.info('Committing UPSTREAM file');
-    execSync('git add .github/UPSTREAM');
-    execSync('git commit -m "Add UPSTREAM file"');
+  // Add UPSTREAM file
+  logger.info('Adding UPSTREAM file');
+  const upstreamContent = `git@github.com:${
+    publicRepoUrl.split('https://github.com/')[1]
+  }.git`;
+  const upstreamFilePath = path.join('.github', 'UPSTREAM');
+  fs.mkdirSync(path.dirname(upstreamFilePath), { recursive: true });
+  fs.writeFileSync(upstreamFilePath, upstreamContent);
 
-    // Add the GitHub Actions workflow file
-    logger.info('Adding GitHub Actions workflow file');
-    const workflowContent = `
+  // Commit the UPSTREAM file
+  logger.info('Committing UPSTREAM file');
+  execSync('git add .github/UPSTREAM');
+  execSync('git commit -m "Add UPSTREAM file"');
+
+  // Add the GitHub Actions workflow file
+  logger.info('Adding GitHub Actions workflow file');
+  const workflowContent = `
 name: sync-with-mirror
 
 on:
@@ -65440,33 +65432,44 @@ jobs:
           ssh-private-key: \${{ secrets.SSH_KEY_ICE_MODULES_READONLY }}
 
       - name: Sync with Upstream
-        # uses: opencepk-module-ghactions-common/sync-with-mirror
         uses: opencepk/opencepk-module-ghactions-common/github-flow-sync-with-mirror@feat/sync-mirror
         with:
           github_token: \${{ secrets.GITHUB_TOKEN }}
     `;
-    const workflowFilePath = path.join(
-      '.github',
-      'workflows',
-      'sync-with-mirror.yml',
-    );
-    fs.mkdirSync(path.dirname(workflowFilePath), { recursive: true });
-    fs.writeFileSync(workflowFilePath, workflowContent);
+  const workflowFilePath = path.join(
+    '.github',
+    'workflows',
+    'sync-with-mirror.yml',
+  );
+  fs.mkdirSync(path.dirname(workflowFilePath), { recursive: true });
+  fs.writeFileSync(workflowFilePath, workflowContent);
 
-    // Commit the workflow file
-    logger.info('Committing workflow file');
-    execSync('git add .github/workflows/sync-with-mirror.yml');
-    execSync('git commit -m "Add sync-with-mirror workflow"');
+  // Commit the workflow file
+  logger.info('Committing workflow file');
+  execSync('git add .github/workflows/sync-with-mirror.yml');
+  execSync('git commit -m "Add sync-with-mirror workflow"');
 
-    // Set the remote URL with the token for authentication
-    logger.info('Setting remote URL with token for authentication');
-    const remoteUrl = `https://x-access-token:${token}@github.com/${org}/${repoName}.git`;
-    execSync(`git remote set-url origin ${remoteUrl}`);
-    execSync('git push origin main');
+  // Set the remote URL with the token for authentication
+  logger.info('Setting remote URL with token for authentication');
+  const remoteUrl = `https://x-access-token:${token}@github.com/${org}/${repoName}.git`;
+  execSync(`git remote set-url origin ${remoteUrl}`);
+  execSync('git push origin main');
 
-    core.setOutput('private_repo_url', privateRepo.html_url);
-    const response = await setGitActionAccess(token, org, repoName, "organization");
-    core.info(`Response: ${response}`);
+  core.setOutput('private_repo_url', privateRepo.html_url);
+  const response = await setGitActionAccess(token, org, repoName, "organization");
+  core.info(`Response: ${response}`);
+}
+
+async function run() {
+  try {
+    const token = core.getInput('github_token');
+    const gitRepos = core.getInput('github_repos');
+    const repos = JSON.parse(gitRepos);
+
+    for (const repo of repos) {
+      const { repo: publicRepoUrl, org } = repo;
+      await processRepo(publicRepoUrl, org, token);
+    }
   } catch (error) {
     logger.error(`Error: ${JSON.stringify(error)}`);
     logger.setFailed(error.message);
@@ -65474,7 +65477,6 @@ jobs:
 }
 
 run();
-
 })();
 
 module.exports = __webpack_exports__;
