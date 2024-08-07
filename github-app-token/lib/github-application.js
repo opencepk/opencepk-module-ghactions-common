@@ -1,23 +1,97 @@
-const GitHubApplication = require('./GitHubApplication');
+const jwt = require('jsonwebtoken');
+const github = require('@actions/github');
+const core = require('@actions/core');
+const HttpsProxyAgent = require('https-proxy-agent').HttpsProxyAgent;
+const URL = require('url');
 
-module.exports = {
-  create: (privateKey, applicationId, baseApiUrl, timeout, proxy) => {
-    const app = new GitHubApplication(privateKey, applicationId, baseApiUrl);
-    return app.connect(timeout, proxy).then(() => app);
-  },
-  revokeAccessToken: async (token, baseUrl, proxy) => {
-    const client = getOctokit(token, baseUrl, proxy);
+class PrivateKey {
+  constructor(key) {
+    this.key = key;
+  }
+}
+
+class GitHubApplication {
+  constructor(privateKey, applicationId, baseApiUrl) {
+    this.privateKey = new PrivateKey(
+      validateInput('privateKey', privateKey),
+    ).key;
+    this.id = validateInput('applicationId', applicationId);
+    this.githubApiUrl =
+      baseApiUrl || process.env['GITHUB_API_URL'] || 'https://api.github.com';
+    this.client = null;
+  }
+
+  async connect(validSeconds = 60, proxy) {
+    const token = jwt.sign(
+      {
+        iat: Math.floor(Date.now() / 1000),
+        exp: Math.floor(Date.now() / 1000) + validSeconds,
+        iss: this.id,
+      },
+      this.privateKey,
+      { algorithm: 'RS256' },
+    );
+
+    this.client = getOctokit(token, this.githubApiUrl, proxy);
+
     try {
-      const resp = await client.rest.apps.revokeInstallationAccessToken();
-      if (resp.status === 204) {
-        return true;
+      const resp = await this.client.request('GET /app', {
+        mediaType: { previews: ['machine-man'] },
+      });
+      if (resp.status === 200) {
+        this.metadata = resp.data;
+        return resp.data;
+      }
+      throw new Error(
+        `Failed to load application with id:${this.id}; ${resp.data}`,
+      );
+    } catch (err) {
+      throw new Error(
+        `Failed to connect as application; status code: ${err.status}\n${err.message}`,
+      );
+    }
+  }
+
+  async getApplicationInstallations() {
+    return this._request('GET /app/installations');
+  }
+
+  async getRepositoryInstallation(owner, repo) {
+    return this._request('GET /repos/{owner}/{repo}/installation', {
+      owner,
+      repo,
+    });
+  }
+
+  async getOrganizationInstallation(org) {
+    return this._request('GET /orgs/{org}/installation', { org });
+  }
+
+  async getInstallationAccessToken(installationId, permissions = {}) {
+    if (!installationId) {
+      throw new Error('GitHub Application installation id must be provided');
+    }
+    return this._request(
+      `POST /app/installations/${installationId}/access_tokens`,
+      { permissions },
+    );
+  }
+
+  async _request(endpoint, params = {}) {
+    try {
+      const resp = await this.client.request(endpoint, {
+        mediaType: { previews: ['machine-man'] },
+        ...params,
+      });
+      if (resp.status >= 200 && resp.status < 300) {
+        return resp.data;
       }
       throw new Error(`Unexpected status code ${resp.status}; ${resp.data}`);
     } catch (err) {
-      throw new Error(`Failed to revoke application token; ${err.message}`);
+      throw new Error(`Failed to execute request; ${err.message}`);
     }
-  },
-};
+  }
+}
 
 function getOctokit(token, baseApiUrl, proxy) {
   const octokitOptions = {
@@ -64,3 +138,22 @@ function validateInput(name, value) {
   }
   return value.trim();
 }
+
+module.exports = {
+  create: (privateKey, applicationId, baseApiUrl, timeout, proxy) => {
+    const app = new GitHubApplication(privateKey, applicationId, baseApiUrl);
+    return app.connect(timeout, proxy).then(() => app);
+  },
+  revokeAccessToken: async (token, baseUrl, proxy) => {
+    const client = getOctokit(token, baseUrl, proxy);
+    try {
+      const resp = await client.rest.apps.revokeInstallationAccessToken();
+      if (resp.status === 204) {
+        return true;
+      }
+      throw new Error(`Unexpected status code ${resp.status}; ${resp.data}`);
+    } catch (err) {
+      throw new Error(`Failed to revoke application token; ${err.message}`);
+    }
+  },
+};
