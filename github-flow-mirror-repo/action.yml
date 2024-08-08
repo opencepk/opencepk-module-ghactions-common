@@ -1,9 +1,6 @@
 name: 'Copy Public Repo to Private Repo'
 description: 'Creates a private repo in the organization and copies content from a public repo.'
 inputs:
-  public_repo_url:
-    description: 'The URL of the public repository'
-    required: true
   git_org:
     description: 'The organization where the private repository will be created'
     required: true
