@@ -117,10 +117,20 @@ async function run() {
     const token = core.getInput('github_token');
     const gitRepos = core.getInput('github_repos');
     const repos = JSON.parse(gitRepos);
-
+    const errors = [];
     for (const repo of repos) {
       const { repo: publicRepoUrl, org } = repo;
-      await processRepo(publicRepoUrl, org, token);
+      try {
+        await processRepo(publicRepoUrl, org, token);
+      } catch (e) {
+        errors.push({ publicRepoUrl, error: `${JSON.stringify(e)}` });
+        logger.error(`Error processing ${publicRepoUrl}: ${JSON.stringify(e)}`);
+      }
+    }
+    if (errors.length > 0) {
+      logger.setFailed(
+        `Errors processing ${errors.length} repositories: ${JSON.stringify(errors)}`,
+      );
     }
   } catch (error) {
     logger.error(`Error: ${JSON.stringify(error)}`);
