@@ -1,6 +1,40 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 3907:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const github = __nccwpck_require__(3994);
+const logger = __nccwpck_require__(5568);
+
+async function setGitActionAccess(token, owner, repo, accessLevel) {
+  try {
+    const octokit = github.getOctokit(token);
+    logger.info(
+      `Setting permissions for ${owner}/${repo} to ${accessLevel}...`,
+    );
+    const response = await octokit.request(
+      'PUT /repos/{owner}/{repo}/actions/permissions/access',
+      {
+        owner: owner,
+        repo: repo,
+        access_level: accessLevel,
+      },
+    );
+
+    logger.info(`Response: ${response.status}`);
+    return response.data;
+  } catch (error) {
+    logger.setFailed(`Action failed with error: ${error.message}`);
+    throw error;
+  }
+}
+
+module.exports = { setGitActionAccess };
+
+
+/***/ }),
+
 /***/ 5568:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -29222,34 +29256,6 @@ function wrappy (fn, cb) {
   }
 }
 
-
-/***/ }),
-
-/***/ 1062:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-const github = __nccwpck_require__(3994);
-const logger = __nccwpck_require__(5568);
-
-async function setGitActionAccess(token, owner, repo, accessLevel) {
-  try {
-    const octokit = github.getOctokit(token);
-    logger.info(`Setting permissions for ${owner}/${repo} to ${accessLevel}...`);
-    const response = await octokit.request('PUT /repos/{owner}/{repo}/actions/permissions/access', {
-      owner: owner,
-      repo: repo,
-      access_level: accessLevel
-    });
-
-    logger.info(`Response: ${response.status}`);
-    return response.data;
-  } catch (error) {
-    logger.setFailed(`Action failed with error: ${error.message}`);
-    throw error;
-  }
-}
-
-module.exports = { setGitActionAccess };
 
 /***/ }),
 
@@ -65357,7 +65363,7 @@ const { execSync } = __nccwpck_require__(2081);
 const fs = __nccwpck_require__(7147);
 const path = __nccwpck_require__(1017);
 const logger = __nccwpck_require__(5568);
-const { setGitActionAccess } = __nccwpck_require__(1062);
+const { setGitActionAccess } = __nccwpck_require__(3907);
 
 async function processRepo(publicRepoUrl, org, token) {
   const octokit = github.getOctokit(token);
@@ -65369,7 +65375,7 @@ async function processRepo(publicRepoUrl, org, token) {
       owner: org,
       repo: repoName,
     });
-    logger.setFailed(`Repository ${org}/${repoName} already exists.`);
+    logger.info(`Repository ${org}/${repoName} already exists.`);
     return;
   } catch (error) {
     if (error.status !== 404) {
@@ -65456,7 +65462,12 @@ jobs:
   execSync('git push origin main');
 
   core.setOutput('private_repo_url', privateRepo.html_url);
-  const response = await setGitActionAccess(token, org, repoName, "organization");
+  const response = await setGitActionAccess(
+    token,
+    org,
+    repoName,
+    'organization',
+  );
   core.info(`Response: ${response}`);
 }
 
@@ -65477,6 +65488,7 @@ async function run() {
 }
 
 run();
+
 })();
 
 module.exports = __webpack_exports__;

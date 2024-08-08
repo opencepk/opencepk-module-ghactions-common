@@ -1,6 +1,40 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 3907:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const github = __nccwpck_require__(3994);
+const logger = __nccwpck_require__(5568);
+
+async function setGitActionAccess(token, owner, repo, accessLevel) {
+  try {
+    const octokit = github.getOctokit(token);
+    logger.info(
+      `Setting permissions for ${owner}/${repo} to ${accessLevel}...`,
+    );
+    const response = await octokit.request(
+      'PUT /repos/{owner}/{repo}/actions/permissions/access',
+      {
+        owner: owner,
+        repo: repo,
+        access_level: accessLevel,
+      },
+    );
+
+    logger.info(`Response: ${response.status}`);
+    return response.data;
+  } catch (error) {
+    logger.setFailed(`Action failed with error: ${error.message}`);
+    throw error;
+  }
+}
+
+module.exports = { setGitActionAccess };
+
+
+/***/ }),
+
 /***/ 5568:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -29225,34 +29259,6 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 1062:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-const github = __nccwpck_require__(3994);
-const logger = __nccwpck_require__(5568);
-
-async function setGitActionAccess(token, owner, repo, accessLevel) {
-  try {
-    const octokit = github.getOctokit(token);
-    logger.info(`Setting permissions for ${owner}/${repo} to ${accessLevel}...`);
-    const response = await octokit.request('PUT /repos/{owner}/{repo}/actions/permissions/access', {
-      owner: owner,
-      repo: repo,
-      access_level: accessLevel
-    });
-
-    logger.info(`Response: ${response.status}`);
-    return response.data;
-  } catch (error) {
-    logger.setFailed(`Action failed with error: ${error.message}`);
-    throw error;
-  }
-}
-
-module.exports = { setGitActionAccess };
-
-/***/ }),
-
 /***/ 7351:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -57685,8 +57691,7 @@ var __webpack_exports__ = {};
 (() => {
 const core = __nccwpck_require__(2186);
 const logger = __nccwpck_require__(5568);
-const {setGitActionAccess} = __nccwpck_require__(1062);
-
+const { setGitActionAccess } = __nccwpck_require__(3907);
 
 async function run() {
   try {
@@ -57703,6 +57708,7 @@ async function run() {
 }
 
 run();
+
 })();
 
 module.exports = __webpack_exports__;
