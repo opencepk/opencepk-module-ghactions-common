@@ -4,7 +4,7 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const logger = require('../common/logger.js');
-const { setGitActionAccess } = require('../common/set-github-access.js');
+const { setGitActionAccess } = require('../common/git-operations.js');
 
 async function run() {
   try {
@@ -112,7 +112,12 @@ jobs:
     execSync('git push origin main');
 
     core.setOutput('private_repo_url', privateRepo.html_url);
-    const response = await setGitActionAccess(token, org, repoName, "organization");
+    const response = await setGitActionAccess(
+      token,
+      org,
+      repoName,
+      'organization',
+    );
     core.info(`Response: ${response}`);
   } catch (error) {
     logger.error(`Error: ${JSON.stringify(error)}`);

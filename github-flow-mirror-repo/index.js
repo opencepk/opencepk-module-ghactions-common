@@ -4,7 +4,7 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const logger = require('../common/logger.js');
-const { setGitActionAccess } = require('../common/set-github-access.js');
+const { setGitActionAccess } = require('../common/git-operations.js');
 
 async function processRepo(publicRepoUrl, org, token) {
   const octokit = github.getOctokit(token);
@@ -16,7 +16,7 @@ async function processRepo(publicRepoUrl, org, token) {
       owner: org,
       repo: repoName,
     });
-    logger.setFailed(`Repository ${org}/${repoName} already exists.`);
+    logger.info(`Repository ${org}/${repoName} already exists.`);
     return;
   } catch (error) {
     if (error.status !== 404) {
@@ -103,7 +103,12 @@ jobs:
   execSync('git push origin main');
 
   core.setOutput('private_repo_url', privateRepo.html_url);
-  const response = await setGitActionAccess(token, org, repoName, "organization");
+  const response = await setGitActionAccess(
+    token,
+    org,
+    repoName,
+    'organization',
+  );
   core.info(`Response: ${response}`);
 }
 
