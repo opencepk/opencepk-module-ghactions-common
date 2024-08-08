@@ -23,7 +23,7 @@ async function processRepo(publicRepoUrl, org, token) {
       throw error;
     }
   }
-
+  core.info(`Creating private repository ${repoName} in ${org}...`);
   // Create a private repository in the organization
   const { data: privateRepo } = await octokit.repos.createInOrg({
     org,
