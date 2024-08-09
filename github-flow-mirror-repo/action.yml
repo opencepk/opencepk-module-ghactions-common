@@ -1,0 +1,22 @@
+name: 'Copy Public Repo to Private Repo'
+description: 'Creates a private repo in the organization and copies content from a public repo.'
+inputs:
+  git_org:
+    description: 'The organization where the private repository will be created'
+    required: true
+  github_token:
+    description: 'GitHub token for authentication'
+    required: true
+  github_repos:
+    description: 'Lists of repositories to be copied'
+    required: true
+outputs:
+  private_repo_url:
+    description: 'The URL of the created private repository'
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
+
+branding:
+  icon: copy
+  color: blue

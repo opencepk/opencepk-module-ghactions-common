@@ -16,6 +16,6 @@
     "@octokit/rest": "^21.0.1"
   },
   "devDependencies": {
-   "@vercel/ncc": "^0.38.1"
+    "@vercel/ncc": "^0.38.1"
   }
 }
