@@ -5,6 +5,7 @@
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const core = __nccwpck_require__(2186);
+
 const red = '\x1b[31m';
 const blue = '\x1b[34m';
 const green = '\x1b[32m';

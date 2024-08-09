@@ -112,7 +112,9 @@ async function run() {
       }
     }
 
-    core.info(`Number of commits which do not follow the proper format: ${nonConformingCommits.length}`); // Log the commit hashes
+    core.info(
+      `Number of commits which do not follow the proper format: ${nonConformingCommits.length}`,
+    );
 
     if (nonConformingCommits.length > 0) {
       const numberOfCommitsToSquash = earliestNonConformingIndex + 1;

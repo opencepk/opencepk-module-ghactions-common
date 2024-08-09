@@ -1,4 +1,5 @@
 const core = require('@actions/core');
+
 const red = '\x1b[31m';
 const blue = '\x1b[34m';
 const green = '\x1b[32m';

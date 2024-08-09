@@ -1,0 +1,19 @@
+name: 'Set GitHub Actions Permissions'
+description: 'A custom GitHub Action to set the access level for a repository'
+inputs:
+  token:
+    description: 'GitHub Token'
+    required: true
+  owner:
+    description: 'Repository owner'
+    required: true
+  repo:
+    description: 'Repository name'
+    required: true
+  access_level:
+    description: 'Access level to set'
+    required: true
+    default: 'organization'
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
