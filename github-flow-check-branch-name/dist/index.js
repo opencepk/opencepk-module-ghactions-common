@@ -57658,11 +57658,8 @@ const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
 const logger = __nccwpck_require__(5568);
 
-// import * as github from '@actions/github';
-// import * as logger from '../dist/logger.js';
-
 try {
-  logger.info('xxxxxxxxxx Starting the branch name check...');
+  logger.info('Starting the branch name check...');
   // Get the pull request event payload
   const pullRequest = github.context.payload.pull_request;
 
