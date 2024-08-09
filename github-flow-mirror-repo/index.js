@@ -6,9 +6,9 @@ const path = require('path');
 const logger = require('../common/logger.js');
 const { setGitActionAccess } = require('../common/git-operations.js');
 
-async function processRepo(publicRepoUrl, org, token) {
+async function processRepo(publicRepoUrl, org, token, newRepoName=null) {
   const octokit = github.getOctokit(token);
-  const repoName = publicRepoUrl.split('/').pop().replace('.git', '');
+  const repoName = newRepoName? newRepoName: publicRepoUrl.split('/').pop().replace('.git', '');
 
   // Check if the private repository already exists
   try {
@@ -119,9 +119,9 @@ async function run() {
     const repos = JSON.parse(gitRepos);
     const errors = [];
     for (const repo of repos) {
-      const { repo: publicRepoUrl, org } = repo;
+      const { repo: publicRepoUrl, org, newRepoName = null } = repo;
       try {
-        await processRepo(publicRepoUrl, org, token);
+        await processRepo(publicRepoUrl, org, token, newRepoName);
       } catch (e) {
         errors.push({ publicRepoUrl, error: `${JSON.stringify(e)}` });
         logger.error(`Error processing ${publicRepoUrl}: ${JSON.stringify(e)}`);
