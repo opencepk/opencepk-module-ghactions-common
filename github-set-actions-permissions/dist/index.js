@@ -40,7 +40,6 @@ module.exports = { setGitActionAccess };
 
 const core = __nccwpck_require__(4561);
 
-
 const red = '\x1b[31m';
 const blue = '\x1b[34m';
 const green = '\x1b[32m';
