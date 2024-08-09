@@ -61158,16 +61158,6 @@ async function run() {
       }
     }
 
-    // Check if there are any commits between the branches
-    // core.info('Checking for new commits between branches...');
-    // const commitDiff = execSync(`git log origin/main..${branchName} --oneline`)
-    //   .toString()
-    //   .trim();
-    // if (!commitDiff) {
-    //   core.info('No new commits to create a pull request.');
-    //   return;
-    // }
-
     // Push the new branch to the private repository
     logger.info(`Pushing the new branch: ${branchName}`);
     execSync(`git push origin ${branchName}`);
