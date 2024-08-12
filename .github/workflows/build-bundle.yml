@@ -23,7 +23,7 @@
         - name: Set environment variable for head ref
           env:
             HEAD_REF: ${{ github.head_ref }}
-          run: echo "HEAD_REF=${{ env.HEAD_REF }}" >> $GITHUB_ENV
+          run: echo "HEAD_REF=${{ env.HEAD_REF }}" >> "$GITHUB_ENV"
         - name: Commit dist folders
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
