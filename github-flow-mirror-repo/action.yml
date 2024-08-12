@@ -1,3 +1,4 @@
+---
 name: 'Copy Public Repo to Private Repo'
 description: 'Creates a private repo in the organization and copies content from a public repo.'
 inputs:
