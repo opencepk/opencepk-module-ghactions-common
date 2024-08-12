@@ -1,3 +1,4 @@
+---
 name: 'Set GitHub Actions Permissions'
 description: 'A custom GitHub Action to set the access level for a repository'
 inputs:
