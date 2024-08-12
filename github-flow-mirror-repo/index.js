@@ -60,7 +60,7 @@ async function processRepo(publicRepoUrl, org, token, newRepoName = null) {
   // Add the GitHub Actions workflow file
   logger.info('Adding GitHub Actions workflow file');
   const workflowContent = `
----  
+---
 name: sync-with-mirror
 on:
   schedule:
