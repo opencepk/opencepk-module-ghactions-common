@@ -65418,26 +65418,22 @@ async function processRepo(publicRepoUrl, org, token, newRepoName = null) {
   // Add the GitHub Actions workflow file
   logger.info('Adding GitHub Actions workflow file');
   const workflowContent = `
+---
 name: sync-with-mirror
-
 on:
   schedule:
     - cron: '*/10 * * * *'
   workflow_dispatch:
-
 jobs:
   sync:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Setup SSH Agent
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: \${{ secrets.SSH_KEY_ICE_MODULES_READONLY }}
-
       - name: Sync with Upstream
         uses: ${org}/opencepk-module-ghactions-common/github-flow-sync-with-mirror@main
         with:
