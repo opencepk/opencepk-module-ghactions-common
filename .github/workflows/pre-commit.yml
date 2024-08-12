@@ -3,7 +3,7 @@ name: pre-commit
 
 on:
   pull_request:
-    -  [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened]
   push:
     branches: [main]
 
