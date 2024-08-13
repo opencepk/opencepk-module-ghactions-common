@@ -33,8 +33,8 @@ async function processRepo(publicRepoUrl, org, token, newRepoName = null) {
     visibility: 'internal',
   });
 
-  // Clone the public repository
-  execSync(`git clone ${publicRepoUrl} public-repo`);
+  // Clone the public repository with all tags
+  execSync(`git clone --mirror ${publicRepoUrl} public-repo`);
   process.chdir('public-repo');
   logger.info('Configured Git user');
   // Configure Git user
@@ -98,7 +98,7 @@ jobs:
   logger.info('Setting remote URL with token for authentication');
   const remoteUrl = `https://x-access-token:${token}@github.com/${org}/${repoName}.git`;
   execSync(`git remote set-url origin ${remoteUrl}`);
-  execSync('git push origin main');
+  execSync('git push --mirror');
 
   core.setOutput('private_repo_url', privateRepo.html_url);
   const response = await setGitActionAccess(
