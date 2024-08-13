@@ -13,7 +13,7 @@
         - name: Checkout repository
           uses: actions/checkout@v4
           with:
-            ref: ${{ github.head_ref }}
+            ref: ${{ github.head_ref || github.ref_name }}
         - name: Set up Node.js
           uses: actions/setup-node@v4
           with:
@@ -21,9 +21,12 @@
         - name: Install dependencies and build
           run: npm run install-and-build-all
         - name: Set environment variable for head ref
-          env:
-            HEAD_REF: ${{ github.head_ref }}
-          run: echo "HEAD_REF=${{ env.HEAD_REF }}" >> "$GITHUB_ENV"
+          run: |
+            if [ "${{ github.event_name }}" == "pull_request" ]; then
+              echo "HEAD_REF=${{ github.head_ref }}" >> "$GITHUB_ENV"
+            else
+              echo "HEAD_REF=${{ github.ref_name }}" >> "$GITHUB_ENV"
+            fi
         - name: Debug HEAD_REF
           run: echo "HEAD_REF is ${{ env.HEAD_REF }}"
         - name: Commit dist folders
