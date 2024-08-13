@@ -77,7 +77,9 @@ async function run() {
     }
 
     // Create a new branch for the changes
-    const branchName = `sync-upstream-${Date.now()}`;
+    const branchName = `bot-sync-upstream`;
+    logger.info(`Deleting branch if it exists: ${branchName}`);
+    execSync(`git branch -D ${branchName} || true`);
     logger.info(`Creating a new branch: ${branchName}`);
     execSync(`git checkout -b ${branchName}`);
 

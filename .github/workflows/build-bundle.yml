@@ -27,7 +27,7 @@
             else
               echo "HEAD_REF=${{ github.ref_name }}" >> "$GITHUB_ENV"
             fi
-        - name: Debug HEAD_REF
+        - name: Head ref 
           run: echo "HEAD_REF is ${{ env.HEAD_REF }}"
         - name: Commit dist folders
           env:
