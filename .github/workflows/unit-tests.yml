@@ -46,9 +46,9 @@ jobs:
       #     npm run deploy:coverage
 
       # - name: Print GitHub Pages URL
-      #   env:
-      #     REPOSITORY_OWNER: ${{ github.repository_owner }}
-      #     REPOSITORY_NAME: ${{ github.event.repository.name }}
+        # env:
+        #   REPOSITORY_OWNER: ${{ github.repository_owner }}
+        #   REPOSITORY_NAME: ${{ github.event.repository.name }}
       #   run: |
       #     echo "Coverage deployed to: https://$REPOSITORY_OWNER.github.io/$REPOSITORY_NAME/"
       #   # run: echo "Coverage deployed to: https://opencepk.github.io/opencepk-module-ghactions-common/"
