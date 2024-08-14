@@ -24,6 +24,11 @@ jobs:
       # - name: Run tests
       #   run: npm test
 
+      - name: Configure Git
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+
       - name: Run tests with coverage
         run: npm run test:coverage
   
