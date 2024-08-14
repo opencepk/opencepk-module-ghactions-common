@@ -1,0 +1,39 @@
+---
+name: Deploy Coverage Report
+on:
+  workflow_run:
+    workflows: ['unit-tests']
+    types:
+      - completed
+
+#   schedule:
+#     - cron: '0 0 * * *' # Runs daily at midnight
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download coverage report
+        uses: actions/download-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+
+      - name: Deploy to GitHub Pages
+        run: |
+          git checkout gh-pages
+          git pull origin gh-pages
+          cp -r coverage/* .
+          git add .
+          git commit -m 'Deploy coverage report'
+          git push origin gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
