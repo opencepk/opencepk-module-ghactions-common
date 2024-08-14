@@ -122,4 +122,17 @@ describe('Sample Test', () => {
     expect(fs.mkdirSync).toHaveBeenCalled();
     expect(fs.writeFileSync).toHaveBeenCalled();
   });
+
+  it('should not create a repository if it already exists', async () => {
+    mockOctokit.repos.get.mockResolvedValue({});
+    mockOctokit.repos.createInOrg.mockResolvedValue({});
+
+    await processRepo('https://github.com/public/repo.git', 'org', 'token');
+
+    expect(mockOctokit.repos.get).toHaveBeenCalledWith({
+      owner: 'org',
+      repo: 'repo',
+    });
+    expect(mockOctokit.repos.createInOrg).not.toHaveBeenCalled();
+  });
 });
