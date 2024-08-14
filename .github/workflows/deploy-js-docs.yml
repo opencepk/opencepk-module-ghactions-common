@@ -22,10 +22,10 @@
          - name: Install dependencies
            run: npm install
 
-         - name: Run tests with coverage
+         - name: Run jsdocs generation
            run: npm run docs
 
-         - name: Upload coverage report
+         - name: Upload jsdocs report
            uses: actions/upload-artifact@v3
            with:
              name: jsdocs-report

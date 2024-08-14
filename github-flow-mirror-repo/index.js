@@ -1,3 +1,6 @@
+/**
+ * @namespace github-flow-mirror-repo
+ */
 const core = require('@actions/core');
 const github = require('@actions/github');
 const { execSync } = require('child_process');
