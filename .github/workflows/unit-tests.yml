@@ -31,17 +31,23 @@ jobs:
       - name: Run tests with coverage
         run: npm run test:coverage
 
-      - name: Deploy coverage to GitHub Pages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-          npm run deploy:coverage
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage
 
-      - name: Print GitHub Pages URL
-        env:
-          REPOSITORY_OWNER: ${{ github.repository_owner }}
-          REPOSITORY_NAME: ${{ github.event.repository.name }}
-        run: |
-          echo " Coverage deployed to: https://opencepk.github.io/opencepk-module-ghactions-common/"
-        # run: echo "Coverage deployed to: https://opencepk.github.io/opencepk-module-ghactions-common/"
+      # - name: Deploy coverage to GitHub Pages
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+      #     npm run deploy:coverage
+
+      # - name: Print GitHub Pages URL
+      #   env:
+      #     REPOSITORY_OWNER: ${{ github.repository_owner }}
+      #     REPOSITORY_NAME: ${{ github.event.repository.name }}
+      #   run: |
+      #     echo "Coverage deployed to: https://$REPOSITORY_OWNER.github.io/$REPOSITORY_NAME/"
+      #   # run: echo "Coverage deployed to: https://opencepk.github.io/opencepk-module-ghactions-common/"
