@@ -7,16 +7,14 @@ const logger = require('../../common/logger.js');
 const { processRepo } = require('../index'); // Adjust the path as needed
 
 jest.mock('fs', () => ({
-  default: {
-    existsSync: jest.fn(),
-  },
+  existsSync: jest.fn(),
+  mkdirSync: jest.fn(),
+  writeFileSync: jest.fn(),
   promises: {
     access: jest.fn(),
     mkdir: jest.fn(),
     writeFile: jest.fn(),
   },
-  mkdirSync: jest.fn(),
-  writeFileSync: jest.fn(),
 }));
 
 // jest.mock('child_process');
