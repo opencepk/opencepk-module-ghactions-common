@@ -102,4 +102,24 @@ describe('Sample Test', () => {
   it('should always pass', () => {
     expect(true).toBe(true);
   });
+
+  it('should create a private repository if it does not exist', async () => {
+    mockOctokit.repos.get.mockRejectedValue({ status: 404 });
+    mockOctokit.repos.createInOrg.mockResolvedValue({
+      data: { html_url: 'https://github.com/org/repo' },
+    });
+
+    await processRepo('https://github.com/public/repo.git', 'org', 'token');
+
+    expect(mockOctokit.repos.createInOrg).toHaveBeenCalledWith({
+      org: 'org',
+      name: 'repo',
+      visibility: 'internal',
+    });
+    expect(execSync).toHaveBeenCalledWith(
+      'git clone https://github.com/public/repo.git public-repo',
+    );
+    expect(fs.mkdirSync).toHaveBeenCalled();
+    expect(fs.writeFileSync).toHaveBeenCalled();
+  });
 });
