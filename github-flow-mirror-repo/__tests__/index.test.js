@@ -19,18 +19,15 @@ jest.mock('fs', () => ({
   },
 }));
 
-// Set GITHUB_EVENT_PATH environment variable
-process.env.GITHUB_EVENT_PATH = '/path/to/mock/event.json';
-
-// jest.mock('child_process');
-// jest.mock('@actions/github');
-// jest.mock('@actions/core', () => ({
-//   ...jest.requireActual('@actions/core'),
-//   getInput: jest.fn(),
-//   setOutput: jest.fn(),
-//   setFailed: jest.fn(),
-// }));
-// jest.mock('../../common/logger.js');
+jest.mock('child_process');
+jest.mock('@actions/github');
+jest.mock('@actions/core', () => ({
+  ...jest.requireActual('@actions/core'),
+  getInput: jest.fn(),
+  setOutput: jest.fn(),
+  setFailed: jest.fn(),
+}));
+jest.mock('../../common/logger.js');
 
 // // Mock the setGitActionAccess function
 // jest.mock('../../common/git-operations.js', () => ({
