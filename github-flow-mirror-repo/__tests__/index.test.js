@@ -10,12 +10,17 @@ jest.mock('fs', () => ({
   existsSync: jest.fn(),
   mkdirSync: jest.fn(),
   writeFileSync: jest.fn(),
+  readFileSync: jest.fn(),
   promises: {
     access: jest.fn(),
     mkdir: jest.fn(),
     writeFile: jest.fn(),
+    readFile: jest.fn(),
   },
 }));
+
+// Set GITHUB_EVENT_PATH environment variable
+process.env.GITHUB_EVENT_PATH = '/path/to/mock/event.json';
 
 // jest.mock('child_process');
 // jest.mock('@actions/github');
