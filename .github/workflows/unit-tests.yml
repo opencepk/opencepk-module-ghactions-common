@@ -38,3 +38,5 @@ jobs:
         run: |
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           npm run deploy:coverage
+      - name: Print GitHub Pages URL
+        run: echo "Coverage report deployed to: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
