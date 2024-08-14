@@ -51,7 +51,7 @@
              git config --global user.name "GitHub Actions"
 
          - name: Fetch all branches
-            run: git fetch --all
+           run: git fetch --all
    
          - name: Deploy to GitHub Pages
            run: |
