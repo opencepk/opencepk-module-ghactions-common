@@ -38,8 +38,10 @@ jobs:
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           npm run deploy:coverage
 
-        - name: Set environment variables for deploying coverage
-          env:
-            REPOSITORY_OWNER: ${{ github.repository_owner }}
-            REPOSITORY_NAME: ${{ github.event.repository.name }}
-          run: echo "Coverage deployed to: https://$REPOSITORY_OWNER.github.io/$REPOSITORY_NAME/"
+      - name: Print GitHub Pages URL
+        env:
+          REPOSITORY_OWNER: ${{ github.repository_owner }}
+          REPOSITORY_NAME: ${{ github.event.repository.name }}
+        run: |
+          echo " Coverage deployed to: https://opencepk.github.io/opencepk-module-ghactions-common/"
+        # run: echo "Coverage deployed to: https://opencepk.github.io/opencepk-module-ghactions-common/"
