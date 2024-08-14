@@ -22,6 +22,9 @@
          - name: Install dependencies
            run: npm install
    
+         - name: Install json2html-cli globally
+           run: npm install -g json2html-cli
+   
          - name: Run npm audit for all projects and combine reports
            run: |
              mkdir -p audit-reports
@@ -37,9 +40,7 @@
              echo ']}' >> audit-reports/combined-audit.json
    
          - name: Convert combined npm audit report to HTML
-           run: |
-             npm install -g json2html-cli
-             json2html -i audit-reports/combined-audit.json -o audit-reports/combined-audit.html
+           run: json2html -i audit-reports/combined-audit.json -o audit-reports/combined-audit.html
    
          - name: Upload combined npm audit HTML report
            uses: actions/upload-artifact@v3
