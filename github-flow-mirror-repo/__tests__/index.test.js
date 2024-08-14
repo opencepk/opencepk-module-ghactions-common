@@ -1,7 +1,6 @@
 /* eslint-disable no-undef */
 const { execSync } = require('child_process');
 const fs = require('fs');
-const path = require('path');
 const github = require('@actions/github');
 const core = require('@actions/core');
 const logger = require('../../common/logger.js');
@@ -19,7 +18,6 @@ jest.mock('fs', () => ({
 }));
 
 jest.mock('child_process');
-jest.mock('path');
 jest.mock('@actions/github');
 jest.mock('@actions/core', () => ({
   ...jest.requireActual('@actions/core'),
@@ -38,19 +36,23 @@ jest.mock('../../common/git-operations.js', () => ({
 jest.spyOn(process, 'chdir').mockImplementation(() => {});
 
 describe('processRepo', () => {
+  let mockOctokit;
+
   beforeEach(() => {
     jest.clearAllMocks();
+    mockOctokit = {
+      repos: {
+        get: jest.fn(),
+        createInOrg: jest.fn(),
+      },
+      request: jest.fn(),
+    };
+    github.getOctokit.mockReturnValue(mockOctokit);
   });
 
   it('should create a private repository if it does not exist', async () => {
-    const mockOctokit = {
-      repos: {
-        get: jest.fn().mockRejectedValue({ status: 404 }),
-        createInOrg: jest.fn().mockResolvedValue({ data: { html_url: 'https://github.com/org/repo' } }),
-      },
-      request: jest.fn().mockResolvedValue({}),
-    };
-    github.getOctokit.mockReturnValue(mockOctokit);
+    mockOctokit.repos.get.mockRejectedValue({ status: 404 });
+    mockOctokit.repos.createInOrg.mockResolvedValue({ data: { html_url: 'https://github.com/org/repo' } });
 
     await processRepo('https://github.com/public/repo.git', 'org', 'token');
 
@@ -65,14 +67,8 @@ describe('processRepo', () => {
   });
 
   it('should not create a repository if it already exists', async () => {
-    const mockOctokit = {
-      repos: {
-        get: jest.fn().mockResolvedValue({}),
-        createInOrg: jest.fn(), // Ensure this is defined to avoid the undefined error
-      },
-      request: jest.fn().mockResolvedValue({}),
-    };
-    github.getOctokit.mockReturnValue(mockOctokit);
+    mockOctokit.repos.get.mockResolvedValue({});
+    mockOctokit.repos.createInOrg.mockResolvedValue({});
 
     await processRepo('https://github.com/public/repo.git', 'org', 'token');
 
@@ -82,6 +78,4 @@ describe('processRepo', () => {
     });
     expect(mockOctokit.repos.createInOrg).not.toHaveBeenCalled();
   });
-
-  // Add more tests for edge cases and other scenarios
 });
