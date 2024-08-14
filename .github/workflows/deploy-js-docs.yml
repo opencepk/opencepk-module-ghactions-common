@@ -1,5 +1,5 @@
 ---
-   name: test-upload-deploy
+   name: deploy-js-docs
    on:
      push:
        branches:
