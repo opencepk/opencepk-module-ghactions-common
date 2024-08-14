@@ -4,6 +4,7 @@ export default {
   verbose: true,
   collectCoverage: true,
   coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov', 'html'],
   testPathIgnorePatterns: ['/node_modules/'],
   setupFilesAfterEnv: ['./jest.setup.js'],
   roots: [

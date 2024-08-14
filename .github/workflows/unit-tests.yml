@@ -21,5 +21,13 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run tests
-        run: npm test
+      # - name: Run tests
+      #   run: npm test
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+  
+      - name: Deploy coverage to GitHub Pages
+        run: npm run deploy:coverage
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
