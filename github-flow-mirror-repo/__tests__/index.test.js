@@ -5,20 +5,19 @@ const github = require('@actions/github');
 const core = require('@actions/core');
 const logger = require('../../common/logger.js');
 const { processRepo } = require('../index'); // Adjust the path as needed
-jest.mock('fs');
 
-// jest.mock('fs', () => ({
-//   default: {
-//     existsSync: jest.fn(),
-//   },
-//   promises: {
-//     access: jest.fn(),
-//     mkdir: jest.fn(),
-//     writeFile: jest.fn(),
-//   },
-//   mkdirSync: jest.fn(),
-//   writeFileSync: jest.fn(),
-// }));
+jest.mock('fs', () => ({
+  default: {
+    existsSync: jest.fn(),
+  },
+  promises: {
+    access: jest.fn(),
+    mkdir: jest.fn(),
+    writeFile: jest.fn(),
+  },
+  mkdirSync: jest.fn(),
+  writeFileSync: jest.fn(),
+}));
 
 // jest.mock('child_process');
 // jest.mock('@actions/github');
