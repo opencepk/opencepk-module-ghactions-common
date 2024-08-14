@@ -19,4 +19,3 @@ jobs:
         uses: org/opencepk-module-ghactions-common/github-flow-sync-with-mirror@main
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-    

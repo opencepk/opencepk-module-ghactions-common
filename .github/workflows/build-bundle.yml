@@ -9,7 +9,7 @@
   jobs:
     build-and-commit:
       runs-on: ubuntu-latest
-  
+
       steps:
         - name: Checkout repository
           uses: actions/checkout@v4
@@ -28,7 +28,7 @@
             else
               echo "HEAD_REF=${{ github.ref_name }}" >> "$GITHUB_ENV"
             fi
-        - name: Head ref 
+        - name: Head ref
           run: echo "HEAD_REF is ${{ env.HEAD_REF }}"
         - name: Commit dist folders
           env:
