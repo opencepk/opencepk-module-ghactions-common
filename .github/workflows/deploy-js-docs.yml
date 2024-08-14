@@ -37,7 +37,6 @@
      deploy-js-docs:
        needs: js-docs
        runs-on: ubuntu-latest
-       if: github.ref == 'refs/heads/fix/ICE-1010-improvement'
        steps:
          - name: Checkout repository
            uses: actions/checkout@v4

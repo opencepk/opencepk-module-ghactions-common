@@ -17,10 +17,13 @@
          - name: Set up Node.js
            uses: actions/setup-node@v4
            with:
-             node-version: '20.16.0'
+             node-version: '20'
 
          - name: Install dependencies
            run: npm install
+
+         - name: Clean up existing artifacts
+           run: rm -rf coverage
 
          - name: Run tests with coverage
            run: npm run test:coverage
@@ -34,7 +37,6 @@
      deploy-coverage:
        needs: unit-tests
        runs-on: ubuntu-latest
-       if: github.ref == 'refs/heads/fix/ICE-1010-improvement'
        steps:
          - name: Checkout repository
            uses: actions/checkout@v4
