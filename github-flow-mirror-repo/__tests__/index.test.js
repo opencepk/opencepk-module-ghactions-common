@@ -29,13 +29,13 @@ jest.mock('@actions/core', () => ({
 }));
 jest.mock('../../common/logger.js');
 
-// // Mock the setGitActionAccess function
-// jest.mock('../../common/git-operations.js', () => ({
-//   setGitActionAccess: jest.fn().mockResolvedValue({}),
-// }));
+// Mock the setGitActionAccess function
+jest.mock('../../common/git-operations.js', () => ({
+  setGitActionAccess: jest.fn().mockResolvedValue({}),
+}));
 
-// // Mock process.chdir to avoid changing the actual working directory
-// jest.spyOn(process, 'chdir').mockImplementation(() => {});
+// Mock process.chdir to avoid changing the actual working directory
+jest.spyOn(process, 'chdir').mockImplementation(() => {});
 
 // describe('processRepo', () => {
 //   let mockOctokit;
