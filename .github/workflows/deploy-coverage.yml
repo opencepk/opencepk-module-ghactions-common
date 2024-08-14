@@ -49,6 +49,9 @@
            run: |
              git config --global user.email "github-actions@github.com"
              git config --global user.name "GitHub Actions"
+
+         - name: Fetch all branches
+            run: git fetch --all
    
          - name: Deploy to GitHub Pages
            run: |
