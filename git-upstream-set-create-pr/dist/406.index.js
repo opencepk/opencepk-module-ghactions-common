@@ -1,8 +1,8 @@
-exports.id = 841;
-exports.ids = [841];
+exports.id = 406;
+exports.ids = [406];
 exports.modules = {
 
-/***/ 7760:
+/***/ 1239:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 /*! node-domexception. MIT License. Jimmy Wärting <https://jimmy.warting.se/opensource> */
@@ -25,7 +25,7 @@ module.exports = globalThis.DOMException
 
 /***/ }),
 
-/***/ 1452:
+/***/ 6723:
 /***/ (function(__unused_webpack_module, exports) {
 
 /**
@@ -4768,7 +4768,7 @@ module.exports = globalThis.DOMException
 
 /***/ }),
 
-/***/ 8572:
+/***/ 2609:
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
 /* c8 ignore start */
@@ -4792,7 +4792,7 @@ if (!globalThis.ReadableStream) {
     }
   } catch (error) {
     // fallback to polyfill implementation
-    Object.assign(globalThis, __webpack_require__(1452))
+    Object.assign(globalThis, __webpack_require__(6723))
   }
 }
 
@@ -4826,508 +4826,7 @@ try {
 
 /***/ }),
 
-/***/ 3213:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* unused harmony export File */
-/* harmony import */ var _index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1410);
-
-
-const _File = class File extends _index_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z {
-  #lastModified = 0
-  #name = ''
-
-  /**
-   * @param {*[]} fileBits
-   * @param {string} fileName
-   * @param {{lastModified?: number, type?: string}} options
-   */// @ts-ignore
-  constructor (fileBits, fileName, options = {}) {
-    if (arguments.length < 2) {
-      throw new TypeError(`Failed to construct 'File': 2 arguments required, but only ${arguments.length} present.`)
-    }
-    super(fileBits, options)
-
-    if (options === null) options = {}
-
-    // Simulate WebIDL type casting for NaN value in lastModified option.
-    const lastModified = options.lastModified === undefined ? Date.now() : Number(options.lastModified)
-    if (!Number.isNaN(lastModified)) {
-      this.#lastModified = lastModified
-    }
-
-    this.#name = String(fileName)
-  }
-
-  get name () {
-    return this.#name
-  }
-
-  get lastModified () {
-    return this.#lastModified
-  }
-
-  get [Symbol.toStringTag] () {
-    return 'File'
-  }
-
-  static [Symbol.hasInstance] (object) {
-    return !!object && object instanceof _index_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z &&
-      /^(File)$/.test(object[Symbol.toStringTag])
-  }
-}
-
-/** @type {typeof globalThis.File} */// @ts-ignore
-const File = _File
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (File);
-
-
-/***/ }),
-
-/***/ 2185:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "$B": () => (/* reexport safe */ _file_js__WEBPACK_IMPORTED_MODULE_3__.Z),
-/* harmony export */   "RA": () => (/* binding */ fileFromSync),
-/* harmony export */   "SX": () => (/* binding */ blobFromSync),
-/* harmony export */   "e2": () => (/* binding */ fileFrom),
-/* harmony export */   "t6": () => (/* reexport safe */ _index_js__WEBPACK_IMPORTED_MODULE_4__.Z),
-/* harmony export */   "xB": () => (/* binding */ blobFrom)
-/* harmony export */ });
-/* harmony import */ var node_fs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7561);
-/* harmony import */ var node_path__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9411);
-/* harmony import */ var node_domexception__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7760);
-/* harmony import */ var _file_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3213);
-/* harmony import */ var _index_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(1410);
-
-
-
-
-
-
-
-const { stat } = node_fs__WEBPACK_IMPORTED_MODULE_0__.promises
-
-/**
- * @param {string} path filepath on the disk
- * @param {string} [type] mimetype to use
- */
-const blobFromSync = (path, type) => fromBlob((0,node_fs__WEBPACK_IMPORTED_MODULE_0__.statSync)(path), path, type)
-
-/**
- * @param {string} path filepath on the disk
- * @param {string} [type] mimetype to use
- * @returns {Promise<Blob>}
- */
-const blobFrom = (path, type) => stat(path).then(stat => fromBlob(stat, path, type))
-
-/**
- * @param {string} path filepath on the disk
- * @param {string} [type] mimetype to use
- * @returns {Promise<File>}
- */
-const fileFrom = (path, type) => stat(path).then(stat => fromFile(stat, path, type))
-
-/**
- * @param {string} path filepath on the disk
- * @param {string} [type] mimetype to use
- */
-const fileFromSync = (path, type) => fromFile((0,node_fs__WEBPACK_IMPORTED_MODULE_0__.statSync)(path), path, type)
-
-// @ts-ignore
-const fromBlob = (stat, path, type = '') => new _index_js__WEBPACK_IMPORTED_MODULE_4__/* ["default"] */ .Z([new BlobDataItem({
-  path,
-  size: stat.size,
-  lastModified: stat.mtimeMs,
-  start: 0
-})], { type })
-
-// @ts-ignore
-const fromFile = (stat, path, type = '') => new _file_js__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .Z([new BlobDataItem({
-  path,
-  size: stat.size,
-  lastModified: stat.mtimeMs,
-  start: 0
-})], (0,node_path__WEBPACK_IMPORTED_MODULE_1__.basename)(path), { type, lastModified: stat.mtimeMs })
-
-/**
- * This is a blob backed up by a file on the disk
- * with minium requirement. Its wrapped around a Blob as a blobPart
- * so you have no direct access to this.
- *
- * @private
- */
-class BlobDataItem {
-  #path
-  #start
-
-  constructor (options) {
-    this.#path = options.path
-    this.#start = options.start
-    this.size = options.size
-    this.lastModified = options.lastModified
-  }
-
-  /**
-   * Slicing arguments is first validated and formatted
-   * to not be out of range by Blob.prototype.slice
-   */
-  slice (start, end) {
-    return new BlobDataItem({
-      path: this.#path,
-      lastModified: this.lastModified,
-      size: end - start,
-      start: this.#start + start
-    })
-  }
-
-  async * stream () {
-    const { mtimeMs } = await stat(this.#path)
-    if (mtimeMs > this.lastModified) {
-      throw new node_domexception__WEBPACK_IMPORTED_MODULE_2__('The requested file could not be read, typically due to permission problems that have occurred after a reference to a file was acquired.', 'NotReadableError')
-    }
-    yield * (0,node_fs__WEBPACK_IMPORTED_MODULE_0__.createReadStream)(this.#path, {
-      start: this.#start,
-      end: this.#start + this.size - 1
-    })
-  }
-
-  get [Symbol.toStringTag] () {
-    return 'Blob'
-  }
-}
-
-/* unused harmony default export */ var __WEBPACK_DEFAULT_EXPORT__ = ((/* unused pure expression or super */ null && (blobFromSync)));
-
-
-
-/***/ }),
-
-/***/ 1410:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* unused harmony export Blob */
-/* harmony import */ var _streams_cjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8572);
-/*! fetch-blob. MIT License. Jimmy Wärting <https://jimmy.warting.se/opensource> */
-
-// TODO (jimmywarting): in the feature use conditional loading with top level await (requires 14.x)
-// Node has recently added whatwg stream into core
-
-
-
-// 64 KiB (same size chrome slice theirs blob into Uint8array's)
-const POOL_SIZE = 65536
-
-/** @param {(Blob | Uint8Array)[]} parts */
-async function * toIterator (parts, clone = true) {
-  for (const part of parts) {
-    if ('stream' in part) {
-      yield * (/** @type {AsyncIterableIterator<Uint8Array>} */ (part.stream()))
-    } else if (ArrayBuffer.isView(part)) {
-      if (clone) {
-        let position = part.byteOffset
-        const end = part.byteOffset + part.byteLength
-        while (position !== end) {
-          const size = Math.min(end - position, POOL_SIZE)
-          const chunk = part.buffer.slice(position, position + size)
-          position += chunk.byteLength
-          yield new Uint8Array(chunk)
-        }
-      } else {
-        yield part
-      }
-    /* c8 ignore next 10 */
-    } else {
-      // For blobs that have arrayBuffer but no stream method (nodes buffer.Blob)
-      let position = 0, b = (/** @type {Blob} */ (part))
-      while (position !== b.size) {
-        const chunk = b.slice(position, Math.min(b.size, position + POOL_SIZE))
-        const buffer = await chunk.arrayBuffer()
-        position += buffer.byteLength
-        yield new Uint8Array(buffer)
-      }
-    }
-  }
-}
-
-const _Blob = class Blob {
-  /** @type {Array.<(Blob|Uint8Array)>} */
-  #parts = []
-  #type = ''
-  #size = 0
-  #endings = 'transparent'
-
-  /**
-   * The Blob() constructor returns a new Blob object. The content
-   * of the blob consists of the concatenation of the values given
-   * in the parameter array.
-   *
-   * @param {*} blobParts
-   * @param {{ type?: string, endings?: string }} [options]
-   */
-  constructor (blobParts = [], options = {}) {
-    if (typeof blobParts !== 'object' || blobParts === null) {
-      throw new TypeError('Failed to construct \'Blob\': The provided value cannot be converted to a sequence.')
-    }
-
-    if (typeof blobParts[Symbol.iterator] !== 'function') {
-      throw new TypeError('Failed to construct \'Blob\': The object must have a callable @@iterator property.')
-    }
-
-    if (typeof options !== 'object' && typeof options !== 'function') {
-      throw new TypeError('Failed to construct \'Blob\': parameter 2 cannot convert to dictionary.')
-    }
-
-    if (options === null) options = {}
-
-    const encoder = new TextEncoder()
-    for (const element of blobParts) {
-      let part
-      if (ArrayBuffer.isView(element)) {
-        part = new Uint8Array(element.buffer.slice(element.byteOffset, element.byteOffset + element.byteLength))
-      } else if (element instanceof ArrayBuffer) {
-        part = new Uint8Array(element.slice(0))
-      } else if (element instanceof Blob) {
-        part = element
-      } else {
-        part = encoder.encode(`${element}`)
-      }
-
-      this.#size += ArrayBuffer.isView(part) ? part.byteLength : part.size
-      this.#parts.push(part)
-    }
-
-    this.#endings = `${options.endings === undefined ? 'transparent' : options.endings}`
-    const type = options.type === undefined ? '' : String(options.type)
-    this.#type = /^[\x20-\x7E]*$/.test(type) ? type : ''
-  }
-
-  /**
-   * The Blob interface's size property returns the
-   * size of the Blob in bytes.
-   */
-  get size () {
-    return this.#size
-  }
-
-  /**
-   * The type property of a Blob object returns the MIME type of the file.
-   */
-  get type () {
-    return this.#type
-  }
-
-  /**
-   * The text() method in the Blob interface returns a Promise
-   * that resolves with a string containing the contents of
-   * the blob, interpreted as UTF-8.
-   *
-   * @return {Promise<string>}
-   */
-  async text () {
-    // More optimized than using this.arrayBuffer()
-    // that requires twice as much ram
-    const decoder = new TextDecoder()
-    let str = ''
-    for await (const part of toIterator(this.#parts, false)) {
-      str += decoder.decode(part, { stream: true })
-    }
-    // Remaining
-    str += decoder.decode()
-    return str
-  }
-
-  /**
-   * The arrayBuffer() method in the Blob interface returns a
-   * Promise that resolves with the contents of the blob as
-   * binary data contained in an ArrayBuffer.
-   *
-   * @return {Promise<ArrayBuffer>}
-   */
-  async arrayBuffer () {
-    // Easier way... Just a unnecessary overhead
-    // const view = new Uint8Array(this.size);
-    // await this.stream().getReader({mode: 'byob'}).read(view);
-    // return view.buffer;
-
-    const data = new Uint8Array(this.size)
-    let offset = 0
-    for await (const chunk of toIterator(this.#parts, false)) {
-      data.set(chunk, offset)
-      offset += chunk.length
-    }
-
-    return data.buffer
-  }
-
-  stream () {
-    const it = toIterator(this.#parts, true)
-
-    return new globalThis.ReadableStream({
-      // @ts-ignore
-      type: 'bytes',
-      async pull (ctrl) {
-        const chunk = await it.next()
-        chunk.done ? ctrl.close() : ctrl.enqueue(chunk.value)
-      },
-
-      async cancel () {
-        await it.return()
-      }
-    })
-  }
-
-  /**
-   * The Blob interface's slice() method creates and returns a
-   * new Blob object which contains data from a subset of the
-   * blob on which it's called.
-   *
-   * @param {number} [start]
-   * @param {number} [end]
-   * @param {string} [type]
-   */
-  slice (start = 0, end = this.size, type = '') {
-    const { size } = this
-
-    let relativeStart = start < 0 ? Math.max(size + start, 0) : Math.min(start, size)
-    let relativeEnd = end < 0 ? Math.max(size + end, 0) : Math.min(end, size)
-
-    const span = Math.max(relativeEnd - relativeStart, 0)
-    const parts = this.#parts
-    const blobParts = []
-    let added = 0
-
-    for (const part of parts) {
-      // don't add the overflow to new blobParts
-      if (added >= span) {
-        break
-      }
-
-      const size = ArrayBuffer.isView(part) ? part.byteLength : part.size
-      if (relativeStart && size <= relativeStart) {
-        // Skip the beginning and change the relative
-        // start & end position as we skip the unwanted parts
-        relativeStart -= size
-        relativeEnd -= size
-      } else {
-        let chunk
-        if (ArrayBuffer.isView(part)) {
-          chunk = part.subarray(relativeStart, Math.min(size, relativeEnd))
-          added += chunk.byteLength
-        } else {
-          chunk = part.slice(relativeStart, Math.min(size, relativeEnd))
-          added += chunk.size
-        }
-        relativeEnd -= size
-        blobParts.push(chunk)
-        relativeStart = 0 // All next sequential parts should start at 0
-      }
-    }
-
-    const blob = new Blob([], { type: String(type).toLowerCase() })
-    blob.#size = span
-    blob.#parts = blobParts
-
-    return blob
-  }
-
-  get [Symbol.toStringTag] () {
-    return 'Blob'
-  }
-
-  static [Symbol.hasInstance] (object) {
-    return (
-      object &&
-      typeof object === 'object' &&
-      typeof object.constructor === 'function' &&
-      (
-        typeof object.stream === 'function' ||
-        typeof object.arrayBuffer === 'function'
-      ) &&
-      /^(Blob|File)$/.test(object[Symbol.toStringTag])
-    )
-  }
-}
-
-Object.defineProperties(_Blob.prototype, {
-  size: { enumerable: true },
-  type: { enumerable: true },
-  slice: { enumerable: true }
-})
-
-/** @type {typeof globalThis.Blob} */
-const Blob = _Blob
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Blob);
-
-
-/***/ }),
-
-/***/ 8010:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Ct": () => (/* binding */ FormData),
-/* harmony export */   "au": () => (/* binding */ formDataToBlob)
-/* harmony export */ });
-/* unused harmony export File */
-/* harmony import */ var fetch_blob__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1410);
-/* harmony import */ var fetch_blob_file_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3213);
-/*! formdata-polyfill. MIT License. Jimmy Wärting <https://jimmy.warting.se/opensource> */
-
-
-
-
-var {toStringTag:t,iterator:i,hasInstance:h}=Symbol,
-r=Math.random,
-m='append,set,get,getAll,delete,keys,values,entries,forEach,constructor'.split(','),
-f=(a,b,c)=>(a+='',/^(Blob|File)$/.test(b && b[t])?[(c=c!==void 0?c+'':b[t]=='File'?b.name:'blob',a),b.name!==c||b[t]=='blob'?new fetch_blob_file_js__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .Z([b],c,b):b]:[a,b+'']),
-e=(c,f)=>(f?c:c.replace(/\r?\n|\r/g,'\r\n')).replace(/\n/g,'%0A').replace(/\r/g,'%0D').replace(/"/g,'%22'),
-x=(n, a, e)=>{if(a.length<e){throw new TypeError(`Failed to execute '${n}' on 'FormData': ${e} arguments required, but only ${a.length} present.`)}}
-
-const File = (/* unused pure expression or super */ null && (F))
-
-/** @type {typeof globalThis.FormData} */
-const FormData = class FormData {
-#d=[];
-constructor(...a){if(a.length)throw new TypeError(`Failed to construct 'FormData': parameter 1 is not of type 'HTMLFormElement'.`)}
-get [t]() {return 'FormData'}
-[i](){return this.entries()}
-static [h](o) {return o&&typeof o==='object'&&o[t]==='FormData'&&!m.some(m=>typeof o[m]!='function')}
-append(...a){x('append',arguments,2);this.#d.push(f(...a))}
-delete(a){x('delete',arguments,1);a+='';this.#d=this.#d.filter(([b])=>b!==a)}
-get(a){x('get',arguments,1);a+='';for(var b=this.#d,l=b.length,c=0;c<l;c++)if(b[c][0]===a)return b[c][1];return null}
-getAll(a,b){x('getAll',arguments,1);b=[];a+='';this.#d.forEach(c=>c[0]===a&&b.push(c[1]));return b}
-has(a){x('has',arguments,1);a+='';return this.#d.some(b=>b[0]===a)}
-forEach(a,b){x('forEach',arguments,1);for(var [c,d]of this)a.call(b,d,c,this)}
-set(...a){x('set',arguments,2);var b=[],c=!0;a=f(...a);this.#d.forEach(d=>{d[0]===a[0]?c&&(c=!b.push(a)):b.push(d)});c&&b.push(a);this.#d=b}
-*entries(){yield*this.#d}
-*keys(){for(var[a]of this)yield a}
-*values(){for(var[,a]of this)yield a}}
-
-/** @param {FormData} F */
-function formDataToBlob (F,B=fetch_blob__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z){
-var b=`${r()}${r()}`.replace(/\./g, '').slice(-28).padStart(32, '-'),c=[],p=`--${b}\r\nContent-Disposition: form-data; name="`
-F.forEach((v,n)=>typeof v=='string'
-?c.push(p+e(n)+`"\r\n\r\n${v.replace(/\r(?!\n)|(?<!\r)\n/g, '\r\n')}\r\n`)
-:c.push(p+e(n)+`"; filename="${e(v.name, 1)}"\r\nContent-Type: ${v.type||"application/octet-stream"}\r\n\r\n`, v, '\r\n'))
-c.push(`--${b}--`)
-return new B(c,{type:"multipart/form-data; boundary="+b})}
-
-
-/***/ }),
-
-/***/ 2841:
+/***/ 8406:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -5355,14 +4854,14 @@ __webpack_require__.d(__webpack_exports__, {
 // EXTERNAL MODULE: external "node:http"
 var external_node_http_ = __webpack_require__(8849);
 // EXTERNAL MODULE: external "node:https"
-var external_node_https_ = __webpack_require__(5200);
+var external_node_https_ = __webpack_require__(2286);
 // EXTERNAL MODULE: external "node:zlib"
 var external_node_zlib_ = __webpack_require__(5628);
 // EXTERNAL MODULE: external "node:stream"
 var external_node_stream_ = __webpack_require__(4492);
 // EXTERNAL MODULE: external "node:buffer"
 var external_node_buffer_ = __webpack_require__(2254);
-;// CONCATENATED MODULE: ./node_modules/data-uri-to-buffer/dist/index.js
+;// CONCATENATED MODULE: ../node_modules/data-uri-to-buffer/dist/index.js
 /**
  * Returns a `Buffer` instance from the given data URI `uri`.
  *
@@ -5418,10 +4917,10 @@ function dataUriToBuffer(uri) {
 //# sourceMappingURL=index.js.map
 // EXTERNAL MODULE: external "node:util"
 var external_node_util_ = __webpack_require__(7261);
-// EXTERNAL MODULE: ./node_modules/fetch-blob/index.js
-var fetch_blob = __webpack_require__(1410);
-// EXTERNAL MODULE: ./node_modules/formdata-polyfill/esm.min.js
-var esm_min = __webpack_require__(8010);
+// EXTERNAL MODULE: ../node_modules/fetch-blob/index.js
+var fetch_blob = __webpack_require__(1074);
+// EXTERNAL MODULE: ../node_modules/formdata-polyfill/esm.min.js
+var esm_min = __webpack_require__(684);
 ;// CONCATENATED MODULE: ./node_modules/node-fetch/src/errors/base.js
 class FetchBaseError extends Error {
 	constructor(message, type) {
@@ -5682,7 +5181,7 @@ class Body {
 			return formData;
 		}
 
-		const {toFormData} = await __webpack_require__.e(/* import() */ 37).then(__webpack_require__.bind(__webpack_require__, 4037));
+		const {toFormData} = await __webpack_require__.e(/* import() */ 868).then(__webpack_require__.bind(__webpack_require__, 1868));
 		return toFormData(this.body, ct);
 	}
 
@@ -7083,8 +6582,8 @@ class AbortError extends FetchBaseError {
 	}
 }
 
-// EXTERNAL MODULE: ./node_modules/fetch-blob/from.js
-var from = __webpack_require__(2185);
+// EXTERNAL MODULE: ../node_modules/fetch-blob/from.js
+var from = __webpack_require__(2095);
 ;// CONCATENATED MODULE: ./node_modules/node-fetch/src/index.js
 /**
  * Index.js
@@ -7496,6 +6995,507 @@ function fixResponseChunkedTransferBadEnding(request, errorCallback) {
 		});
 	});
 }
+
+
+/***/ }),
+
+/***/ 3256:
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* unused harmony export File */
+/* harmony import */ var _index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1074);
+
+
+const _File = class File extends _index_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z {
+  #lastModified = 0
+  #name = ''
+
+  /**
+   * @param {*[]} fileBits
+   * @param {string} fileName
+   * @param {{lastModified?: number, type?: string}} options
+   */// @ts-ignore
+  constructor (fileBits, fileName, options = {}) {
+    if (arguments.length < 2) {
+      throw new TypeError(`Failed to construct 'File': 2 arguments required, but only ${arguments.length} present.`)
+    }
+    super(fileBits, options)
+
+    if (options === null) options = {}
+
+    // Simulate WebIDL type casting for NaN value in lastModified option.
+    const lastModified = options.lastModified === undefined ? Date.now() : Number(options.lastModified)
+    if (!Number.isNaN(lastModified)) {
+      this.#lastModified = lastModified
+    }
+
+    this.#name = String(fileName)
+  }
+
+  get name () {
+    return this.#name
+  }
+
+  get lastModified () {
+    return this.#lastModified
+  }
+
+  get [Symbol.toStringTag] () {
+    return 'File'
+  }
+
+  static [Symbol.hasInstance] (object) {
+    return !!object && object instanceof _index_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z &&
+      /^(File)$/.test(object[Symbol.toStringTag])
+  }
+}
+
+/** @type {typeof globalThis.File} */// @ts-ignore
+const File = _File
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (File);
+
+
+/***/ }),
+
+/***/ 2095:
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "$B": () => (/* reexport safe */ _file_js__WEBPACK_IMPORTED_MODULE_3__.Z),
+/* harmony export */   "RA": () => (/* binding */ fileFromSync),
+/* harmony export */   "SX": () => (/* binding */ blobFromSync),
+/* harmony export */   "e2": () => (/* binding */ fileFrom),
+/* harmony export */   "t6": () => (/* reexport safe */ _index_js__WEBPACK_IMPORTED_MODULE_4__.Z),
+/* harmony export */   "xB": () => (/* binding */ blobFrom)
+/* harmony export */ });
+/* harmony import */ var node_fs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7561);
+/* harmony import */ var node_path__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9411);
+/* harmony import */ var node_domexception__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(1239);
+/* harmony import */ var _file_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3256);
+/* harmony import */ var _index_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(1074);
+
+
+
+
+
+
+
+const { stat } = node_fs__WEBPACK_IMPORTED_MODULE_0__.promises
+
+/**
+ * @param {string} path filepath on the disk
+ * @param {string} [type] mimetype to use
+ */
+const blobFromSync = (path, type) => fromBlob((0,node_fs__WEBPACK_IMPORTED_MODULE_0__.statSync)(path), path, type)
+
+/**
+ * @param {string} path filepath on the disk
+ * @param {string} [type] mimetype to use
+ * @returns {Promise<Blob>}
+ */
+const blobFrom = (path, type) => stat(path).then(stat => fromBlob(stat, path, type))
+
+/**
+ * @param {string} path filepath on the disk
+ * @param {string} [type] mimetype to use
+ * @returns {Promise<File>}
+ */
+const fileFrom = (path, type) => stat(path).then(stat => fromFile(stat, path, type))
+
+/**
+ * @param {string} path filepath on the disk
+ * @param {string} [type] mimetype to use
+ */
+const fileFromSync = (path, type) => fromFile((0,node_fs__WEBPACK_IMPORTED_MODULE_0__.statSync)(path), path, type)
+
+// @ts-ignore
+const fromBlob = (stat, path, type = '') => new _index_js__WEBPACK_IMPORTED_MODULE_4__/* ["default"] */ .Z([new BlobDataItem({
+  path,
+  size: stat.size,
+  lastModified: stat.mtimeMs,
+  start: 0
+})], { type })
+
+// @ts-ignore
+const fromFile = (stat, path, type = '') => new _file_js__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .Z([new BlobDataItem({
+  path,
+  size: stat.size,
+  lastModified: stat.mtimeMs,
+  start: 0
+})], (0,node_path__WEBPACK_IMPORTED_MODULE_1__.basename)(path), { type, lastModified: stat.mtimeMs })
+
+/**
+ * This is a blob backed up by a file on the disk
+ * with minium requirement. Its wrapped around a Blob as a blobPart
+ * so you have no direct access to this.
+ *
+ * @private
+ */
+class BlobDataItem {
+  #path
+  #start
+
+  constructor (options) {
+    this.#path = options.path
+    this.#start = options.start
+    this.size = options.size
+    this.lastModified = options.lastModified
+  }
+
+  /**
+   * Slicing arguments is first validated and formatted
+   * to not be out of range by Blob.prototype.slice
+   */
+  slice (start, end) {
+    return new BlobDataItem({
+      path: this.#path,
+      lastModified: this.lastModified,
+      size: end - start,
+      start: this.#start + start
+    })
+  }
+
+  async * stream () {
+    const { mtimeMs } = await stat(this.#path)
+    if (mtimeMs > this.lastModified) {
+      throw new node_domexception__WEBPACK_IMPORTED_MODULE_2__('The requested file could not be read, typically due to permission problems that have occurred after a reference to a file was acquired.', 'NotReadableError')
+    }
+    yield * (0,node_fs__WEBPACK_IMPORTED_MODULE_0__.createReadStream)(this.#path, {
+      start: this.#start,
+      end: this.#start + this.size - 1
+    })
+  }
+
+  get [Symbol.toStringTag] () {
+    return 'Blob'
+  }
+}
+
+/* unused harmony default export */ var __WEBPACK_DEFAULT_EXPORT__ = ((/* unused pure expression or super */ null && (blobFromSync)));
+
+
+
+/***/ }),
+
+/***/ 1074:
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* unused harmony export Blob */
+/* harmony import */ var _streams_cjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2609);
+/*! fetch-blob. MIT License. Jimmy Wärting <https://jimmy.warting.se/opensource> */
+
+// TODO (jimmywarting): in the feature use conditional loading with top level await (requires 14.x)
+// Node has recently added whatwg stream into core
+
+
+
+// 64 KiB (same size chrome slice theirs blob into Uint8array's)
+const POOL_SIZE = 65536
+
+/** @param {(Blob | Uint8Array)[]} parts */
+async function * toIterator (parts, clone = true) {
+  for (const part of parts) {
+    if ('stream' in part) {
+      yield * (/** @type {AsyncIterableIterator<Uint8Array>} */ (part.stream()))
+    } else if (ArrayBuffer.isView(part)) {
+      if (clone) {
+        let position = part.byteOffset
+        const end = part.byteOffset + part.byteLength
+        while (position !== end) {
+          const size = Math.min(end - position, POOL_SIZE)
+          const chunk = part.buffer.slice(position, position + size)
+          position += chunk.byteLength
+          yield new Uint8Array(chunk)
+        }
+      } else {
+        yield part
+      }
+    /* c8 ignore next 10 */
+    } else {
+      // For blobs that have arrayBuffer but no stream method (nodes buffer.Blob)
+      let position = 0, b = (/** @type {Blob} */ (part))
+      while (position !== b.size) {
+        const chunk = b.slice(position, Math.min(b.size, position + POOL_SIZE))
+        const buffer = await chunk.arrayBuffer()
+        position += buffer.byteLength
+        yield new Uint8Array(buffer)
+      }
+    }
+  }
+}
+
+const _Blob = class Blob {
+  /** @type {Array.<(Blob|Uint8Array)>} */
+  #parts = []
+  #type = ''
+  #size = 0
+  #endings = 'transparent'
+
+  /**
+   * The Blob() constructor returns a new Blob object. The content
+   * of the blob consists of the concatenation of the values given
+   * in the parameter array.
+   *
+   * @param {*} blobParts
+   * @param {{ type?: string, endings?: string }} [options]
+   */
+  constructor (blobParts = [], options = {}) {
+    if (typeof blobParts !== 'object' || blobParts === null) {
+      throw new TypeError('Failed to construct \'Blob\': The provided value cannot be converted to a sequence.')
+    }
+
+    if (typeof blobParts[Symbol.iterator] !== 'function') {
+      throw new TypeError('Failed to construct \'Blob\': The object must have a callable @@iterator property.')
+    }
+
+    if (typeof options !== 'object' && typeof options !== 'function') {
+      throw new TypeError('Failed to construct \'Blob\': parameter 2 cannot convert to dictionary.')
+    }
+
+    if (options === null) options = {}
+
+    const encoder = new TextEncoder()
+    for (const element of blobParts) {
+      let part
+      if (ArrayBuffer.isView(element)) {
+        part = new Uint8Array(element.buffer.slice(element.byteOffset, element.byteOffset + element.byteLength))
+      } else if (element instanceof ArrayBuffer) {
+        part = new Uint8Array(element.slice(0))
+      } else if (element instanceof Blob) {
+        part = element
+      } else {
+        part = encoder.encode(`${element}`)
+      }
+
+      this.#size += ArrayBuffer.isView(part) ? part.byteLength : part.size
+      this.#parts.push(part)
+    }
+
+    this.#endings = `${options.endings === undefined ? 'transparent' : options.endings}`
+    const type = options.type === undefined ? '' : String(options.type)
+    this.#type = /^[\x20-\x7E]*$/.test(type) ? type : ''
+  }
+
+  /**
+   * The Blob interface's size property returns the
+   * size of the Blob in bytes.
+   */
+  get size () {
+    return this.#size
+  }
+
+  /**
+   * The type property of a Blob object returns the MIME type of the file.
+   */
+  get type () {
+    return this.#type
+  }
+
+  /**
+   * The text() method in the Blob interface returns a Promise
+   * that resolves with a string containing the contents of
+   * the blob, interpreted as UTF-8.
+   *
+   * @return {Promise<string>}
+   */
+  async text () {
+    // More optimized than using this.arrayBuffer()
+    // that requires twice as much ram
+    const decoder = new TextDecoder()
+    let str = ''
+    for await (const part of toIterator(this.#parts, false)) {
+      str += decoder.decode(part, { stream: true })
+    }
+    // Remaining
+    str += decoder.decode()
+    return str
+  }
+
+  /**
+   * The arrayBuffer() method in the Blob interface returns a
+   * Promise that resolves with the contents of the blob as
+   * binary data contained in an ArrayBuffer.
+   *
+   * @return {Promise<ArrayBuffer>}
+   */
+  async arrayBuffer () {
+    // Easier way... Just a unnecessary overhead
+    // const view = new Uint8Array(this.size);
+    // await this.stream().getReader({mode: 'byob'}).read(view);
+    // return view.buffer;
+
+    const data = new Uint8Array(this.size)
+    let offset = 0
+    for await (const chunk of toIterator(this.#parts, false)) {
+      data.set(chunk, offset)
+      offset += chunk.length
+    }
+
+    return data.buffer
+  }
+
+  stream () {
+    const it = toIterator(this.#parts, true)
+
+    return new globalThis.ReadableStream({
+      // @ts-ignore
+      type: 'bytes',
+      async pull (ctrl) {
+        const chunk = await it.next()
+        chunk.done ? ctrl.close() : ctrl.enqueue(chunk.value)
+      },
+
+      async cancel () {
+        await it.return()
+      }
+    })
+  }
+
+  /**
+   * The Blob interface's slice() method creates and returns a
+   * new Blob object which contains data from a subset of the
+   * blob on which it's called.
+   *
+   * @param {number} [start]
+   * @param {number} [end]
+   * @param {string} [type]
+   */
+  slice (start = 0, end = this.size, type = '') {
+    const { size } = this
+
+    let relativeStart = start < 0 ? Math.max(size + start, 0) : Math.min(start, size)
+    let relativeEnd = end < 0 ? Math.max(size + end, 0) : Math.min(end, size)
+
+    const span = Math.max(relativeEnd - relativeStart, 0)
+    const parts = this.#parts
+    const blobParts = []
+    let added = 0
+
+    for (const part of parts) {
+      // don't add the overflow to new blobParts
+      if (added >= span) {
+        break
+      }
+
+      const size = ArrayBuffer.isView(part) ? part.byteLength : part.size
+      if (relativeStart && size <= relativeStart) {
+        // Skip the beginning and change the relative
+        // start & end position as we skip the unwanted parts
+        relativeStart -= size
+        relativeEnd -= size
+      } else {
+        let chunk
+        if (ArrayBuffer.isView(part)) {
+          chunk = part.subarray(relativeStart, Math.min(size, relativeEnd))
+          added += chunk.byteLength
+        } else {
+          chunk = part.slice(relativeStart, Math.min(size, relativeEnd))
+          added += chunk.size
+        }
+        relativeEnd -= size
+        blobParts.push(chunk)
+        relativeStart = 0 // All next sequential parts should start at 0
+      }
+    }
+
+    const blob = new Blob([], { type: String(type).toLowerCase() })
+    blob.#size = span
+    blob.#parts = blobParts
+
+    return blob
+  }
+
+  get [Symbol.toStringTag] () {
+    return 'Blob'
+  }
+
+  static [Symbol.hasInstance] (object) {
+    return (
+      object &&
+      typeof object === 'object' &&
+      typeof object.constructor === 'function' &&
+      (
+        typeof object.stream === 'function' ||
+        typeof object.arrayBuffer === 'function'
+      ) &&
+      /^(Blob|File)$/.test(object[Symbol.toStringTag])
+    )
+  }
+}
+
+Object.defineProperties(_Blob.prototype, {
+  size: { enumerable: true },
+  type: { enumerable: true },
+  slice: { enumerable: true }
+})
+
+/** @type {typeof globalThis.Blob} */
+const Blob = _Blob
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Blob);
+
+
+/***/ }),
+
+/***/ 684:
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Ct": () => (/* binding */ FormData),
+/* harmony export */   "au": () => (/* binding */ formDataToBlob)
+/* harmony export */ });
+/* unused harmony export File */
+/* harmony import */ var fetch_blob__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1074);
+/* harmony import */ var fetch_blob_file_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3256);
+/*! formdata-polyfill. MIT License. Jimmy Wärting <https://jimmy.warting.se/opensource> */
+
+
+
+
+var {toStringTag:t,iterator:i,hasInstance:h}=Symbol,
+r=Math.random,
+m='append,set,get,getAll,delete,keys,values,entries,forEach,constructor'.split(','),
+f=(a,b,c)=>(a+='',/^(Blob|File)$/.test(b && b[t])?[(c=c!==void 0?c+'':b[t]=='File'?b.name:'blob',a),b.name!==c||b[t]=='blob'?new fetch_blob_file_js__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .Z([b],c,b):b]:[a,b+'']),
+e=(c,f)=>(f?c:c.replace(/\r?\n|\r/g,'\r\n')).replace(/\n/g,'%0A').replace(/\r/g,'%0D').replace(/"/g,'%22'),
+x=(n, a, e)=>{if(a.length<e){throw new TypeError(`Failed to execute '${n}' on 'FormData': ${e} arguments required, but only ${a.length} present.`)}}
+
+const File = (/* unused pure expression or super */ null && (F))
+
+/** @type {typeof globalThis.FormData} */
+const FormData = class FormData {
+#d=[];
+constructor(...a){if(a.length)throw new TypeError(`Failed to construct 'FormData': parameter 1 is not of type 'HTMLFormElement'.`)}
+get [t]() {return 'FormData'}
+[i](){return this.entries()}
+static [h](o) {return o&&typeof o==='object'&&o[t]==='FormData'&&!m.some(m=>typeof o[m]!='function')}
+append(...a){x('append',arguments,2);this.#d.push(f(...a))}
+delete(a){x('delete',arguments,1);a+='';this.#d=this.#d.filter(([b])=>b!==a)}
+get(a){x('get',arguments,1);a+='';for(var b=this.#d,l=b.length,c=0;c<l;c++)if(b[c][0]===a)return b[c][1];return null}
+getAll(a,b){x('getAll',arguments,1);b=[];a+='';this.#d.forEach(c=>c[0]===a&&b.push(c[1]));return b}
+has(a){x('has',arguments,1);a+='';return this.#d.some(b=>b[0]===a)}
+forEach(a,b){x('forEach',arguments,1);for(var [c,d]of this)a.call(b,d,c,this)}
+set(...a){x('set',arguments,2);var b=[],c=!0;a=f(...a);this.#d.forEach(d=>{d[0]===a[0]?c&&(c=!b.push(a)):b.push(d)});c&&b.push(a);this.#d=b}
+*entries(){yield*this.#d}
+*keys(){for(var[a]of this)yield a}
+*values(){for(var[,a]of this)yield a}}
+
+/** @param {FormData} F */
+function formDataToBlob (F,B=fetch_blob__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z){
+var b=`${r()}${r()}`.replace(/\./g, '').slice(-28).padStart(32, '-'),c=[],p=`--${b}\r\nContent-Disposition: form-data; name="`
+F.forEach((v,n)=>typeof v=='string'
+?c.push(p+e(n)+`"\r\n\r\n${v.replace(/\r(?!\n)|(?<!\r)\n/g, '\r\n')}\r\n`)
+:c.push(p+e(n)+`"; filename="${e(v.name, 1)}"\r\nContent-Type: ${v.type||"application/octet-stream"}\r\n\r\n`, v, '\r\n'))
+c.push(`--${b}--`)
+return new B(c,{type:"multipart/form-data; boundary="+b})}
 
 
 /***/ })

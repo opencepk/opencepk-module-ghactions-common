@@ -1,0 +1,18 @@
+{
+  "packages": [
+    "common",
+    "git-upstream-set-check-pr-block",
+    "git-upstream-set-create-pr",
+    "github-actions-set-permissions",
+    "github-flow-check-branch-name",
+    "github-flow-check-commit-message",
+    "github-flow-mirror-repo",
+    "github-flow-update-pr-title",
+    "github-flow-update-release-notes",
+    "github-flow-sync-with-mirror",
+    "github-set-actions-permissions"
+  ],
+  "version": "0.0.0",
+  "npmClient": "npm",
+  "$schema": "node_modules/lerna/schemas/lerna-schema.json"
+}

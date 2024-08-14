@@ -1,5 +1,5 @@
 {
-  "name": "sync-with-mirror",
+  "name": "github-flow-sync-with-mirror",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {

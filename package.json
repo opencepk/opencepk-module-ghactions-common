@@ -5,9 +5,9 @@
   "description": "Github custom actions",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-     "install-and-build-all": "npm install --prefix ./common && npm run build --prefix common && npm install --prefix ./git-upstream-set-check-pr-block && npm run build --prefix ./git-upstream-set-check-pr-block && npm install --prefix ./git-upstream-set-create-pr && npm run build --prefix ./git-upstream-set-create-pr && npm install --prefix ./github-flow-check-branch-name && npm run build --prefix ./github-flow-check-branch-name && npm install --prefix ./github-flow-check-commit-message && npm run build --prefix ./github-flow-check-commit-message && npm install --prefix ./github-flow-update-pr-title && npm run build --prefix ./github-flow-update-pr-title && npm install --prefix ./github-flow-update-release-notes && npm run build --prefix ./github-flow-update-release-notes  && npm install --prefix ./github-flow-sync-with-mirror && npm run build --prefix ./github-flow-sync-with-mirror && npm install --prefix ./github-flow-mirror-repo && npm run build --prefix ./github-flow-mirror-repo && npm install --prefix ./github-set-actions-permissions && npm run build --prefix ./github-set-actions-permissions"
-
+    "test": "lerna run test",
+    "test-init": "lerna init",
+    "install-and-build-all": "npm install && npm run build --workspaces"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,20 @@
   "devDependencies": {
     "@eslint/js": "^9.7.0",
     "eslint": "^9.7.0",
+    "lerna": "^8.1.8",
     "prettier": "^3.3.3"
-  }
+  },
+  "workspaces": [
+    "common",
+    "git-upstream-set-check-pr-block",
+    "git-upstream-set-create-pr",
+    "github-actions-set-permissions",
+    "github-flow-check-branch-name",
+    "github-flow-check-commit-message",
+    "github-flow-mirror-repo",
+    "github-flow-update-pr-title",
+    "github-flow-update-release-notes",
+    "github-flow-sync-with-mirror",
+    "github-set-actions-permissions"
+  ]
 }

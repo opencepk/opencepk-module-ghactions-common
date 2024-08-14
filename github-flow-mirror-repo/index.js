@@ -137,3 +137,5 @@ async function run() {
   }
 }
 run();
+
+module.exports = { processRepo };

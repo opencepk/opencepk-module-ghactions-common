@@ -1,9 +1,9 @@
 "use strict";
-exports.id = 692;
-exports.ids = [692];
+exports.id = 887;
+exports.ids = [887];
 exports.modules = {
 
-/***/ 6692:
+/***/ 2887:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 // ESM COMPAT FLAG
@@ -1062,11 +1062,11 @@ class Octokit {
 }
 
 
-;// CONCATENATED MODULE: ./node_modules/@octokit/plugin-request-log/dist-src/version.js
+;// CONCATENATED MODULE: ./node_modules/@octokit/rest/node_modules/@octokit/plugin-request-log/dist-src/version.js
 const dist_src_version_VERSION = "5.3.1";
 
 
-;// CONCATENATED MODULE: ./node_modules/@octokit/plugin-request-log/dist-src/index.js
+;// CONCATENATED MODULE: ./node_modules/@octokit/rest/node_modules/@octokit/plugin-request-log/dist-src/index.js
 
 function requestLog(octokit) {
   octokit.hook.wrap("request", (request, options) => {
