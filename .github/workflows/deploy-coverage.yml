@@ -59,8 +59,8 @@
              git pull origin gh-pages
              cp -r coverage/* .
              git add .
-             git commit -m 'Deploy coverage report'
-             git push origin gh-pages
+             git commit -m 'Deploy coverage report' || true
+             git push origin gh-pages || true
            env:
              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
