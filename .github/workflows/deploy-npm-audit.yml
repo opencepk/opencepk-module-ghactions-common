@@ -8,7 +8,7 @@
        types: [opened, synchronize, reopened]
    
    jobs:
-     js-docs:
+     audit-npm:
        runs-on: ubuntu-latest
        steps:
          - name: Checkout repository
