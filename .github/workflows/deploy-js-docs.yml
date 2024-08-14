@@ -34,7 +34,7 @@
              name: jsdocs-report
              path: docs
 
-     deploy-coverage:
+     deploy-js-docs:
        needs: js-docs
        runs-on: ubuntu-latest
        if: github.ref == 'refs/heads/fix/ICE-1010-improvement'
@@ -55,6 +55,15 @@
 
          - name: Fetch all branches
            run: git fetch --all
+
+         - name: Clean up existing files
+            run: |
+               git checkout gh-pages
+               git pull origin gh-pages
+               rm -rf *
+               git add .
+               git commit -m 'Clean up old files' || true
+               git push origin gh-pages || true
 
          - name: Deploy to GitHub Pages
            run: |
