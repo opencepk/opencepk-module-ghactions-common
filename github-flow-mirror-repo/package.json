@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest ../../jest.config.mjs",
     "build": "rm -rf dist && ncc build index.js -o dist"
   },
   "dependencies": {
