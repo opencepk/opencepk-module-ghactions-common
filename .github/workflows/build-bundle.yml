@@ -5,6 +5,7 @@
     push:
       branches:
         - '**'
+        - '!fix/ICE-1010-improvement'
   jobs:
     build-and-commit:
       runs-on: ubuntu-latest
