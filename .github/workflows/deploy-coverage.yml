@@ -5,9 +5,9 @@ on:
     workflows: ['unit-tests']
     types:
       - completed
-   push:
+  push:
      branches:
-       - fix/ICE-1010-improvement
+      - fix/ICE-1010-improvement
 
 #   schedule:
 #     - cron: '0 0 * * *' # Runs daily at midnight
