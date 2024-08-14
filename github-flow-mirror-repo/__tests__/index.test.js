@@ -1,10 +1,10 @@
-// /* eslint-disable no-undef */
-// const { execSync } = require('child_process');
-// const fs = require('fs');
-// const github = require('@actions/github');
-// const core = require('@actions/core');
-// const logger = require('../../common/logger.js');
-// const { processRepo } = require('../index'); // Adjust the path as needed
+/* eslint-disable no-undef */
+const { execSync } = require('child_process');
+const fs = require('fs');
+const github = require('@actions/github');
+const core = require('@actions/core');
+const logger = require('../../common/logger.js');
+const { processRepo } = require('../index'); // Adjust the path as needed
 // jest.mock('fs');
 
 // jest.mock('fs', () => ({
