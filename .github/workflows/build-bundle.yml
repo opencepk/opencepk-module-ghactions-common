@@ -1,42 +1,42 @@
 ---
-  name: build-bundle
-  on:
-    pull_request:
-    push:
-      branches:
-        - '**'
-  jobs:
-    build-and-commit:
-      runs-on: ubuntu-latest
-  
-      steps:
-        - name: Checkout repository
-          uses: actions/checkout@v4
-          with:
-            ref: ${{ github.head_ref || github.ref_name }}
-        - name: Set up Node.js
-          uses: actions/setup-node@v4
-          with:
-            node-version: '20'
-        - name: Install dependencies and build
-          run: npm run install-and-build-all
-        - name: Set environment variable for head ref
-          run: |
-            if [ "${{ github.event_name }}" == "pull_request" ]; then
-              echo "HEAD_REF=${{ github.head_ref }}" >> "$GITHUB_ENV"
-            else
-              echo "HEAD_REF=${{ github.ref_name }}" >> "$GITHUB_ENV"
-            fi
-        - name: Head ref 
-          run: echo "HEAD_REF is ${{ env.HEAD_REF }}"
-        - name: Commit dist folders
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            HEAD_REF: ${{ env.HEAD_REF }}
-          run: |
-            git config user.name "${{ github.actor }}"
-            git config user.email "${{ github.actor }}@users.noreply.github.com"
-            git add */dist
-            git commit -m 'chores/update-dist: Build dist folders' || true
-            echo "Pushing to branch: $HEAD_REF"
-            git push origin "$HEAD_REF" || true
+name: build-bundle
+on:
+  pull_request:
+  push:
+    branches:
+      - '**'
+jobs:
+  build-and-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies and build
+        run: npm run install-and-build-all
+      - name: Set environment variable for head ref
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "HEAD_REF=${{ github.head_ref }}" >> "$GITHUB_ENV"
+          else
+            echo "HEAD_REF=${{ github.ref_name }}" >> "$GITHUB_ENV"
+          fi
+      - name: Head ref
+        run: echo "HEAD_REF is ${{ env.HEAD_REF }}"
+      - name: Commit dist folders
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_REF: ${{ env.HEAD_REF }}
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git add */dist
+          git commit -m 'chores/update-dist: Build dist folders' || true
+          echo "Pushing to branch: $HEAD_REF"
+          git push origin "$HEAD_REF" || true
