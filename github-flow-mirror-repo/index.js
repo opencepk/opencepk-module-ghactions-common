@@ -6,6 +6,15 @@ const path = require('path');
 const logger = require('../common/logger.js');
 const { setGitActionAccess } = require('../common/git-operations.js');
 
+/**
+ * Processes a repository by creating a private copy in the specified organization.
+ *
+ * @param {string} publicRepoUrl - The URL of the public repository to clone.
+ * @param {string} org - The GitHub organization where the private repository will be created.
+ * @param {string} token - The GitHub token for authentication.
+ * @param {string} [newRepoName=null] - The name for the new private repository. Defaults to the name of the public repository.
+ * @returns {Promise<void>}
+ */
 async function processRepo(publicRepoUrl, org, token, newRepoName = null) {
   const octokit = github.getOctokit(token);
   const repoName = newRepoName
@@ -111,6 +120,11 @@ jobs:
   core.info(`Response: ${response}`);
 }
 
+/**
+ * Main function to run the GitHub Action.
+ *
+ * @returns {Promise<void>}
+ */
 async function run() {
   try {
     const token = core.getInput('github_token');

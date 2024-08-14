@@ -1,0 +1,72 @@
+---
+   name: test-upload-deploy
+   on:
+     push:
+       branches:
+         - '**'
+     pull_request:
+       types: [opened, synchronize, reopened]
+
+   jobs:
+     js-docs:
+       runs-on: ubuntu-latest
+       steps:
+         - name: Checkout repository
+           uses: actions/checkout@v4
+
+         - name: Set up Node.js
+           uses: actions/setup-node@v4
+           with:
+             node-version: '20.16.0'
+
+         - name: Install dependencies
+           run: npm install
+
+         - name: Run tests with coverage
+           run: npm run docs
+
+         - name: Upload coverage report
+           uses: actions/upload-artifact@v3
+           with:
+             name: jsdocs-report
+             path: docs
+
+     deploy-coverage:
+       needs: js-docs
+       runs-on: ubuntu-latest
+       if: github.ref == 'refs/heads/fix/ICE-1010-improvement'
+       steps:
+         - name: Checkout repository
+           uses: actions/checkout@v4
+
+         - name: Download jsdocs report
+           uses: actions/download-artifact@v3
+           with:
+             name: jsdocs-report
+             path: docs
+
+         - name: Configure Git
+           run: |
+             git config --global user.email "github-actions@github.com"
+             git config --global user.name "GitHub Actions"
+
+         - name: Fetch all branches
+           run: git fetch --all
+
+         - name: Deploy to GitHub Pages
+           run: |
+             git checkout gh-pages
+             git pull origin gh-pages
+             cp -r docs/* .
+             git add .
+             git commit -m 'Deploy js docs report' || true
+             git push origin gh-pages || true
+           env:
+             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+         - name: Print Coverage Report URL
+           env:
+             REPOSITORY_OWNER: ${{ github.repository_owner }}
+             REPOSITORY_NAME: ${{ github.event.repository.name }}
+           run: |
+             echo "Coverage deployed to: https://$REPOSITORY_OWNER.github.io/$REPOSITORY_NAME/docs/"

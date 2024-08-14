@@ -9,7 +9,8 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "deploy:coverage": "gh-pages -d coverage",
-    "install-and-build-all": "npm install && npm run build --workspaces"
+    "install-and-build-all": "npm install && npm run build --workspaces",
+    "docs": "jsdoc -c jsdoc.json"
   },
   "repository": {
     "type": "git",
@@ -26,6 +27,7 @@
     "eslint": "^9.7.0",
     "gh-pages": "^6.1.1",
     "jest": "^29.7.0",
+    "jsdoc": "^4.0.3",
     "prettier": "^3.3.3"
   },
   "workspaces": [
