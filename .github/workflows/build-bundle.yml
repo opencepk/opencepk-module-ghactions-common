@@ -24,7 +24,7 @@ jobs:
       - name: Set environment variable for head ref
         env:
           HEAD_REF: ${{ github.head_ref || github.ref_name }}
-        run: echo "HEAD_REF=${HEAD_REF}" >> $GITHUB_ENV
+        run: echo "HEAD_REF=${{ env.HEAD_REF }}" >> $GITHUB_ENV
       - name: Head ref
         run: echo "HEAD_REF is ${{ env.HEAD_REF }}"
       - name: Commit dist folders
