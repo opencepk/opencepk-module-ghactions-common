@@ -23,6 +23,11 @@
    },
    "opts": {
      "destination": "./docs",
-     "recurse": true
+     "recurse": true,
+     "template": "node_modules/docdash"
+   },
+   "templates": {
+     "cleverLinks": true,
+     "monospaceLinks": true
    }
  }

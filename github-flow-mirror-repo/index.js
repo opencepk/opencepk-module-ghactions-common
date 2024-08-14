@@ -12,6 +12,7 @@ const { setGitActionAccess } = require('../common/git-operations.js');
 /**
  * Processes a repository by creating a private copy in the specified organization.
  *
+ * @memberof github-flow-mirror-repo
  * @param {string} publicRepoUrl - The URL of the public repository to clone.
  * @param {string} org - The GitHub organization where the private repository will be created.
  * @param {string} token - The GitHub token for authentication.
@@ -126,6 +127,7 @@ jobs:
 /**
  * Main function to run the GitHub Action.
  *
+ * @memberof github-flow-mirror-repo
  * @returns {Promise<void>}
  */
 async function run() {

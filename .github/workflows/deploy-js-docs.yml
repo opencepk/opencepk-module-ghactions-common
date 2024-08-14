@@ -22,6 +22,9 @@
          - name: Install dependencies
            run: npm install
 
+         - name: Clean up existing artifacts
+           run: rm -rf docs
+
          - name: Run jsdocs generation
            run: npm run docs
 
