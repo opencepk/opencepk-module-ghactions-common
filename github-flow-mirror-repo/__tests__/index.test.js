@@ -5,7 +5,7 @@ const github = require('@actions/github');
 const core = require('@actions/core');
 const logger = require('../../common/logger.js');
 const { processRepo } = require('../index'); // Adjust the path as needed
-
+jest.mock('fs');
 // Mock fs.promises before any other mocks
 jest.mock('fs', () => ({
   default: {
