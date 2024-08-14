@@ -87,6 +87,18 @@ jest.spyOn(process, 'chdir').mockImplementation(() => {});
 // });
 
 describe('Sample Test', () => {
+  let mockOctokit;
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockOctokit = {
+      repos: {
+        get: jest.fn(),
+        createInOrg: jest.fn(),
+      },
+      request: jest.fn(),
+    };
+    github.getOctokit.mockReturnValue(mockOctokit);
+  });
   it('should always pass', () => {
     expect(true).toBe(true);
   });
