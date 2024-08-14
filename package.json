@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "test": "lerna run test",
-    "test-init": "lerna init",
+    "lerna-init": "lerna init",
+    "lerna-repair": "lerna repair",
     "install-and-build-all": "npm install && npm run build --workspaces"
   },
   "repository": {
