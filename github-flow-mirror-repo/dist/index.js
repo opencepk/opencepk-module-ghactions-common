@@ -65494,8 +65494,8 @@ async function run() {
     logger.setFailed(error.message);
   }
 }
-run();
 
+run();
 })();
 
 module.exports = __webpack_exports__;
