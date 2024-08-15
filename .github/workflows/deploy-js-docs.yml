@@ -67,7 +67,7 @@ jobs:
         run: |
           rm -rf "$TARGET_DIR"
           rm -rf docs
-        
+
 
       - name: Download jsdocs report
         uses: actions/download-artifact@v3
@@ -101,4 +101,4 @@ jobs:
 
       - name: Add Coverage Report URL to Job Summary
         run: |
-          echo "Coverage deployed to: [${{ steps.print-url.outputs.url }}](${{ steps.print-url.outputs.url }})" >> $GITHUB_STEP_SUMMARY
+          echo "[${{ steps.print-url.outputs.url }}](${{ steps.print-url.outputs.url }})" >> $GITHUB_STEP_SUMMARY
