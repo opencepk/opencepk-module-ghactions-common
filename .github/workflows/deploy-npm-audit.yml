@@ -21,9 +21,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Install json2html locally
-        run: npm install json2html
-
       - name: Run npm audit for all projects and combine reports
         run: |
           mkdir -p audit-reports
@@ -60,14 +57,38 @@ jobs:
         with:
           name: combined-audit-html-report
           path: ./output.html
+  deploy-js-docs:
+    needs: js-docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Deploy combined npm audit HTML report to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Download jsdocs report
+        uses: actions/download-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./output.html
-          publish_branch: gh-pages
-          destination_dir: audit
+          name: combined-audit-html-report
+          path: audit
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+
+      - name: Fetch all branches
+        run: git fetch --all
+
+      - name: Checkout gh-pages branch
+        run: git checkout gh-pages
+
+      - name: Copy new docs to gh-pages
+        run: |
+          cp -r audit/* .
+          git add .
+          git commit -m 'Deploy js docs report' || true
+          git push origin gh-pages || true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Print Coverage Report URL
         env:
