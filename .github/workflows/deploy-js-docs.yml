@@ -41,12 +41,6 @@
          - name: Checkout repository
            uses: actions/checkout@v4
    
-         - name: Download jsdocs report
-           uses: actions/download-artifact@v3
-           with:
-             name: jsdocs-report
-             path: docs
-   
          - name: Configure Git
            run: |
              git config --global user.email "github-actions@github.com"
@@ -57,6 +51,12 @@
    
          - name: Checkout gh-pages branch
            run: git checkout gh-pages
+
+         - name: Download jsdocs report
+           uses: actions/download-artifact@v3
+           with:
+             name: jsdocs-report
+             path: docs
    
          - name: Copy new docs to gh-pages
            run: |

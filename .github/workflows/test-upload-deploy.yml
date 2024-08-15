@@ -41,12 +41,6 @@
          - name: Checkout repository
            uses: actions/checkout@v4
 
-         - name: Download coverage report
-           uses: actions/download-artifact@v3
-           with:
-             name: coverage-report
-             path: coverage
-
          - name: Configure Git
            run: |
              git config --global user.email "github-actions@github.com"
@@ -55,9 +49,17 @@
          - name: Fetch all branches
            run: git fetch --all
 
+         - name: Checkout gh-pages branch
+           run: git checkout gh-pages
+
+         - name: Download coverage report
+           uses: actions/download-artifact@v3
+           with:
+             name: coverage-report
+             path: coverage
+
          - name: Deploy to GitHub Pages
            run: |
-             git checkout gh-pages
              git pull origin gh-pages
              cp -r coverage/* .
              git add .
