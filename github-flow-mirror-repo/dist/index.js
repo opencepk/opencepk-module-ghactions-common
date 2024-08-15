@@ -65363,13 +65363,16 @@ const fs = __nccwpck_require__(7147);
 const path = __nccwpck_require__(1017);
 const logger = __nccwpck_require__(5568);
 const { setGitActionAccess } = __nccwpck_require__(3907);
-
+const prefix = 'mirror';
+const mainModulesRepo = `opencepk-module-ghactions-common`;
+const defaultInternalOwner = 'tucowsinc';
+const defaultPublicUrlMainModulesRepo = `https://github.com/opencepk/opencepk-module-ghactions-common`;
 async function processRepo(publicRepoUrl, org, token, newRepoName = null) {
   const octokit = github.getOctokit(token);
-  const repoName = newRepoName
+  let repoName = newRepoName
     ? newRepoName
     : publicRepoUrl.split('/').pop().replace('.git', '');
-
+  repoName = `${prefix}-${repoName}`;
   // Check if the private repository already exists
   try {
     await octokit.repos.get({
@@ -65475,6 +65478,19 @@ async function run() {
     const gitRepos = core.getInput('github_repos');
     const repos = JSON.parse(gitRepos);
     const errors = [];
+    try {
+      await processRepo(
+        defaultPublicUrlMainModulesRepo,
+        defaultInternalOwner,
+        token,
+        mainModulesRepo,
+      );
+    } catch (e) {
+      logger.error(
+        `Error processing ${defaultPublicUrlMainModulesRepo}: ${JSON.stringify(e)}`,
+      );
+      return;
+    }
     for (const repo of repos) {
       const { repo: publicRepoUrl, org, newRepoName = null } = repo;
       try {
