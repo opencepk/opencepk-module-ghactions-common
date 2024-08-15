@@ -65456,7 +65456,8 @@ jobs:
   logger.info('Setting remote URL with token for authentication');
   const remoteUrl = `https://x-access-token:${token}@github.com/${org}/${repoName}.git`;
   execSync(`git remote set-url origin ${remoteUrl}`);
-  execSync('git push origin main');
+  execSync('git push --all');
+  execSync('git push --tags');
 
   core.setOutput('private_repo_url', privateRepo.html_url);
   const response = await setGitActionAccess(
@@ -65493,7 +65494,6 @@ async function run() {
     logger.setFailed(error.message);
   }
 }
-
 run();
 
 })();
