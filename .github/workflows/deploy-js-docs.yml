@@ -59,21 +59,21 @@
              path: docs
    
 			- name: Copy new docs to gh-pages
-				run: |
-					BRANCH_NAME=${GITHUB_REF##*/}
-					TARGET_DIR="jsdocs-$BRANCH_NAME"
-					mkdir -p $TARGET_DIR
-					cp -r docs/* $TARGET_DIR/
-					git add .
-					git commit -m "Deploy js docs report for branch $BRANCH_NAME" || true
-					git push origin gh-pages || true
+			   run: |
+				  BRANCH_NAME=${GITHUB_REF##*/}
+				  TARGET_DIR="jsdocs-$BRANCH_NAME"
+				  mkdir -p $TARGET_DIR
+				  cp -r docs/* $TARGET_DIR/
+				  git add .
+				  git commit -m "Deploy js docs report for branch $BRANCH_NAME" || true
+				  git push origin gh-pages || true
 				env:
 					GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 			- name: Print Coverage Report URL
 				env:
-					REPOSITORY_OWNER: ${{ github.repository_owner }}
-					REPOSITORY_NAME: ${{ github.event.repository.name }}
-					BRANCH_NAME: ${{ github.ref_name }}
+				  REPOSITORY_OWNER: ${{ github.repository_owner }}
+				  REPOSITORY_NAME: ${{ github.event.repository.name }}
+				  BRANCH_NAME: ${{ github.ref_name }}
 				run: |
-					echo "Coverage deployed to: https://$REPOSITORY_OWNER.github.io/$REPOSITORY_NAME/jsdocs-$BRANCH_NAME/docs/"
+				  echo "Coverage deployed to: https://$REPOSITORY_OWNER.github.io/$REPOSITORY_NAME/jsdocs-$BRANCH_NAME/docs/"
