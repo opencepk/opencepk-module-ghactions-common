@@ -38,8 +38,19 @@ jobs:
           sed -i '$ s/,$//' audit-reports/combined-audit.json
           echo ']}' >> audit-reports/combined-audit.json
 
+      - name: Check if combined-audit.json exists
+        run: ls -l audit-reports/combined-audit.json
+
+      - name: Print combined-audit.json
+        run: cat audit-reports/combined-audit.json
+
       - name: Convert combined npm audit report to HTML
-        run: npx json2html -i audit-reports/combined-audit.json -o audit-reports/combined-audit.html
+        run: |
+          npx json2html -i audit-reports/combined-audit.json -o audit-reports/combined-audit.html
+          echo "json2html command completed"
+
+      - name: Check if combined-audit.html exists
+        run: ls -l audit-reports/combined-audit.html
 
       - name: Print combined npm audit HTML report
         run: cat audit-reports/combined-audit.html
