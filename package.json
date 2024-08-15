@@ -10,7 +10,8 @@
     "test:coverage": "jest --coverage",
     "deploy:coverage": "gh-pages -d coverage",
     "install-and-build-all": "npm install && npm run build --workspaces",
-    "docs": "jsdoc -c jsdoc.json"
+    "docs": "jsdoc -c jsdoc.json",
+    "build": "echo 'No build script defined'"
   },
   "repository": {
     "type": "git",
@@ -35,16 +36,16 @@
     "taffydb": "^2.7.3"
   },
   "workspaces": [
+    "github-flow-check-commit-message",
+    "github-flow-sync-with-mirror",
     "common",
     "git-upstream-set-check-pr-block",
     "git-upstream-set-create-pr",
     "github-actions-set-permissions",
     "github-flow-check-branch-name",
-    "github-flow-check-commit-message",
     "github-flow-mirror-repo",
     "github-flow-update-pr-title",
     "github-flow-update-release-notes",
-    "github-flow-sync-with-mirror",
     "github-set-actions-permissions"
   ]
 }
