@@ -58,7 +58,7 @@ jobs:
           name: combined-audit-html-report
           path: ./output.html
   deploy-js-docs:
-    needs: js-docs
+    needs: audit-npm
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
