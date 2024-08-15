@@ -24,28 +24,26 @@ jobs:
       - name: Run npm audit for all projects and combine reports
         run: |
           mkdir -p audit-reports
-          echo '{"auditReports": [' > audit-reports/combined-audit.json
+          echo '[]' > audit-reports/combined-advisories.json
           for dir in */ ; do
             if [ -f "$dir/package.json" ]; then
               echo "Running npm audit in $dir"
-              (cd "$dir" && npm install && npm audit --json >> ../audit-reports/combined-audit.json)
-              echo ',' >> audit-reports/combined-audit.json
+              (cd "$dir" && npm install && npm audit --json > ../audit-reports/audit-$dir.json)
+              jq '.advisories | to_entries | .[]' ../audit-reports/audit-$dir.json >> audit-reports/combined-advisories.json
             fi
           done
-          sed -i '$ s/,$//' audit-reports/combined-audit.json
-          echo ']}' >> audit-reports/combined-audit.json
+          jq -s '.' audit-reports/combined-advisories.json > audit-reports/final-combined-advisories.json
 
-      - name: Check if combined-audit.json exists
-        run: ls -l audit-reports/combined-audit.json
+      - name: Check if final-combined-advisories.json exists
+        run: ls -l audit-reports/final-combined-advisories.json
 
-      - name: Print combined-audit.json
-        run: cat audit-reports/combined-audit.json
-
+      - name: Print final-combined-advisories.json
+        run: cat audit-reports/final-combined-advisories.json
 
       - name: Convert JSON to HTML Table
         uses: Teebra/JSON-to-HTML-table@v2.0.0
         with:
-          json-file: ./audit-reports/combined-audit.json
+          json-file: ./audit-reports/final-combined-advisories.json
 
       - name: Check if combined-audit.html exists
         run: ls -l .
@@ -58,6 +56,7 @@ jobs:
         with:
           name: combined-audit-html-report
           path: ./output.html
+
   deploy-js-docs:
     needs: audit-npm
     runs-on: ubuntu-latest
@@ -96,4 +95,4 @@ jobs:
           REPOSITORY_OWNER: ${{ github.repository_owner }}
           REPOSITORY_NAME: ${{ github.event.repository.name }}
         run: |
-          echo "Coverage deployed to: https://$REPOSITORY_OWNER.github.io/$REPOSITORY_NAME/audit/"
+          echo "Coverage deployed to: https://$REPOSITORY_OWNER.github.io/$REPOSITORY_NAME/audit/outpout.html"
