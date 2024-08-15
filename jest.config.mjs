@@ -8,7 +8,8 @@ export default {
   testPathIgnorePatterns: ['/node_modules/'],
   setupFilesAfterEnv: ['./jest.setup.js'],
   roots: [
-    '<rootDir>/github-flow-mirror-repo'
+    '<rootDir>/github-flow-mirror-repo',
+    '<rootDir>/github-flow-sync-with-mirror',
   ],
   testMatch: ['**/tests/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[tj]s?(x)', '**/__tests__/**/*.[jt]s?(x)']
 };
