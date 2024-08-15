@@ -66,7 +66,7 @@ jobs:
           SANITIZED_BRANCH_NAME=$(echo $BRANCH_NAME | tr '/' '-')
           TARGET_DIR="${{ env.DOCS_PREFIX }}-$SANITIZED_BRANCH_NAME"
           mkdir -p "$TARGET_DIR"
-          cp -r docs/* "$TARGET_DIR/"
+          cp -r coverage/* "$TARGET_DIR/"
           git add .
           git commit -m "Deploy js docs report for branch $BRANCH_NAME" || true
           git push origin gh-pages || true
