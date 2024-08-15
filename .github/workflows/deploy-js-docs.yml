@@ -10,8 +10,6 @@ on:
 jobs:
   js-docs:
     runs-on: ubuntu-latest
-    env:
-      DOCS_PREFIX: "jsdocs"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -39,6 +37,8 @@ jobs:
   deploy-js-docs:
     needs: js-docs
     runs-on: ubuntu-latest
+    env:
+      DOCS_PREFIX: "jsdocs"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -59,6 +59,9 @@ jobs:
         with:
           name: jsdocs-report
           path: docs
+
+		- name: Print DOCS_PREFIX
+		  run: echo "DOCS_PREFIX = ${{ env.DOCS_PREFIX }}"
 
       - name: Copy new docs to gh-pages
         run: |
