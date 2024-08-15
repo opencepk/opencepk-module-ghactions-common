@@ -78,8 +78,14 @@ async function run() {
 
     // Create a new branch for the changes
     const branchName = `bot-sync-upstream`;
-    logger.info(`Deleting branch if it exists: ${branchName}`);
+    // Ensure the branch is deleted remotely
+    logger.info(`Deleting remote branch if it exists: ${branchName}`);
+    execSync(`git push origin --delete ${branchName} || true`);
+
+    // Delete the local branch
+    logger.info(`Deleting local branch if it exists: ${branchName}`);
     execSync(`git branch -D ${branchName} || true`);
+
     logger.info(`Creating a new branch: ${branchName}`);
     execSync(`git checkout -b ${branchName}`);
 
