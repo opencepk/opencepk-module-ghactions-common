@@ -21,8 +21,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Install json2html-cli globally
-        run: npm install -g json2html-cli
+      - name: Install json2html locally
+        run: npm install json2html
 
       - name: Run npm audit for all projects and combine reports
         run: |
