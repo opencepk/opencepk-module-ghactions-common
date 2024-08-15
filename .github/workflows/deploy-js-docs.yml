@@ -60,9 +60,6 @@ jobs:
           name: jsdocs-report
           path: docs
 
-      - name: Print DOCS_PREFIX
-        run: echo "DOCS_PREFIX = ${{ env.DOCS_PREFIX }}"
-
       - name: Copy new docs to gh-pages
         run: |
           BRANCH_NAME=${GITHUB_REF##*/}

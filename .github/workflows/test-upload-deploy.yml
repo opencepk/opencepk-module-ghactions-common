@@ -1,76 +1,82 @@
 ---
-   name: test-upload-deploy
-   on:
-     push:
-       branches:
-         - '**'
-     pull_request:
-       types: [opened, synchronize, reopened]
+name: test-upload-deploy
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    types: [opened, synchronize, reopened]
 
-   jobs:
-     unit-tests:
-       runs-on: ubuntu-latest
-       steps:
-         - name: Checkout repository
-           uses: actions/checkout@v4
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-         - name: Set up Node.js
-           uses: actions/setup-node@v4
-           with:
-             node-version: '20'
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-         - name: Install dependencies
-           run: npm install
+      - name: Install dependencies
+        run: npm install
 
-         - name: Clean up existing artifacts
-           run: rm -rf coverage
+      - name: Clean up existing artifacts
+        run: rm -rf coverage
 
-         - name: Run tests with coverage
-           run: npm run test:coverage
+      - name: Run tests with coverage
+        run: npm run test:coverage
 
-         - name: Upload coverage report
-           uses: actions/upload-artifact@v3
-           with:
-             name: coverage-report
-             path: coverage
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage/lcov-report
 
-     deploy-coverage:
-       needs: unit-tests
-       runs-on: ubuntu-latest
-       steps:
-         - name: Checkout repository
-           uses: actions/checkout@v4
+  deploy-coverage:
+    needs: unit-tests
+    runs-on: ubuntu-latest
+    env:
+      DOCS_PREFIX: "coverage"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-         - name: Configure Git
-           run: |
-             git config --global user.email "github-actions@github.com"
-             git config --global user.name "GitHub Actions"
+      - name: Configure Git
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
 
-         - name: Fetch all branches
-           run: git fetch --all
+      - name: Fetch all branches
+        run: git fetch --all
 
-         - name: Checkout gh-pages branch
-           run: git checkout gh-pages
+      - name: Checkout gh-pages branch
+        run: git checkout gh-pages
 
-         - name: Download coverage report
-           uses: actions/download-artifact@v3
-           with:
-             name: coverage-report
-             path: coverage
+      - name: Download coverage report
+        uses: actions/download-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage
 
-         - name: Deploy to GitHub Pages
-           run: |
-             git pull origin gh-pages
-             cp -r coverage/* .
-             git add .
-             git commit -m 'Deploy coverage report' || true
-             git push origin gh-pages || true
-           env:
-             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Copy new coverage to coverage folder
+        run: |
+          BRANCH_NAME=${GITHUB_REF##*/}
+          SANITIZED_BRANCH_NAME=$(echo $BRANCH_NAME | tr '/' '-')
+          TARGET_DIR="${{ env.DOCS_PREFIX }}-$SANITIZED_BRANCH_NAME"
+          mkdir -p "$TARGET_DIR"
+          cp -r docs/* "$TARGET_DIR/"
+          git add .
+          git commit -m "Deploy js docs report for branch $BRANCH_NAME" || true
+          git push origin gh-pages || true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-         - name: Print Coverage Report URL
-           env:
-             REPOSITORY_OWNER: ${{ github.repository_owner }}
-             REPOSITORY_NAME: ${{ github.event.repository.name }}
-           run: |
-             echo "Coverage deployed to: https://$REPOSITORY_OWNER.github.io/$REPOSITORY_NAME/coverage/"
+      - name: Print Coverage Report URL
+        run: |
+          REPOSITORY_OWNER=${{ github.repository_owner }}
+          REPOSITORY_NAME=${{ github.event.repository.name }}
+          BRANCH_NAME=${GITHUB_REF##*/}
+          SANITIZED_BRANCH_NAME=$(echo $BRANCH_NAME | tr '/' '-')
+          echo "Coverage deployed to: https://$REPOSITORY_OWNER.github.io/$REPOSITORY_NAME/${{ env.DOCS_PREFIX }}-$SANITIZED_BRANCH_NAME/"
