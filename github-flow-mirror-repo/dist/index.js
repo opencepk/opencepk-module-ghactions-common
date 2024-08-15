@@ -65373,6 +65373,7 @@ async function processRepo(publicRepoUrl, org, token, newRepoName = null) {
     ? newRepoName
     : publicRepoUrl.split('/').pop().replace('.git', '');
   repoName = `${prefix}-${repoName}`;
+  logger.info(`repoName is : ${repoName}`);
   // Check if the private repository already exists
   try {
     await octokit.repos.get({
