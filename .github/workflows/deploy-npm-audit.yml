@@ -41,7 +41,7 @@ jobs:
       - name: Print combined-audit.json
         run: cat audit-reports/combined-audit.json
 
-        
+
       - name: Convert JSON to HTML Table
         uses: Teebra/JSON-to-HTML-table@v2.0.0
         with:
@@ -65,12 +65,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download jsdocs report
-        uses: actions/download-artifact@v3
-        with:
-          name: combined-audit-html-report
-          path: audit
-
       - name: Configure Git
         run: |
           git config --global user.email "github-actions@github.com"
@@ -81,6 +75,12 @@ jobs:
 
       - name: Checkout gh-pages branch
         run: git checkout gh-pages
+
+      - name: Download jsdocs report
+        uses: actions/download-artifact@v3
+        with:
+          name: combined-audit-html-report
+          path: audit
 
       - name: Copy new docs to gh-pages
         run: |
