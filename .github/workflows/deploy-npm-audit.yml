@@ -41,6 +41,7 @@ jobs:
       - name: Print combined-audit.json
         run: cat audit-reports/combined-audit.json
 
+        
       - name: Convert JSON to HTML Table
         uses: Teebra/JSON-to-HTML-table@v2.0.0
         with:
