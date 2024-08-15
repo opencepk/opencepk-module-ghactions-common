@@ -72,11 +72,18 @@ jobs:
           git push origin gh-pages || true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+          
       - name: Print Coverage Report URL
+        id: print-url
         run: |
           REPOSITORY_OWNER=${{ github.repository_owner }}
           REPOSITORY_NAME=${{ github.event.repository.name }}
           BRANCH_NAME=${GITHUB_REF##*/}
           SANITIZED_BRANCH_NAME=$(echo $BRANCH_NAME | tr '/' '-')
-          echo "Coverage deployed to: https://$REPOSITORY_OWNER.github.io/$REPOSITORY_NAME/${{ env.DOCS_PREFIX }}-$SANITIZED_BRANCH_NAME/"
+          URL="https://$REPOSITORY_OWNER.github.io/$REPOSITORY_NAME/${{ env.DOCS_PREFIX }}-$SANITIZED_BRANCH_NAME/"
+          echo "It is deployed to: $URL"
+          echo "::set-output name=url::$URL"
+
+      - name: Add Coverage Report URL to Job Summary
+        run: |
+          echo "Coverage deployed to: [${{ steps.print-url.outputs.url }}](${{ steps.print-url.outputs.url }})" >> $GITHUB_STEP_SUMMARY
