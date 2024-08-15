@@ -61,7 +61,7 @@ jobs:
       - name: Copy new docs to gh-pages
         run: |
           BRANCH_NAME=${GITHUB_REF##*/}
-			 SANITIZED_BRANCH_NAME=$(echo $BRANCH_NAME | tr '/' '-')
+          SANITIZED_BRANCH_NAME=$(echo $BRANCH_NAME | tr '/' '-')
           TARGET_DIR="jsdocs-$SANITIZED_BRANCH_NAME"
           mkdir -p $TARGET_DIR
           cp -r docs/* $TARGET_DIR/
