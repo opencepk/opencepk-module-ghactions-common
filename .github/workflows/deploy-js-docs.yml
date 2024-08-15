@@ -10,7 +10,7 @@ on:
 jobs:
   js-docs:
     runs-on: ubuntu-latest
-	 env:
+    env:
       DOCS_PREFIX: "jsdocs"
     steps:
       - name: Checkout repository
