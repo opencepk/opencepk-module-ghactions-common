@@ -44,31 +44,28 @@ jobs:
       - name: Print combined-audit.json
         run: cat audit-reports/combined-audit.json
 
-      - name: Convert combined npm audit report to HTML
-        run: |
-          npx json2html -i audit-reports/combined-audit.json -o audit-reports/combined-audit.html || echo "json2html command failed"
-          echo "json2html command completed"
+      - name: Convert JSON to HTML Table
+        uses: Teebra/JSON-to-HTML-table@v2.0.0
+        with:
+          json-file: ./audit-reports/combined-audit.json
 
       - name: Check if combined-audit.html exists
-        run: ls -l audit-reports/combined-audit.html
+        run: ls -l .
 
       - name: Print combined npm audit HTML report
-        run: cat audit-reports/combined-audit.html
-
-      - name: List audit-reports directory
-        run: ls -l audit-reports
+        run: cat ./output.html
 
       - name: Upload combined npm audit HTML report
         uses: actions/upload-artifact@v3
         with:
           name: combined-audit-html-report
-          path: audit-reports/combined-audit.html
+          path: ./output.html
 
       - name: Deploy combined npm audit HTML report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./audit-reports
+          publish_dir: ./output.html
           publish_branch: gh-pages
           destination_dir: audit
 
