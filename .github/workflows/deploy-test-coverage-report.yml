@@ -54,6 +54,20 @@ jobs:
       - name: Checkout gh-pages branch
         run: git checkout gh-pages
 
+      - name: Detect TARGET_DIR
+        id: detect-target-dir
+        run: |
+          BRANCH_NAME=${GITHUB_REF##*/}
+          SANITIZED_BRANCH_NAME=$(echo $BRANCH_NAME | tr '/' '-')
+          echo "TARGET_DIR=${{ env.DOCS_PREFIX }}-$SANITIZED_BRANCH_NAME" >> $GITHUB_ENV
+
+      - name: delete existing coverage folder
+        env:
+          TARGET_DIR: ${{ env.TARGET_DIR }}
+        run: |
+          rm -rf "$TARGET_DIR"
+          rm -rf coverage
+
       - name: Download coverage report
         uses: actions/download-artifact@v3
         with:
