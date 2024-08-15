@@ -97,7 +97,7 @@ jobs:
           SANITIZED_BRANCH_NAME=$(echo $BRANCH_NAME | tr '/' '-')
           URL="https://$REPOSITORY_OWNER.github.io/$REPOSITORY_NAME/$TARGET_DIR/"
           echo "It is deployed to: $URL"
-          echo "::set-output name=url::$URL"
+          echo "url=$URL" >> $GITHUB_OUTPUT
 
       - name: Add Coverage Report URL to Job Summary
         run: |
