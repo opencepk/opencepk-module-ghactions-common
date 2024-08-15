@@ -10,6 +10,8 @@ on:
 jobs:
   js-docs:
     runs-on: ubuntu-latest
+	 env:
+      DOCS_PREFIX: "jsdocs"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -62,7 +64,7 @@ jobs:
         run: |
           BRANCH_NAME=${GITHUB_REF##*/}
           SANITIZED_BRANCH_NAME=$(echo $BRANCH_NAME | tr '/' '-')
-          TARGET_DIR="jsdocs-$SANITIZED_BRANCH_NAME"
+          TARGET_DIR="${{ needs.js-docs.outputs.DOCS_PREFIX }}-$SANITIZED_BRANCH_NAME"
           mkdir -p $TARGET_DIR
           cp -r docs/* $TARGET_DIR/
           git add .
@@ -77,4 +79,4 @@ jobs:
           REPOSITORY_NAME=${{ github.event.repository.name }}
           BRANCH_NAME=${GITHUB_REF##*/}
           SANITIZED_BRANCH_NAME=$(echo $BRANCH_NAME | tr '/' '-')
-          echo "Coverage deployed to: https://$REPOSITORY_OWNER.github.io/$REPOSITORY_NAME/jsdocs-$SANITIZED_BRANCH_NAME/"
+          echo "Coverage deployed to: https://$REPOSITORY_OWNER.github.io/$REPOSITORY_NAME/${{ needs.js-docs.outputs.DOCS_PREFIX }}-$SANITIZED_BRANCH_NAME/"
