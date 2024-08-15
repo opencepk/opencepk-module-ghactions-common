@@ -80,10 +80,10 @@ jobs:
           REPOSITORY_NAME=${{ github.event.repository.name }}
           BRANCH_NAME=${GITHUB_REF##*/}
           SANITIZED_BRANCH_NAME=$(echo $BRANCH_NAME | tr '/' '-')
-          COVERAGE_URL="https://$REPOSITORY_OWNER.github.io/$REPOSITORY_NAME/${{ env.DOCS_PREFIX }}-$SANITIZED_BRANCH_NAME/"
-          echo "Coverage deployed to: $COVERAGE_URL"
-          echo "::set-output name=coverage-url::$COVERAGE_URL"
+          URL="https://$REPOSITORY_OWNER.github.io/$REPOSITORY_NAME/${{ env.DOCS_PREFIX }}-$SANITIZED_BRANCH_NAME/"
+          echo "Coverage deployed to: $URL"
+          echo "::set-output name=url::$URL"
 
       - name: Add Coverage Report URL to Job Summary
         run: |
-          echo "Coverage deployed to: [${{ steps.print-url.outputs.coverage-url }}](${{ steps.print-url.outputs.coverage-url }})" >> $GITHUB_STEP_SUMMARY
+          echo "Coverage deployed to: [${{ steps.print-url.outputs.url }}](${{ steps.print-url.outputs.url }})" >> $GITHUB_STEP_SUMMARY
