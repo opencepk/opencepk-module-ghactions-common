@@ -1,57 +1,58 @@
 ---
-name: deploy-npm-audit
-on:
-  push:
-    branches:
-      - '**'
-  pull_request:
-    types: [opened, synchronize, reopened]
-
-jobs:
-  audit-npm:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Install json2html-cli globally
-        run: npm install -g json2html-cli
-
-      - name: Run npm audit for all projects and combine reports
-        run: |
-          mkdir -p audit-reports
-          echo '{"auditReports": [' > audit-reports/combined-audit.json
-          for dir in */ ; do
-            if [ -f "$dir/package.json" ]; then
-              echo "Running npm audit in $dir"
-              (cd "$dir" && npm install && npm audit --json >> ../audit-reports/combined-audit.json)
-              echo ',' >> audit-reports/combined-audit.json
-            fi
-          done
-          sed -i '$ s/,$//' audit-reports/combined-audit.json
-          echo ']}' >> audit-reports/combined-audit.json
-
-      - name: Convert combined npm audit report to HTML
-        run: json2html -i audit-reports/combined-audit.json -o audit-reports/combined-audit.html
-
-      - name: Upload combined npm audit HTML report
-        uses: actions/upload-artifact@v3
-        with:
-          name: combined-audit-html-report
-          path: audit-reports/combined-audit.html
-
-      - name: Deploy combined npm audit HTML report to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./audit-reports
-          publish_branch: gh-pages
-          destination_dir: audit
+  name: deploy-npm-audit
+  on:
+    push:
+      branches:
+        - '**'
+    pull_request:
+      types: [opened, synchronize, reopened]
+  
+  jobs:
+    audit-npm:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+  
+        - name: Set up Node.js
+          uses: actions/setup-node@v4
+          with:
+            node-version: '20'
+  
+        - name: Install dependencies
+          run: npm install
+  
+        - name: Install json2html-cli globally
+          run: npm install -g json2html-cli
+  
+        - name: Run npm audit for all projects and combine reports
+          run: |
+            mkdir -p audit-reports
+            echo '{"auditReports": [' > audit-reports/combined-audit.json
+            for dir in */ ; do
+              if [ -f "$dir/package.json" ]; then
+                echo "Running npm audit in $dir"
+                (cd "$dir" && npm install && npm audit --json >> ../audit-reports/combined-audit.json)
+                echo ',' >> audit-reports/combined-audit.json
+              fi
+            done
+            sed -i '$ s/,$//' audit-reports/combined-audit.json
+            echo ']}' >> audit-reports/combined-audit.json
+  
+        - name: Convert combined npm audit report to HTML
+          run: npx json2html -i audit-reports/combined-audit.json -o audit-reports/combined-audit.html
+  
+        - name: Upload combined npm audit HTML report
+          uses: actions/upload-artifact@v3
+          with:
+            name: combined-audit-html-report
+            path: audit-reports/combined-audit.html
+  
+        - name: Deploy combined npm audit HTML report to GitHub Pages
+          uses: peaceiris/actions-gh-pages@v3
+          with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            publish_dir: ./audit-reports
+            publish_branch: gh-pages
+            destination_dir: audit
+  
