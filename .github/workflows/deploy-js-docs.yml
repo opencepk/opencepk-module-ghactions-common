@@ -61,7 +61,8 @@ jobs:
       - name: Copy new docs to gh-pages
         run: |
           BRANCH_NAME=${GITHUB_REF##*/}
-          TARGET_DIR="jsdocs-$BRANCH_NAME"
+			 SANITIZED_BRANCH_NAME=$(echo $BRANCH_NAME | tr '/' '-')
+          TARGET_DIR="jsdocs-$SANITIZED_BRANCH_NAME"
           mkdir -p $TARGET_DIR
           cp -r docs/* $TARGET_DIR/
           git add .
@@ -74,6 +75,6 @@ jobs:
         env:
           REPOSITORY_OWNER: ${{ github.repository_owner }}
           REPOSITORY_NAME: ${{ github.event.repository.name }}
-          BRANCH_NAME: ${{ github.ref_name }}
+          SANITIZED_BRANCH_NAME: ${{ github.ref_name | replace('/', '-') }}
         run: |
-          echo "Coverage deployed to: https://$REPOSITORY_OWNER.github.io/$REPOSITORY_NAME/jsdocs-$BRANCH_NAME/docs/"
+          echo "Coverage deployed to: https://$REPOSITORY_OWNER.github.io/$REPOSITORY_NAME/jsdocs-$SANITIZED_BRANCH_NAME/"
