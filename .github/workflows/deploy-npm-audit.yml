@@ -28,8 +28,10 @@ jobs:
           for dir in */ ; do
             if [ -f "$dir/package.json" ]; then
               echo "Running npm audit in $dir"
-              (cd "$dir" && npm install && npm audit --json > ../audit-reports/audit-${dir%/}.json)
-              jq '.advisories | to_entries | .[]' ../audit-reports/audit-${dir%/}.json >> audit-reports/combined-advisories.json
+              (cd "$dir" && npm install && npm audit --json > ../audit-reports/audit-${dir%/}.json || true)
+              if [ -f "../audit-reports/audit-${dir%/}.json" ]; then
+                jq '.advisories | to_entries | .[]' ../audit-reports/audit-${dir%/}.json >> audit-reports/combined-advisories.json
+              fi
             fi
           done
           jq -s '.' audit-reports/combined-advisories.json > audit-reports/final-combined-advisories.json
