@@ -30,6 +30,8 @@ jobs:
               echo "Running npm audit in $dir"
               (cd "$dir" && npm install && npm audit --json > ../audit-reports/audit-${dir%/}.json || true)
               if [ -f "../audit-reports/audit-${dir%/}.json" ]; then
+                echo "Processing audit report for $dir"
+                cat ../audit-reports/audit-${dir%/}.json
                 jq '.advisories | to_entries | .[]' ../audit-reports/audit-${dir%/}.json >> audit-reports/combined-advisories.json
               fi
             fi
