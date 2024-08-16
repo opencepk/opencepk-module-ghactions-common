@@ -5,13 +5,14 @@ const fs = require('fs');
 const path = require('path');
 const logger = require('../common/logger.js');
 const { setGitActionAccess } = require('../common/git-operations.js');
+const prefix = 'mirror';
 
 async function processRepo(publicRepoUrl, org, token, newRepoName = null) {
   const octokit = github.getOctokit(token);
-  const repoName = newRepoName
+  let repoName = newRepoName
     ? newRepoName
     : publicRepoUrl.split('/').pop().replace('.git', '');
-
+  repoName = `${prefix}-${repoName}`;
   // Check if the private repository already exists
   try {
     await octokit.repos.get({
