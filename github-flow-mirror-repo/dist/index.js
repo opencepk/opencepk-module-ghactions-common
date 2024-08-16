@@ -65363,13 +65363,14 @@ const fs = __nccwpck_require__(7147);
 const path = __nccwpck_require__(1017);
 const logger = __nccwpck_require__(5568);
 const { setGitActionAccess } = __nccwpck_require__(3907);
+const prefix = 'mirror';
 
 async function processRepo(publicRepoUrl, org, token, newRepoName = null) {
   const octokit = github.getOctokit(token);
-  const repoName = newRepoName
+  let repoName = newRepoName
     ? newRepoName
     : publicRepoUrl.split('/').pop().replace('.git', '');
-
+  repoName = `${prefix}-${repoName}`;
   // Check if the private repository already exists
   try {
     await octokit.repos.get({
