@@ -78,7 +78,7 @@ jobs:
         with:
           ssh-private-key: \${{ secrets.SSH_KEY_ICE_MODULES_READONLY }}
       - name: Sync with Upstream
-        uses: ${org}/opencepk-module-ghactions-common/github-flow-sync-with-mirror@main
+        uses: ${org}/mirror-opencepk-module-ghactions-common/github-flow-sync-with-mirror@main
         with:
           github_token: \${{ secrets.GITHUB_TOKEN }}
     `;
