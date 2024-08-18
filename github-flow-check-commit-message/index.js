@@ -47,7 +47,7 @@ async function run() {
       if (repoOwner === 'opencepk') {
         upstreamRepo = `git@github.com:${repoOwner}/opencepk-template-base.git`;
       } else if (repoOwner === internalRepoOwner) {
-        upstreamRepo = `git@github.com:${repoOwner}/cepk-template-base.git`;
+        upstreamRepo = `git@github.com:${repoOwner}/mirror-opencepk-template-base.git`;
       } else {
         throw new Error(`Unsupported repository owner: ${repoOwner}`);
       }
