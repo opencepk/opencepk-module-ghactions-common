@@ -32347,9 +32347,9 @@ async function run() {
     const baseRef = github.context.payload.pull_request.base.ref;
     const repoOwner = github.context.repo.owner;
     core.info(`repoOwner is: ${repoOwner}`);
-    let upstreamRepo = 'git@github.com:opencepk/cepk-template-base.git';
+    let upstreamRepo = 'git@github.com:opencepk/opencepk-template-base.git';
     if (repoOwner === 'opencepk') {
-      upstreamRepo = 'git@github.com:opencepk/cepk-template-base.git';
+      upstreamRepo = 'git@github.com:opencepk/opencepk-template-base.git';
     } else if (repoOwner === 'tucowsinc') {
       upstreamRepo = 'git@github.com:tucowsinc/cepk-template-base.git';
     } else {
