@@ -6,6 +6,10 @@ inputs:
     description: 'The regex pattern to validate commit messages'
     required: false
     default: '^(feat|fix|build|breaking|chore|ci|docs|perf|refactor|revert|test)(\/[\w-]+)*(:\s+)?(.+)?$'
+  internal-repo-owner:
+    description: 'The repository owner to use for determining the upstream repository'
+    required: true
+    default: 'tucowsinc'
 runs:
   using: 'node20'
   main: 'dist/index.js'
