@@ -32345,7 +32345,16 @@ async function run() {
       },
     };
     const baseRef = github.context.payload.pull_request.base.ref;
-    const upstreamRepo = 'git@github.com:tucowsinc/cepk-template-base.git';
+    const repoOwner = github.context.repo.owner;
+    core.info(`repoOwner is: ${repoOwner}`);
+    let upstreamRepo = 'git@github.com:opencepk/cepk-template-base.git';
+    if (repoOwner === 'opencepk') {
+      upstreamRepo = 'git@github.com:opencepk/cepk-template-base.git';
+    } else if (repoOwner === 'tucowsinc') {
+      upstreamRepo = 'git@github.com:tucowsinc/cepk-template-base.git';
+    } else {
+      throw new Error(`Unsupported repository owner: ${repoOwner}`);
+    }
 
     // Fetch the latest changes from the origin repository
     await exec.exec('git', ['fetch', 'origin']);
