@@ -8,6 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const logger = require('../common/logger.js');
 const { setGitActionAccess } = require('../common/git-operations.js');
+const prefix = 'mirror';
 
 /**
  * Processes a repository by creating a private copy in the specified organization.
@@ -21,10 +22,10 @@ const { setGitActionAccess } = require('../common/git-operations.js');
  */
 async function processRepo(publicRepoUrl, org, token, newRepoName = null) {
   const octokit = github.getOctokit(token);
-  const repoName = newRepoName
+  let repoName = newRepoName
     ? newRepoName
     : publicRepoUrl.split('/').pop().replace('.git', '');
-
+  repoName = `${prefix}-${repoName}`;
   // Check if the private repository already exists
   try {
     await octokit.repos.get({
@@ -90,7 +91,7 @@ jobs:
         with:
           ssh-private-key: \${{ secrets.SSH_KEY_ICE_MODULES_READONLY }}
       - name: Sync with Upstream
-        uses: ${org}/opencepk-module-ghactions-common/github-flow-sync-with-mirror@main
+        uses: ${org}/mirror-opencepk-module-ghactions-common/github-flow-sync-with-mirror@main
         with:
           github_token: \${{ secrets.GITHUB_TOKEN }}
     `;
