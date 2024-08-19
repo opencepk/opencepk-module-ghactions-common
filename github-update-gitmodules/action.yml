@@ -1,0 +1,9 @@
+name: 'github-update-gitmodules'
+description: 'Reads pattern from META-REPO-PATTERNS, searches for matching repositories, adds them as submodules, and creates a pull request.'
+inputs:
+  token:
+    description: 'GitHub Token'
+    required: true
+runs:
+  using: 'node20'
+  main: 'index.js'
