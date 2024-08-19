@@ -61081,7 +61081,11 @@ async function run() {
     const token = core.getInput('token');
 
     // Read the pattern from META-REPO-PATTERNS in the .github folder
-    const patternPath = path.join(process.env.GITHUB_WORKSPACE, '.github', 'META-REPO-PATTERNS');
+    const patternPath = path.join(
+      process.env.GITHUB_WORKSPACE,
+      '.github',
+      'META-REPO-PATTERNS',
+    );
     const pattern = fs.readFileSync(patternPath, 'utf8').trim();
     logger.info(`Pattern: ${pattern}`);
 
@@ -61091,20 +61095,27 @@ async function run() {
     logger.info(`Repository owner: ${repoOwner} Repository name: ${repoName}`);
 
     // Read the .gitmodules file and count the number of submodules
-    const gitmodulesPath = path.join(process.env.GITHUB_WORKSPACE, '.gitmodules');
+    const gitmodulesPath = path.join(
+      process.env.GITHUB_WORKSPACE,
+      '.gitmodules',
+    );
     let submoduleCount = 0;
 
     if (fs.existsSync(gitmodulesPath)) {
       const gitmodulesContent = fs.readFileSync(gitmodulesPath, 'utf8');
-      submoduleCount = (gitmodulesContent.match(/^\[submodule /gm) || []).length;
+      submoduleCount = (gitmodulesContent.match(/^\[submodule /gm) || [])
+        .length;
     }
 
     logger.info(`Number of submodules: ${submoduleCount}`);
 
     // Calculate the starting page
     const perPage = 100;
-    const startPage = submoduleCount > 0 ? Math.ceil(submoduleCount / perPage) : 1;
-    logger.info(`Starting page should be : ${startPage} if we want to save some API calls`);
+    const startPage =
+      submoduleCount > 0 ? Math.ceil(submoduleCount / perPage) : 1;
+    logger.info(
+      `Starting page should be : ${startPage} if we want to save some API calls`,
+    );
 
     // Get the list of repositories in the organization with pagination
     const octokit = github.getOctokit(token);
@@ -61129,6 +61140,19 @@ async function run() {
 
     // Filter repositories that match the pattern and start with "cepk"
     const matchingRepos = repos.filter(repo => repo.name.includes(pattern));
+
+    // Delete the branch if it exists
+    try {
+      execSync(`git push origin --delete ${branchName}`);
+    } catch (error) {
+      logger.warn(
+        `Branch ${branchName} does not exist or could not be deleted.`,
+      );
+      logger.error(JSON.stringify(error));
+    }
+
+    // Create the branch
+    execSync(`git checkout -b ${branchName}`);
 
     // Add matching repositories as submodules
     matchingRepos.forEach(repo => {
@@ -61155,25 +61179,11 @@ async function run() {
       return;
     }
 
-    execSync('git push origin main');
-
     const branchName = 'update-submodules';
     const prTitle = 'Add submodules for matching repositories';
     const prBody =
       'This PR adds submodules for repositories matching the pattern in META-REPO-PATTERNS.';
 
-    // Delete the branch if it exists
-    try {
-      execSync(`git push origin --delete ${branchName}`);
-    } catch (error) {
-      logger.warn(
-        `Branch ${branchName} does not exist or could not be deleted.`,
-      );
-      logger.error(JSON.stringify(error));
-    }
-
-    // Create the branch
-    execSync(`git checkout -b ${branchName}`);
     execSync(`git push origin ${branchName}`);
 
     // Create the pull request
@@ -61191,6 +61201,7 @@ async function run() {
 }
 
 run();
+
 })();
 
 module.exports = __webpack_exports__;
