@@ -61135,7 +61135,7 @@ async function run() {
         sort: 'created',
         direction: 'asc',
       });
-      logger.info(`xxxxxxxx ${response.data.name}`);
+      logger.info(`xxxxxxxx ${response.data}`);
       if (response.data.name !== repoName) {
         repos = repos.concat(response.data);
       }
