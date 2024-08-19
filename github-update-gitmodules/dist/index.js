@@ -61144,7 +61144,7 @@ async function run() {
 
     // Delete the branch if it exists
     try {
-      execSync(`git push origin --delete ${branchName}`);
+      execSync(`git push origin --delete ${branchName} || true`);
     } catch (error) {
       logger.warn(
         `Branch ${branchName} does not exist or could not be deleted.`,
