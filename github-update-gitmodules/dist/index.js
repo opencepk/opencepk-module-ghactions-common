@@ -61135,10 +61135,6 @@ async function run() {
         sort: 'created',
         direction: 'asc',
       });
-      logger.info(`xxxxxxxx ${JSON.stringify(response.data)}`);
-      if (response.data.name !== repoName) {
-        repos = repos.concat(response.data);
-      }
       page++;
     } while (response.data.length === perPage);
     logger.info(
@@ -61146,7 +61142,7 @@ async function run() {
     );
 
     // Filter repositories that match the pattern and start with "cepk"
-    const matchingRepos = repos.filter(repo => repo.name.includes(pattern));
+    const matchingRepos = repos.filter(repo => repo.name.includes(pattern) && repo.name !== repoName);
 
     // Delete the branch if it exists
     try {
