@@ -61101,11 +61101,14 @@ async function run() {
       '.gitmodules',
     );
     let submoduleCount = 0;
+    let existingSubmodules = [];
 
     if (fs.existsSync(gitmodulesPath)) {
       const gitmodulesContent = fs.readFileSync(gitmodulesPath, 'utf8');
-      submoduleCount = (gitmodulesContent.match(/^\[submodule /gm) || [])
-        .length;
+      existingSubmodules = (gitmodulesContent.match(/path = (.+)/g) || []).map(
+        line => line.split(' = ')[1].trim(),
+      );
+      submoduleCount = existingSubmodules.length;
     }
 
     logger.info(`Number of submodules: ${submoduleCount}`);
@@ -61157,6 +61160,17 @@ async function run() {
     // Create the branch
     execSync(`git checkout -b ${branchName}`);
 
+    // Remove submodules that do not match any repository in the fetched list
+    existingSubmodules.forEach(submodulePath => {
+      const repoName = path.basename(submodulePath);
+      if (!matchingRepos.some(repo => repo.name === repoName)) {
+        execSync(`git submodule deinit -f ${submodulePath}`);
+        execSync(`git rm -f ${submodulePath}`);
+        execSync(`rm -rf .git/modules/${submodulePath}`);
+        logger.info(`Removed submodule ${submodulePath}`);
+      }
+    });
+
     // Add matching repositories as submodules
     matchingRepos.forEach(repo => {
       const submodulePath = path.join('modules', repo.name);
@@ -61175,16 +61189,16 @@ async function run() {
     execSync('git add .');
 
     try {
-      execSync('git commit -m "Add submodules for matching repositories"');
+      execSync('git commit -m "Update submodules for matching repositories"');
     } catch (error) {
       logger.warn('No changes to commit');
       logger.error(JSON.stringify(error));
       return;
     }
 
-    const prTitle = 'Add submodules for matching repositories';
+    const prTitle = 'Update submodules for matching repositories';
     const prBody =
-      'This PR adds submodules for repositories matching the pattern in META-REPO-PATTERNS.';
+      'This PR updates submodules for repositories matching the pattern in META-REPO-PATTERNS.';
 
     execSync(`git push origin ${branchName}`);
 
@@ -61203,7 +61217,6 @@ async function run() {
 }
 
 run();
-
 })();
 
 module.exports = __webpack_exports__;
