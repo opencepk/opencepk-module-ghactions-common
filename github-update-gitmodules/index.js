@@ -4,6 +4,7 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const logger = require('../common/logger');
+const branchName = 'update-submodules';
 
 async function run() {
   try {
@@ -108,7 +109,7 @@ async function run() {
       return;
     }
 
-    const branchName = 'update-submodules';
+    
     const prTitle = 'Add submodules for matching repositories';
     const prBody =
       'This PR adds submodules for repositories matching the pattern in META-REPO-PATTERNS.';
