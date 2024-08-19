@@ -61145,6 +61145,8 @@ async function run() {
     // Delete the branch if it exists
     try {
       execSync(`git push origin --delete ${branchName} || true`);
+      // Delete the branch locally, ignoring errors
+      execSync(`git branch -D ${branchName} || true`);
     } catch (error) {
       logger.warn(
         `Branch ${branchName} does not exist or could not be deleted.`,
@@ -61180,7 +61182,6 @@ async function run() {
       return;
     }
 
-    
     const prTitle = 'Add submodules for matching repositories';
     const prBody =
       'This PR adds submodules for repositories matching the pattern in META-REPO-PATTERNS.';
