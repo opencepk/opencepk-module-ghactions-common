@@ -93,9 +93,10 @@ async function run() {
     existingSubmodules.forEach(submodulePath => {
       const repoName = path.basename(submodulePath);
       if (!matchingRepos.some(repo => repo.name === repoName)) {
-        execSync(`git submodule deinit -f ${submodulePath}`);
-        execSync(`git rm -f ${submodulePath}`);
-        execSync(`rm -rf .git/modules/${submodulePath}`);
+        execSync(`git submodule deinit -f ${submodulePath} || true`);
+        execSync(`git rm -f ${submodulePath} || true`);
+        execSync(`rm -rf .git/modules/${submodulePath} || true`);
+        execSync(`rm -rf ${submodulePath} || true`);
         logger.info(`Removed submodule ${submodulePath}`);
       }
     });
