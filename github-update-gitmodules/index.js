@@ -71,7 +71,7 @@ async function run() {
     );
 
     // Filter repositories that match the pattern and start with "cepk"
-    const matchingRepos = repos.filter(repo => repo.name.includes(pattern) && repo.name !== repoName);
+    const matchingRepos = repos.filter(repo => repo.name.includes(pattern));
 
     // Delete the branch if it exists
     try {
