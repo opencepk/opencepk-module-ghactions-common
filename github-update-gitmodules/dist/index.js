@@ -61074,8 +61074,9 @@ async function run() {
   try {
     const token = core.getInput('token');
 
-    // Read the pattern from META-REPO-PATTERNS
-    const pattern = fs.readFileSync('META-REPO-PATTERNS', 'utf8').trim();
+    // Read the pattern from META-REPO-PATTERNS in the .github folder
+    const patternPath = path.join(__dirname, '.github', 'META-REPO-PATTERNS');
+    const pattern = fs.readFileSync(patternPath, 'utf8').trim();
     logger.info(`Pattern: ${pattern}`);
 
     // Get the repository owner and name from the context
@@ -61099,7 +61100,9 @@ async function run() {
     const perPage = 100;
     const startPage =
       submoduleCount > 0 ? Math.ceil(submoduleCount / perPage) : 1;
-    logger.info(`Starting page should be : ${startPage} if we want to save some API calls`);
+    logger.info(
+      `Starting page should be : ${startPage} if we want to save some API calls`,
+    );
 
     // Get the list of repositories in the organization with pagination
     const octokit = github.getOctokit(token);
