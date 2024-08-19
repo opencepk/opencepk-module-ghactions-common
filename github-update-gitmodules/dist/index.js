@@ -61135,7 +61135,9 @@ async function run() {
         sort: 'created',
         direction: 'asc',
       });
-      repos = repos.concat(response.data);
+      if (response.data.name !== repoName) {
+        repos = repos.concat(response.data);
+      }
       page++;
     } while (response.data.length === perPage);
     logger.info(
@@ -61217,6 +61219,7 @@ async function run() {
 }
 
 run();
+
 })();
 
 module.exports = __webpack_exports__;
