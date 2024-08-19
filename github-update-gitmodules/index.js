@@ -64,6 +64,7 @@ async function run() {
         sort: 'created',
         direction: 'asc',
       });
+      repos = repos.concat(response.data); // Concatenate the response data to the repos array
       page++;
     } while (response.data.length === perPage);
     logger.info(
