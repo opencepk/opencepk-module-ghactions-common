@@ -61075,6 +61075,7 @@ const { execSync } = __nccwpck_require__(2081);
 const fs = __nccwpck_require__(7147);
 const path = __nccwpck_require__(1017);
 const logger = __nccwpck_require__(5568);
+const branchName = 'update-submodules';
 
 async function run() {
   try {
@@ -61179,7 +61180,7 @@ async function run() {
       return;
     }
 
-    const branchName = 'update-submodules';
+    
     const prTitle = 'Add submodules for matching repositories';
     const prBody =
       'This PR adds submodules for repositories matching the pattern in META-REPO-PATTERNS.';
