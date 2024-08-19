@@ -21,7 +21,6 @@ async function run() {
     };
     const baseRef = github.context.payload.pull_request.base.ref;
     const repoOwner = github.context.repo.owner;
-    const internalRepoOwner = core.getInput('internal-repo-owner');
     core.info(`repoOwner is: ${repoOwner}`);
     let upstreamRepo = '';
     // Check if .github/UPSTREAM file exists and read its content
@@ -46,10 +45,8 @@ async function run() {
 
       if (repoOwner === 'opencepk') {
         upstreamRepo = `git@github.com:${repoOwner}/opencepk-template-base.git`;
-      } else if (repoOwner === internalRepoOwner) {
-        upstreamRepo = `git@github.com:${repoOwner}/mirror-opencepk-template-base.git`;
       } else {
-        throw new Error(`Unsupported repository owner: ${repoOwner}`);
+        upstreamRepo = `git@github.com:${repoOwner}/mirror-opencepk-template-base.git`;
       }
     }
 
