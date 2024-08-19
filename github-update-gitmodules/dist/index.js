@@ -61075,11 +61075,7 @@ async function run() {
     const token = core.getInput('token');
 
     // Read the pattern from META-REPO-PATTERNS in the .github folder
-    const patternPath = path.join(
-      process.env.GITHUB_WORKSPACE,
-      '.github',
-      'META-REPO-PATTERNS',
-    );
+    const patternPath = path.join(process.env.GITHUB_WORKSPACE, '.github', 'META-REPO-PATTERNS');
     const pattern = fs.readFileSync(patternPath, 'utf8').trim();
     logger.info(`Pattern: ${pattern}`);
 
@@ -61089,32 +61085,25 @@ async function run() {
     logger.info(`Repository owner: ${repoOwner} Repository name: ${repoName}`);
 
     // Read the .gitmodules file and count the number of submodules
-    const gitmodulesPath = path.join(
-      process.env.GITHUB_WORKSPACE,
-      '.gitmodules',
-    );
+    const gitmodulesPath = path.join(process.env.GITHUB_WORKSPACE, '.gitmodules');
     let submoduleCount = 0;
 
     if (fs.existsSync(gitmodulesPath)) {
       const gitmodulesContent = fs.readFileSync(gitmodulesPath, 'utf8');
-      submoduleCount = (gitmodulesContent.match(/^\[submodule /gm) || [])
-        .length;
+      submoduleCount = (gitmodulesContent.match(/^\[submodule /gm) || []).length;
     }
 
     logger.info(`Number of submodules: ${submoduleCount}`);
 
     // Calculate the starting page
     const perPage = 100;
-    const startPage =
-      submoduleCount > 0 ? Math.ceil(submoduleCount / perPage) : 1;
-    logger.info(
-      `Starting page should be : ${startPage} if we want to save some API calls`,
-    );
+    const startPage = submoduleCount > 0 ? Math.ceil(submoduleCount / perPage) : 1;
+    logger.info(`Starting page should be : ${startPage} if we want to save some API calls`);
 
     // Get the list of repositories in the organization with pagination
     const octokit = github.getOctokit(token);
     let repos = [];
-    let page = 1;
+    let page = startPage;
     let response;
 
     do {
@@ -61131,21 +61120,35 @@ async function run() {
     logger.info(
       `Total number of repositories in the organization: ${repos.length}`,
     );
+
     // Filter repositories that match the pattern and start with "cepk"
     const matchingRepos = repos.filter(repo => repo.name.includes(pattern));
 
     // Add matching repositories as submodules
     matchingRepos.forEach(repo => {
-      execSync(
-        `git submodule add https://github.com/${repoOwner}/${repo.name}.git modules/${repo.name}`,
-      );
+      const submodulePath = path.join('modules', repo.name);
+      if (!fs.existsSync(submodulePath)) {
+        execSync(
+          `git submodule add https://github.com/${repoOwner}/${repo.name}.git ${submodulePath}`,
+        );
+      } else {
+        logger.info(`Submodule ${submodulePath} already exists, skipping.`);
+      }
     });
 
     // Commit the changes
     execSync('git config --global user.email "default-user@example.com"');
     execSync('git config --global user.name "Default User"');
     execSync('git add .');
-    execSync('git commit -m "Add submodules for matching repositories"');
+
+    try {
+      execSync('git commit -m "Add submodules for matching repositories"');
+    } catch (error) {
+      logger.warn('No changes to commit');
+      logger.error(JSON.stringify(error));
+      return;
+    }
+
     execSync('git push origin main');
 
     const branchName = 'update-submodules';
@@ -61182,7 +61185,6 @@ async function run() {
 }
 
 run();
-
 })();
 
 module.exports = __webpack_exports__;
