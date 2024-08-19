@@ -53,7 +53,7 @@ async function run() {
     // Get the list of repositories in the organization with pagination
     const octokit = github.getOctokit(token);
     let repos = [];
-    let page = startPage;
+    let page = 1;
     let response;
 
     do {
