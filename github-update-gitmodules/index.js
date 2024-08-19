@@ -64,7 +64,9 @@ async function run() {
         sort: 'created',
         direction: 'asc',
       });
-      repos = repos.concat(response.data);
+      if (response.data.name !== repoName) {
+        repos = repos.concat(response.data);
+      }
       page++;
     } while (response.data.length === perPage);
     logger.info(
