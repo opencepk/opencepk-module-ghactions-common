@@ -61087,8 +61087,12 @@ async function run() {
       '.github',
       'META-REPO-PATTERNS',
     );
-    const pattern = fs.readFileSync(patternPath, 'utf8').trim();
-    logger.info(`Pattern: ${pattern}`);
+    const patterns = fs
+      .readFileSync(patternPath, 'utf8')
+      .trim()
+      .split('\n')
+      .map(line => line.trim());
+    logger.info(`Patterns: ${patterns.join(', ')}`);
 
     // Get the repository owner and name from the context
     const repoOwner = github.context.repo.owner;
@@ -61142,8 +61146,12 @@ async function run() {
       `Total number of repositories in the organization: ${repos.length}`,
     );
 
-    // Filter repositories that match the pattern and start with "cepk"
-    const matchingRepos = repos.filter(repo => repo.name.includes(pattern) && repo.name !== repoName);
+    // Filter repositories that match any of the patterns and start with "cepk"
+    const matchingRepos = repos.filter(
+      repo =>
+        patterns.some(pattern => repo.name.includes(pattern)) &&
+        repo.name !== repoName,
+    );
 
     // Delete the branch if it exists
     try {
@@ -61190,7 +61198,9 @@ async function run() {
     execSync('git add .');
 
     try {
-      execSync('git commit -m "chore/bot-update-submodule Update submodules for matching repositories"');
+      execSync(
+        'git commit -m "chore/bot-update-submodule Update submodules for matching repositories"',
+      );
     } catch (error) {
       logger.warn('No changes to commit');
       logger.error(JSON.stringify(error));
@@ -61218,6 +61228,7 @@ async function run() {
 }
 
 run();
+
 })();
 
 module.exports = __webpack_exports__;
