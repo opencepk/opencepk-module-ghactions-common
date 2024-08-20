@@ -27,9 +27,7 @@ async function run() {
 
     // Check if the META-REPO-PATTERNS file exists
     if (!fs.existsSync(patternPath)) {
-      logger.info(
-        'META-REPO-PATTERNS file does not exist. No action will be taken.',
-      );
+      logger.setFailed('META-REPO-PATTERNS file does not exist');
       return;
     }
     const patterns = fs
