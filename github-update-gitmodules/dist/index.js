@@ -61190,7 +61190,7 @@ async function run() {
     execSync('git add .');
 
     try {
-      execSync('git commit -m "Update submodules for matching repositories"');
+      execSync('git commit -m "chore/bot-update-submodule Update submodules for matching repositories"');
     } catch (error) {
       logger.warn('No changes to commit');
       logger.error(JSON.stringify(error));
