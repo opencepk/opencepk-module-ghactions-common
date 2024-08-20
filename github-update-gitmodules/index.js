@@ -4,10 +4,18 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const logger = require('../common/logger');
+const { log } = require('console');
 const branchName = 'update-submodules';
 
 async function run() {
   try {
+    // Get the repository owner and name from the context
+    const repoOwner = github.context.repo.owner;
+    const repoName = github.context.repo.repo;
+    if (repoName.includes('cepk-template')) {
+      logger.info(`Skipping as the repo is a template`);
+      return;
+    }
     const token = core.getInput('token');
 
     // Read the pattern from META-REPO-PATTERNS in the .github folder
@@ -16,16 +24,28 @@ async function run() {
       '.github',
       'META-REPO-PATTERNS',
     );
+
+    // Check if the META-REPO-PATTERNS file exists
+    if (!fs.existsSync(patternPath)) {
+      logger.info(
+        'META-REPO-PATTERNS file does not exist. No action will be taken.',
+      );
+      return;
+    }
     const patterns = fs
       .readFileSync(patternPath, 'utf8')
       .trim()
       .split('\n')
       .map(line => line.trim());
+    // Check if the patterns array is empty
+    if (
+      patterns.length === 0 ||
+      (patterns.length === 1 && patterns[0] === '')
+    ) {
+      logger.info('META-REPO-PATTERNS file is empty. No action will be taken.');
+      return;
+    }
     logger.info(`Patterns: ${patterns.join(', ')}`);
-
-    // Get the repository owner and name from the context
-    const repoOwner = github.context.repo.owner;
-    const repoName = github.context.repo.repo;
     logger.info(`Repository owner: ${repoOwner} Repository name: ${repoName}`);
 
     // Read the .gitmodules file and count the number of submodules
@@ -136,7 +156,8 @@ async function run() {
       return;
     }
 
-    const prTitle = 'chore/bot-update-submodule Update submodules for matching repositories';
+    const prTitle =
+      'chore/bot-update-submodule Update submodules for matching repositories';
     const prBody =
       'This PR updates submodules for repositories matching the pattern in META-REPO-PATTERNS.';
 
