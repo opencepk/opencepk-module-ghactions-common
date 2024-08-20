@@ -1,0 +1,13 @@
+name: 'Add Topics to Repository'
+description: 'Adds topics to the repository based on .project-properties.json'
+inputs:
+  github-token:
+    description: 'GitHub token'
+    required: true
+  properties-file:
+    description: 'The name of the properties file'
+    required: false
+    default: '.project-properties.json'
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
