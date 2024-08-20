@@ -61071,6 +61071,10 @@ async function run() {
     const context = github.context;
     const repo = context.repo.repo;
     const owner = context.repo.owner;
+    if(!repo.startsWith('mirror-')) {
+      logger.info(`Skipping as the repository is not a mirror repository`);
+      return;
+    }
 
     logger.info(`Repository: ${owner}/${repo}`);
     // Read the UPSTREAM file
