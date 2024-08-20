@@ -33841,7 +33841,13 @@ async function run() {
     const fileContent = fs.readFileSync(filePath, 'utf8');
     const properties = JSON.parse(fileContent);
 
-    const topics = properties.map(prop => prop.replacement);
+    const topics = properties.map(prop => prop.replacement)
+      .filter(topic => /^[a-z0-9][a-z0-9-]{0,49}$/.test(topic)); // Validate topics
+
+    if (topics.length === 0) {
+      core.setFailed('No valid topics found');
+      return;
+    }
 
     await octokit.rest.repos.replaceAllTopics({
       owner,
