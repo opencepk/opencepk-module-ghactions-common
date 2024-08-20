@@ -61207,7 +61207,7 @@ async function run() {
       return;
     }
 
-    const prTitle = 'Update submodules for matching repositories';
+    const prTitle = 'chore/bot-update-submodule Update submodules for matching repositories';
     const prBody =
       'This PR updates submodules for repositories matching the pattern in META-REPO-PATTERNS.';
 
