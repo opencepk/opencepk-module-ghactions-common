@@ -33822,26 +33822,34 @@ var __webpack_exports__ = {};
 const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
 const fs = __nccwpck_require__(5630);
-
 const path = __nccwpck_require__(1017);
 
 async function run() {
   try {
     const token = core.getInput('github-token');
+    const propertiesInput = core.getInput('properties');
     const propertiesFile = core.getInput('properties-file') || '.project-properties.json';
     const octokit = github.getOctokit(token);
     const repo = core.getInput('repo') || github.context.repo.repo;
     const owner = core.getInput('org') || github.context.repo.owner;
 
-    const filePath = path.join(process.cwd(), propertiesFile);
+    let properties;
 
-    if (!fs.existsSync(filePath)) {
-      core.setFailed(`${propertiesFile} file does not exist`);
-      return;
+    if (propertiesInput) {
+      properties = JSON.parse(propertiesInput);
+      core.info(`Using properties from input: ${properties}`);
+    } else {
+      const filePath = path.join(process.cwd(), propertiesFile);
+      core.info(`Reading properties from file: ${filePath}`);
+
+      if (!fs.existsSync(filePath)) {
+        core.setFailed(`${propertiesFile} file does not exist`);
+        return;
+      }
+
+      const fileContent = fs.readFileSync(filePath, 'utf8');
+      properties = JSON.parse(fileContent);
     }
-
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-    const properties = JSON.parse(fileContent);
 
     const topics = properties.map(prop => prop.replacement)
       .filter(topic => /^[a-z0-9][a-z0-9-]{0,49}$/.test(topic)); // Validate topics
