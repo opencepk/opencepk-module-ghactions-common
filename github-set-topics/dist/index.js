@@ -33829,7 +33829,8 @@ async function run() {
     const token = core.getInput('github-token');
     const propertiesFile = core.getInput('properties-file') || '.project-properties.json';
     const octokit = github.getOctokit(token);
-    const { owner, repo } = github.context.repo;
+    const repo = core.getInput('repo') || github.context.repo.repo;
+    const owner = core.getInput('org') || github.context.repo.owner;
 
     const filePath = path.join(process.cwd(), propertiesFile);
 
