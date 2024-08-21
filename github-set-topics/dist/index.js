@@ -33864,7 +33864,7 @@ async function run() {
       names: topics
     });
 
-    core.info(`Successfully added topics: ${topics.join(', ')}`);
+    core.info(`Successfully added topics: ${topics.join(', ')} to ${owner}/${repo}`);
   } catch (error) {
     core.setFailed(`Action failed with error: ${error.message}`);
   }
