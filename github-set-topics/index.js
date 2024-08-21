@@ -1,6 +1,7 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const fs = require('fs-extra');
+
 const path = require('path');
 
 async function run() {
