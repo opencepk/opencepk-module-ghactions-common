@@ -33835,13 +33835,12 @@ async function run() {
 
     let properties;
 
-    if (propertiesInput) {
+    if (propertiesInput && propertiesInput !== '{}') {
       properties = JSON.parse(propertiesInput);
-      core.info(`Using properties from input: ${properties}`);
+      core.info('Using properties from input');
     } else {
       const filePath = path.join(process.cwd(), propertiesFile);
       core.info(`Reading properties from file: ${filePath}`);
-
       if (!fs.existsSync(filePath)) {
         core.setFailed(`${propertiesFile} file does not exist`);
         return;
