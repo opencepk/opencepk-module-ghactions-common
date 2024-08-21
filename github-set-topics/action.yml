@@ -1,9 +1,12 @@
 name: 'Add Topics to Repository'
-description: 'Adds topics to the repository based on .project-properties.json'
+description: 'Adds topics to the repository based on provided properties or .project-properties.json'
 inputs:
   github-token:
     description: 'GitHub token'
     required: true
+  properties:
+    description: 'JSON string of properties'
+    required: false
   properties-file:
     description: 'The name of the properties file'
     required: false
