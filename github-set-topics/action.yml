@@ -8,6 +8,12 @@ inputs:
     description: 'The name of the properties file'
     required: false
     default: '.project-properties.json'
+  org:
+    description: 'The organization name'
+    required: true
+  repo:
+    description: 'The repository name'
+    required: true
 runs:
   using: 'node20'
   main: 'dist/index.js'
