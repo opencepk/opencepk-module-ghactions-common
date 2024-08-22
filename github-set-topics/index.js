@@ -7,7 +7,8 @@ async function run() {
   try {
     const token = core.getInput('github-token');
     const propertiesInput = core.getInput('properties');
-    const propertiesFile = core.getInput('properties-file') || '.project-properties.json';
+    const propertiesFile =
+      core.getInput('properties-file') || '.project-properties.json';
     const octokit = github.getOctokit(token);
     const repo = core.getInput('repo') || github.context.repo.repo;
     const owner = core.getInput('org') || github.context.repo.owner;
@@ -25,14 +26,14 @@ async function run() {
       //   return;
       // }
 
-
       // const fileContent = fs.readFileSync(filePath, 'utf8');
       // properties = JSON.parse(fileContent);
-      core.info('No properties found');
+      core.setFailed('No properties found');
       return;
     }
 
-    const topics = properties.map(prop => prop.replacement)
+    const topics = properties
+      .map(prop => prop.replacement)
       .filter(topic => /^[a-z0-9][a-z0-9-]{0,49}$/.test(topic)); // Validate topics
 
     if (topics.length === 0) {
@@ -43,10 +44,12 @@ async function run() {
     await octokit.rest.repos.replaceAllTopics({
       owner,
       repo,
-      names: topics
+      names: topics,
     });
 
-    core.info(`Successfully added topics: ${topics.join(', ')} to ${owner}/${repo}`);
+    core.info(
+      `Successfully added topics: ${topics.join(', ')} to ${owner}/${repo}`,
+    );
   } catch (error) {
     core.setFailed(`Action failed with error: ${error.message}`);
   }
