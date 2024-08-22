@@ -18,15 +18,18 @@ async function run() {
       properties = JSON.parse(propertiesInput);
       core.info('Using properties from input');
     } else {
-      const filePath = path.join(process.cwd(), propertiesFile);
-      core.info(`Reading properties from file: ${filePath}`);
-      if (!fs.existsSync(filePath)) {
-        core.setFailed(`${propertiesFile} file does not exist`);
-        return;
-      }
+      // const filePath = path.join(process.cwd(), propertiesFile);
+      // core.info(`Reading properties from file: ${filePath}`);
+      // if (!fs.existsSync(filePath)) {
+      //   core.setFailed(`${propertiesFile} file does not exist`);
+      //   return;
+      // }
 
-      const fileContent = fs.readFileSync(filePath, 'utf8');
-      properties = JSON.parse(fileContent);
+
+      // const fileContent = fs.readFileSync(filePath, 'utf8');
+      // properties = JSON.parse(fileContent);
+      core.info('No properties found');
+      return;
     }
 
     const topics = properties.map(prop => prop.replacement)
