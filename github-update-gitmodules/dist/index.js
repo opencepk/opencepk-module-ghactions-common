@@ -61080,9 +61080,15 @@ const branchName = 'update-submodules';
 
 async function run() {
   try {
-    // Get the repository owner and name from the context
-    const repoOwner = github.context.repo.owner;
-    const repoName = github.context.repo.repo;
+    // Get the repository and organization from the input
+    const repoInput = core.getInput('repo'); // Expecting format org/repo
+    const [repoOwner, repoName] = repoInput.split('/');
+
+    if (!repoOwner || !repoName) {
+      logger.setFailed('Invalid repo format. Expected format: org/repo');
+      return;
+    }
+
     if (repoName.includes('cepk-template')) {
       logger.info(`Skipping as the repo is a template`);
       return;
@@ -61247,7 +61253,6 @@ async function run() {
 }
 
 run();
-
 })();
 
 module.exports = __webpack_exports__;
