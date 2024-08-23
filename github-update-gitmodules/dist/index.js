@@ -61075,7 +61075,6 @@ const { execSync } = __nccwpck_require__(2081);
 const fs = __nccwpck_require__(7147);
 const path = __nccwpck_require__(1017);
 const logger = __nccwpck_require__(5568);
-const { log } = __nccwpck_require__(6206);
 const branchName = 'update-submodules';
 
 async function run() {
@@ -61107,11 +61106,13 @@ async function run() {
     logger.info(`Patterns: ${patterns.join(', ')}`);
     logger.info(`Repository owner: ${repoOwner} Repository name: ${repoName}`);
 
+    // Clone the target repository
+    const repoUrl = `https://github.com/${repoOwner}/${repoName}.git`;
+    execSync(`git clone ${repoUrl}`);
+    process.chdir(repoName);
+
     // Read the .gitmodules file and count the number of submodules
-    const gitmodulesPath = path.join(
-      process.env.GITHUB_WORKSPACE,
-      '.gitmodules',
-    );
+    const gitmodulesPath = path.join(process.cwd(), '.gitmodules');
     let submoduleCount = 0;
     let existingSubmodules = [];
 
