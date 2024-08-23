@@ -61111,19 +61111,15 @@ async function run() {
     logger.info(`Patterns: ${patterns.join(', ')}`);
     logger.info(`Repository owner: ${repoOwner} Repository name: ${repoName}`);
 
-    // Clone the target repository
-    const repoUrl = `https://${token}@github.com/${repoOwner}/${repoName}.git`;
+    // Clone the target repository using SSH
+    const repoUrl = `git@github.com:${repoOwner}/${repoName}.git`;
     logger.info(`Cloning repository: ${repoUrl}`);
     execSync(`git clone ${repoUrl}`);
     process.chdir(repoName);
     logger.info(`Changed working directory to: ${process.cwd()}`);
 
-    // Set the remote URL with the token
+    // Set the remote URL with the SSH URL
     execSync(`git remote set-url origin ${repoUrl}`);
-
-    // Configure Git credentials helper to cache the token
-    execSync(`git config --global credential.helper 'cache --timeout=3600'`);
-    execSync(`git config --global credential.username ${token}`);
 
     // Read the .gitmodules file and count the number of submodules
     const gitmodulesPath = path.join(process.cwd(), '.gitmodules');
@@ -61209,12 +61205,12 @@ async function run() {
       }
     });
 
-    // Add matching repositories as submodules
+    // Add matching repositories as submodules using SSH URLs
     matchingRepos.forEach(repo => {
       const submodulePath = path.join('modules', repo.name);
       if (!fs.existsSync(submodulePath)) {
         logger.info(`Adding submodule: ${submodulePath}`);
-        const submoduleUrl = `https://${token}@github.com/${repoOwner}/${repo.name}.git`;
+        const submoduleUrl = `git@github.com:${repoOwner}/${repo.name}.git`;
         try {
           execSync(`git submodule add ${submoduleUrl} ${submodulePath}`);
           logger.info(`Added submodule ${submodulePath}`);
