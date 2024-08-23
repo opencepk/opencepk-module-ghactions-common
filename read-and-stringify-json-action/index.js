@@ -17,17 +17,17 @@ async function run() {
       const fileContent = fs.readFileSync(absolutePath, 'utf8');
 
       switch (fileType) {
-      case 'json':
-        properties = JSON.parse(fileContent);
-        break;
-      case 'yml':
-      case 'yaml':
-        properties = yaml.load(fileContent);
-        break;
-      case 'file':
-      default:
-        properties = fileContent.split(separator);
-        break;
+        case 'json':
+          properties = JSON.parse(fileContent);
+          break;
+        case 'yml':
+        case 'yaml':
+          properties = yaml.load(fileContent);
+          break;
+        case 'file':
+        default:
+          properties = fileContent.split(separator);
+          break;
       }
     }
 
