@@ -50,6 +50,10 @@ async function run() {
     // Set the remote URL with the token
     execSync(`git remote set-url origin ${repoUrl}`);
 
+    // Configure Git credentials helper to cache the token
+    execSync(`git config --global credential.helper 'cache --timeout=3600'`);
+    execSync(`git config --global credential.username ${token}`);
+
     // Read the .gitmodules file and count the number of submodules
     const gitmodulesPath = path.join(process.cwd(), '.gitmodules');
     let submoduleCount = 0;
