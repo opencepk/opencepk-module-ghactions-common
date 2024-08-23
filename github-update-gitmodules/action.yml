@@ -7,6 +7,9 @@ inputs:
   repo:
     description: 'Repository in the format org/repo'
     required: true
+  patterns:
+    description: 'Comma-separated list of patterns to match repositories'
+    required: true
 runs:
   using: 'node20'
   main: 'dist/index.js'
