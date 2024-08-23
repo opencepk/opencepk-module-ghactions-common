@@ -61079,8 +61079,11 @@ const branchName = 'update-submodules';
 
 async function run() {
   try {
+    logger.info('Starting the submodule update process...');
+
     // Get the repository and organization from the input
     const repoInput = core.getInput('repo'); // Expecting format org/repo
+    logger.debug(`Received repo input: ${repoInput}`);
     const [repoOwner, repoName] = repoInput.split('/');
 
     if (!repoOwner || !repoName) {
@@ -61093,9 +61096,14 @@ async function run() {
       return;
     }
     const token = core.getInput('token');
+    logger.debug('Received GitHub token.');
+
+    // Configure Git to use the token for authentication
+    execSync(`git config --global url."https://${token}:x-oauth-basic@github.com/".insteadOf "https://github.com/"`);
 
     // Read the patterns from input
     const patternsInput = core.getInput('patterns');
+    logger.debug(`Received patterns input: ${patternsInput}`);
     const patterns = patternsInput.split(',').map(pattern => pattern.trim());
 
     if (patterns.length === 0 || (patterns.length === 1 && patterns[0] === '')) {
@@ -61108,8 +61116,10 @@ async function run() {
 
     // Clone the target repository
     const repoUrl = `https://github.com/${repoOwner}/${repoName}.git`;
+    logger.info(`Cloning repository: ${repoUrl}`);
     execSync(`git clone ${repoUrl}`);
     process.chdir(repoName);
+    logger.info(`Changed working directory to: ${process.cwd()}`);
 
     // Read the .gitmodules file and count the number of submodules
     const gitmodulesPath = path.join(process.cwd(), '.gitmodules');
@@ -61117,6 +61127,7 @@ async function run() {
     let existingSubmodules = [];
 
     if (fs.existsSync(gitmodulesPath)) {
+      logger.info(`Reading .gitmodules file from: ${gitmodulesPath}`);
       const gitmodulesContent = fs.readFileSync(gitmodulesPath, 'utf8');
       existingSubmodules = (gitmodulesContent.match(/path = (.+)/g) || []).map(
         line => line.split(' = ')[1].trim(),
@@ -61141,6 +61152,7 @@ async function run() {
     let response;
 
     do {
+      logger.info(`Fetching repositories from GitHub (page ${page})...`);
       response = await octokit.rest.repos.listForOrg({
         org: repoOwner,
         per_page: perPage,
@@ -61161,9 +61173,11 @@ async function run() {
         patterns.some(pattern => repo.name.includes(pattern)) &&
         repo.name !== repoName,
     );
+    logger.info(`Number of matching repositories: ${matchingRepos.length}`);
 
     // Delete the branch if it exists
     try {
+      logger.info(`Deleting branch ${branchName} if it exists...`);
       execSync(`git push origin --delete ${branchName} || true`);
       // Delete the branch locally, ignoring errors
       execSync(`git branch -D ${branchName} || true`);
@@ -61175,12 +61189,14 @@ async function run() {
     }
 
     // Create the branch
+    logger.info(`Creating new branch: ${branchName}`);
     execSync(`git checkout -b ${branchName}`);
 
     // Remove submodules that do not match any repository in the fetched list
     existingSubmodules.forEach(submodulePath => {
       const repoName = path.basename(submodulePath);
       if (!matchingRepos.some(repo => repo.name === repoName)) {
+        logger.info(`Removing submodule: ${submodulePath}`);
         execSync(`git submodule deinit -f ${submodulePath} || true`);
         execSync(`git rm -f ${submodulePath} || true`);
         execSync(`rm -rf .git/modules/${submodulePath} || true`);
@@ -61193,23 +61209,27 @@ async function run() {
     matchingRepos.forEach(repo => {
       const submodulePath = path.join('modules', repo.name);
       if (!fs.existsSync(submodulePath)) {
-        execSync(
-          `git submodule add https://github.com/${repoOwner}/${repo.name}.git ${submodulePath}`,
-        );
+        logger.info(`Adding submodule: ${submodulePath}`);
+        const submoduleUrl = `https://github.com/${repoOwner}/${repo.name}.git`;
+        execSync(`git submodule add ${submoduleUrl} ${submodulePath}`);
       } else {
         logger.info(`Submodule ${submodulePath} already exists, skipping.`);
       }
     });
 
     // Commit the changes
+    logger.info('Configuring git user...');
     execSync('git config --global user.email "default-user@example.com"');
     execSync('git config --global user.name "Default User"');
+    logger.info('Adding changes to git...');
     execSync('git add .');
 
     try {
+      logger.info('Committing changes...');
       execSync(
         'git commit -m "chore/bot-update-submodule Update submodules for matching repositories"',
       );
+      logger.info('Changes committed successfully.');
     } catch (error) {
       logger.warn('No changes to commit');
       logger.error(JSON.stringify(error));
@@ -61221,9 +61241,12 @@ async function run() {
     const prBody =
       'This PR updates submodules for repositories matching the pattern in META-REPO-PATTERNS.';
 
+    logger.info(`Pushing changes to branch ${branchName}...`);
     execSync(`git push origin ${branchName}`);
+    logger.info('Changes pushed successfully.');
 
     // Create the pull request
+    logger.info('Creating pull request...');
     await octokit.rest.pulls.create({
       owner: repoOwner,
       repo: repoName,
@@ -61232,7 +61255,10 @@ async function run() {
       head: branchName,
       base: 'main',
     });
+    logger.info('Pull request created successfully.');
   } catch (error) {
+    logger.error('An error occurred:');
+    logger.error(error.message);
     logger.setFailed(error.message);
   }
 }
