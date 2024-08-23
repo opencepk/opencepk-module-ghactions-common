@@ -24929,6 +24929,14 @@ exports["default"] = _default;
 
 /***/ }),
 
+/***/ 6350:
+/***/ ((module) => {
+
+module.exports = eval("require")("js-yaml");
+
+
+/***/ }),
+
 /***/ 9491:
 /***/ ((module) => {
 
@@ -26822,29 +26830,56 @@ var __webpack_exports__ = {};
 const core = __nccwpck_require__(2186);
 const fs = __nccwpck_require__(7147);
 const path = __nccwpck_require__(1017);
+const yaml = __nccwpck_require__(6350);
 
 async function run() {
   try {
     const filePath = core.getInput('file');
+    const fileType = core.getInput('file_type');
+    const separator = core.getInput('separator') || '\n';
+    const outputFormat = core.getInput('output_format') || 'comma';
     const absolutePath = path.resolve(filePath);
 
     let properties = {};
 
     if (fs.existsSync(absolutePath)) {
       const fileContent = fs.readFileSync(absolutePath, 'utf8');
-      properties = JSON.parse(fileContent);
+
+      switch (fileType) {
+        case 'json':
+          properties = JSON.parse(fileContent);
+          break;
+        case 'yml':
+        case 'yaml':
+          properties = yaml.load(fileContent);
+          break;
+        case 'file':
+        default:
+          properties = fileContent.split(separator);
+          break;
+      }
     }
 
-    const propertiesStringified = JSON.stringify(properties).replace(/"/g, '\\"');
-    core.setOutput('properties', propertiesStringified);
+    let propertiesStringified;
+    if (fileType === 'json' || fileType === 'yml' || fileType === 'yaml') {
+      propertiesStringified = JSON.stringify(properties).replace(/"/g, '\\"');
+    } else {
+      propertiesStringified = properties.join(
+        outputFormat === 'comma' ? ',' : outputFormat,
+      );
+    }
 
-    core.info(`Successfully read and stringified JSON data from ${filePath}`);
+    core.setOutput('properties', propertiesStringified);
+    core.info(
+      `Successfully read and processed ${fileType} data from ${filePath}`,
+    );
   } catch (error) {
     core.setFailed(error.message);
   }
 }
 
 run();
+
 })();
 
 module.exports = __webpack_exports__;
