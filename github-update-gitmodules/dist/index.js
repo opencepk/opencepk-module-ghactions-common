@@ -61095,31 +61095,15 @@ async function run() {
     }
     const token = core.getInput('token');
 
-    // Read the pattern from META-REPO-PATTERNS in the .github folder
-    const patternPath = path.join(
-      process.env.GITHUB_WORKSPACE,
-      '.github',
-      'META-REPO-PATTERNS',
-    );
+    // Read the patterns from input
+    const patternsInput = core.getInput('patterns');
+    const patterns = patternsInput.split(',').map(pattern => pattern.trim());
 
-    // Check if the META-REPO-PATTERNS file exists
-    if (!fs.existsSync(patternPath)) {
-      logger.setFailed('META-REPO-PATTERNS file does not exist');
+    if (patterns.length === 0 || (patterns.length === 1 && patterns[0] === '')) {
+      logger.info('Patterns input is empty. No action will be taken.');
       return;
     }
-    const patterns = fs
-      .readFileSync(patternPath, 'utf8')
-      .trim()
-      .split('\n')
-      .map(line => line.trim());
-    // Check if the patterns array is empty
-    if (
-      patterns.length === 0 ||
-      (patterns.length === 1 && patterns[0] === '')
-    ) {
-      logger.info('META-REPO-PATTERNS file is empty. No action will be taken.');
-      return;
-    }
+
     logger.info(`Patterns: ${patterns.join(', ')}`);
     logger.info(`Repository owner: ${repoOwner} Repository name: ${repoName}`);
 
