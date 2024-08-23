@@ -1,23 +1,49 @@
 const core = require('@actions/core');
 const fs = require('fs');
 const path = require('path');
+const yaml = require('js-yaml');
 
 async function run() {
   try {
     const filePath = core.getInput('file');
+    const fileType = core.getInput('file_type');
+    const separator = core.getInput('separator') || '\n';
+    const outputFormat = core.getInput('output_format') || 'comma';
     const absolutePath = path.resolve(filePath);
 
     let properties = {};
 
     if (fs.existsSync(absolutePath)) {
       const fileContent = fs.readFileSync(absolutePath, 'utf8');
-      properties = JSON.parse(fileContent);
+
+      switch (fileType) {
+        case 'json':
+          properties = JSON.parse(fileContent);
+          break;
+        case 'yml':
+        case 'yaml':
+          properties = yaml.load(fileContent);
+          break;
+        case 'file':
+        default:
+          properties = fileContent.split(separator);
+          break;
+      }
     }
 
-    const propertiesStringified = JSON.stringify(properties).replace(/"/g, '\\"');
-    core.setOutput('properties', propertiesStringified);
+    let propertiesStringified;
+    if (fileType === 'json' || fileType === 'yml' || fileType === 'yaml') {
+      propertiesStringified = JSON.stringify(properties).replace(/"/g, '\\"');
+    } else {
+      propertiesStringified = properties.join(
+        outputFormat === 'comma' ? ',' : outputFormat,
+      );
+    }
 
-    core.info(`Successfully read and stringified JSON data from ${filePath}`);
+    core.setOutput('properties', propertiesStringified);
+    core.info(
+      `Successfully read and processed ${fileType} data from ${filePath}`,
+    );
   } catch (error) {
     core.setFailed(error.message);
   }
