@@ -33831,8 +33831,19 @@ async function run() {
     const propertiesFile =
       core.getInput('properties-file') || '.project-properties.json';
     const octokit = github.getOctokit(token);
-    const repo = core.getInput('repo') || github.context.repo.repo;
-    const owner = core.getInput('org') || github.context.repo.owner;
+    const repoInput = core.getInput('repo'); // Expecting format org/repo
+
+    if (!repoInput) {
+      core.setFailed('Input "repo" is required and should be in the format org/repo');
+      return;
+    }
+
+    const [owner, repo] = repoInput.split('/');
+
+    if (!owner || !repo) {
+      core.setFailed('Invalid repo format. Expected format: org/repo');
+      return;
+    }
 
     let properties;
 
@@ -33840,15 +33851,6 @@ async function run() {
       properties = JSON.parse(propertiesInput);
       core.info('Using properties from input');
     } else {
-      // const filePath = path.join(process.cwd(), propertiesFile);
-      // core.info(`Reading properties from file: ${filePath}`);
-      // if (!fs.existsSync(filePath)) {
-      //   core.setFailed(`${propertiesFile} file does not exist`);
-      //   return;
-      // }
-
-      // const fileContent = fs.readFileSync(filePath, 'utf8');
-      // properties = JSON.parse(fileContent);
       core.setFailed('No properties found');
       return;
     }
@@ -33877,7 +33879,6 @@ async function run() {
 }
 
 run();
-
 })();
 
 module.exports = __webpack_exports__;
