@@ -4,7 +4,6 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const logger = require('../common/logger');
-const { log } = require('console');
 const branchName = 'update-submodules';
 
 async function run() {
@@ -36,11 +35,13 @@ async function run() {
     logger.info(`Patterns: ${patterns.join(', ')}`);
     logger.info(`Repository owner: ${repoOwner} Repository name: ${repoName}`);
 
+    // Clone the target repository
+    const repoUrl = `https://github.com/${repoOwner}/${repoName}.git`;
+    execSync(`git clone ${repoUrl}`);
+    process.chdir(repoName);
+
     // Read the .gitmodules file and count the number of submodules
-    const gitmodulesPath = path.join(
-      process.env.GITHUB_WORKSPACE,
-      '.gitmodules',
-    );
+    const gitmodulesPath = path.join(process.cwd(), '.gitmodules');
     let submoduleCount = 0;
     let existingSubmodules = [];
 
