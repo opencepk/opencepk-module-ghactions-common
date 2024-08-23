@@ -27,9 +27,6 @@ async function run() {
     const token = core.getInput('token');
     logger.debug('Received GitHub token.');
 
-    // Configure Git to use the token for authentication
-    execSync(`git config --global url."https://${token}:x-oauth-basic@github.com/".insteadOf "https://github.com/"`);
-
     // Read the patterns from input
     const patternsInput = core.getInput('patterns');
     logger.debug(`Received patterns input: ${patternsInput}`);
@@ -44,11 +41,14 @@ async function run() {
     logger.info(`Repository owner: ${repoOwner} Repository name: ${repoName}`);
 
     // Clone the target repository
-    const repoUrl = `https://github.com/${repoOwner}/${repoName}.git`;
+    const repoUrl = `https://${token}@github.com/${repoOwner}/${repoName}.git`;
     logger.info(`Cloning repository: ${repoUrl}`);
     execSync(`git clone ${repoUrl}`);
     process.chdir(repoName);
     logger.info(`Changed working directory to: ${process.cwd()}`);
+
+    // Set the remote URL with the token
+    execSync(`git remote set-url origin ${repoUrl}`);
 
     // Read the .gitmodules file and count the number of submodules
     const gitmodulesPath = path.join(process.cwd(), '.gitmodules');
@@ -139,9 +139,14 @@ async function run() {
       const submodulePath = path.join('modules', repo.name);
       if (!fs.existsSync(submodulePath)) {
         logger.info(`Adding submodule: ${submodulePath}`);
-        const submoduleUrl = `https://github.com/${repoOwner}/${repo.name}.git`;
-        execSync(`git submodule add ${submoduleUrl} ${submodulePath}`);
-        logger.info(`Added submodule ${submodulePath}`);
+        const submoduleUrl = `https://${token}@github.com/${repoOwner}/${repo.name}.git`;
+        try {
+          execSync(`git submodule add ${submoduleUrl} ${submodulePath}`);
+          logger.info(`Added submodule ${submodulePath}`);
+        } catch (error) {
+          logger.error(`Failed to add submodule ${submodulePath}`);
+          logger.error(error.message);
+        }
       } else {
         logger.info(`Submodule ${submodulePath} already exists, skipping.`);
       }
