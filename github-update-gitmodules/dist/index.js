@@ -61212,6 +61212,7 @@ async function run() {
         logger.info(`Adding submodule: ${submodulePath}`);
         const submoduleUrl = `https://github.com/${repoOwner}/${repo.name}.git`;
         execSync(`git submodule add ${submoduleUrl} ${submodulePath}`);
+        logger.info(`Added submodule ${submodulePath}`);
       } else {
         logger.info(`Submodule ${submodulePath} already exists, skipping.`);
       }
