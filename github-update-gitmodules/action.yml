@@ -4,6 +4,9 @@ inputs:
   token:
     description: 'GitHub Token'
     required: true
+  repo:
+    description: 'Repository in the format org/repo'
+    required: true
 runs:
   using: 'node20'
   main: 'dist/index.js'
