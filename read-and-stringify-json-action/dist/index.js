@@ -30957,7 +30957,8 @@ async function run() {
         default:
           properties = fileContent
             .split(separator)
-            .filter(line => line.trim() !== '');
+            .map(line => line.trim())
+            .filter(line => line !== '');
           break;
       }
     }
@@ -30969,6 +30970,7 @@ async function run() {
       propertiesStringified = properties.join(outputFormat);
     }
 
+    core.info(`Processed properties: ${propertiesStringified}`);
     core.setOutput('properties', propertiesStringified);
     core.info(
       `Successfully read and processed ${fileType} data from ${filePath}`,
