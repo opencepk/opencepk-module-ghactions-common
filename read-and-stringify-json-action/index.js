@@ -36,7 +36,7 @@ async function run() {
           break;
         case 'file':
         default:
-          properties = fileContent
+          properties = JSON.stringify(fileContent)
             .split(separator)
             .map(line => line.trim())
             .filter(line => line !== '');
@@ -56,7 +56,9 @@ async function run() {
 
     core.info(`Processed properties: ${propertiesStringified}`);
     core.setOutput('properties', propertiesStringified);
-    core.info(`Successfully read and processed ${fileType} data from ${filePath}`);
+    core.info(
+      `Successfully read and processed ${fileType} data from ${filePath}`,
+    );
   } catch (error) {
     core.setFailed(error.message);
   }
