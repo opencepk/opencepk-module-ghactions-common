@@ -30951,7 +30951,7 @@ async function run() {
     if (fs.existsSync(absolutePath)) {
       core.info(`File exists at path: ${absolutePath}`);
       const fileContent = fs.readFileSync(absolutePath, 'utf8');
-      core.info(`File content: ${fileContent}`);
+      core.info(`File content: ${JSON.stringify(fileContent)}`); // Log the file content as a JSON string to see the exact characters
 
       switch (fileType) {
         case 'json':
@@ -30969,7 +30969,7 @@ async function run() {
             .split(separator)
             .map(line => line.trim())
             .filter(line => line !== '');
-          core.info(`Parsed file properties: ${properties.join(',')}`);
+          core.info(`Parsed file properties: ${properties.join(', ')}`);
           break;
       }
     } else {
@@ -30985,16 +30985,13 @@ async function run() {
 
     core.info(`Processed properties: ${propertiesStringified}`);
     core.setOutput('properties', propertiesStringified);
-    core.info(
-      `Successfully read and processed ${fileType} data from ${filePath}`,
-    );
+    core.info(`Successfully read and processed ${fileType} data from ${filePath}`);
   } catch (error) {
     core.setFailed(error.message);
   }
 }
 
 run();
-
 })();
 
 module.exports = __webpack_exports__;
