@@ -30972,16 +30972,13 @@ async function run() {
 
     core.info(`Processed properties: ${propertiesStringified}`);
     core.setOutput('properties', propertiesStringified);
-    core.info(
-      `Successfully read and processed ${fileType} data from ${filePath}`,
-    );
+    core.info(`Successfully read and processed ${fileType} data from ${filePath}`);
   } catch (error) {
     core.setFailed(error.message);
   }
 }
 
 run();
-
 })();
 
 module.exports = __webpack_exports__;
