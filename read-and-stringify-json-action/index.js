@@ -8,10 +8,10 @@ async function run() {
     const filePath = core.getInput('file');
     const fileType = core.getInput('file_type');
     const separator = core.getInput('separator') || '\n';
-    const outputFormat = core.getInput('output_format') || 'comma';
+    const outputFormat = core.getInput('output_format') || ',';
     const absolutePath = path.resolve(filePath);
 
-    let properties = {};
+    let properties = [];
 
     if (fs.existsSync(absolutePath)) {
       const fileContent = fs.readFileSync(absolutePath, 'utf8');
@@ -26,7 +26,9 @@ async function run() {
           break;
         case 'file':
         default:
-          properties = fileContent.split(separator);
+          properties = fileContent
+            .split(separator)
+            .filter(line => line.trim() !== '');
           break;
       }
     }
@@ -35,9 +37,7 @@ async function run() {
     if (fileType === 'json' || fileType === 'yml' || fileType === 'yaml') {
       propertiesStringified = JSON.stringify(properties).replace(/"/g, '\\"');
     } else {
-      propertiesStringified = properties.join(
-        outputFormat === 'comma' ? ',' : outputFormat,
-      );
+      propertiesStringified = properties.join(outputFormat);
     }
 
     core.setOutput('properties', propertiesStringified);
@@ -48,4 +48,5 @@ async function run() {
     core.setFailed(error.message);
   }
 }
+
 run();
