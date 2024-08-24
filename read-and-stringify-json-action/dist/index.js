@@ -30969,7 +30969,7 @@ async function run() {
             .split(separator)
             .map(line => line.trim())
             .filter(line => line !== '');
-          core.info(`Parsed file properties: ${properties.join(', ')}`);
+          core.info(`Parsed file properties: ${properties.join(',')}`);
           break;
       }
     } else {
@@ -30985,13 +30985,16 @@ async function run() {
 
     core.info(`Processed properties: ${propertiesStringified}`);
     core.setOutput('properties', propertiesStringified);
-    core.info(`Successfully read and processed ${fileType} data from ${filePath}`);
+    core.info(
+      `Successfully read and processed ${fileType} data from ${filePath}`,
+    );
   } catch (error) {
     core.setFailed(error.message);
   }
 }
 
 run();
+
 })();
 
 module.exports = __webpack_exports__;
