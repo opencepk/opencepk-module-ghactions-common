@@ -11,18 +11,28 @@ async function run() {
     const outputFormat = core.getInput('output_format') || ',';
     const absolutePath = path.resolve(filePath);
 
+    core.info(`File path: ${filePath}`);
+    core.info(`File type: ${fileType}`);
+    core.info(`Separator: ${separator}`);
+    core.info(`Output format: ${outputFormat}`);
+    core.info(`Absolute path: ${absolutePath}`);
+
     let properties = [];
 
     if (fs.existsSync(absolutePath)) {
+      core.info(`File exists at path: ${absolutePath}`);
       const fileContent = fs.readFileSync(absolutePath, 'utf8');
+      core.info(`File content: ${fileContent}`);
 
       switch (fileType) {
         case 'json':
           properties = JSON.parse(fileContent);
+          core.info(`Parsed JSON properties: ${JSON.stringify(properties)}`);
           break;
         case 'yml':
         case 'yaml':
           properties = yaml.load(fileContent);
+          core.info(`Parsed YAML properties: ${JSON.stringify(properties)}`);
           break;
         case 'file':
         default:
@@ -30,8 +40,11 @@ async function run() {
             .split(separator)
             .map(line => line.trim())
             .filter(line => line !== '');
+          core.info(`Parsed file properties: ${properties.join(', ')}`);
           break;
       }
+    } else {
+      core.warning(`File does not exist at path: ${absolutePath}`);
     }
 
     let propertiesStringified;
