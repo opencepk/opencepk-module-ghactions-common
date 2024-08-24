@@ -30965,8 +30965,8 @@ async function run() {
           break;
         case 'file':
         default:
-          properties = JSON.stringify(fileContent)
-            .split(separator)
+          properties = fileContent
+            .split(/\r?\n/)
             .map(line => line.trim())
             .filter(line => line !== '');
           core.info(`Parsed file properties: ${properties.join(', ')}`);
@@ -30985,16 +30985,13 @@ async function run() {
 
     core.info(`Processed properties: ${propertiesStringified}`);
     core.setOutput('properties', propertiesStringified);
-    core.info(
-      `Successfully read and processed ${fileType} data from ${filePath}`,
-    );
+    core.info(`Successfully read and processed ${fileType} data from ${filePath}`);
   } catch (error) {
     core.setFailed(error.message);
   }
 }
 
 run();
-
 })();
 
 module.exports = __webpack_exports__;
