@@ -7,7 +7,7 @@ async function run() {
   try {
     const filePath = core.getInput('file');
     const fileType = core.getInput('file_type');
-    const separator = core.getInput('separator') || '\n';
+    let separator = core.getInput('separator') || '/\r?\n/';
     const outputFormat = core.getInput('output_format') || ',';
     const absolutePath = path.resolve(filePath);
 
@@ -16,6 +16,11 @@ async function run() {
     core.info(`Separator: ${separator}`);
     core.info(`Output format: ${outputFormat}`);
     core.info(`Absolute path: ${absolutePath}`);
+
+    // Check if the separator is a regular expression
+    if (separator.startsWith('/') && separator.endsWith('/')) {
+      separator = new RegExp(separator.slice(1, -1));
+    }
 
     let properties = [];
 
@@ -37,7 +42,7 @@ async function run() {
         case 'file':
         default:
           properties = fileContent
-            .split(/\r?\n/)
+            .split(separator)
             .map(line => line.trim())
             .filter(line => line !== '');
           core.info(`Parsed file properties: ${properties.join(', ')}`);
