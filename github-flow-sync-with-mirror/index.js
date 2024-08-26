@@ -153,13 +153,23 @@
 const core = require('@actions/core');
 const exec = require('@actions/exec');
 const github = require('@actions/github');
+const fs = require('fs');
+const path = require('path');
 
 async function run() {
   try {
-    const token = process.env.GITHUB_TOKEN;
-    const upstreamRepo = process.env.UPSTREAM_REPO;
-    const originRepo = process.env.ORIGIN_REPO;
-    const branch = process.env.BRANCH;
+    core.info('Starting the sync process...');
+    const token = core.getInput('github_token');
+    const octokit = github.getOctokit(token);
+    const { owner, repo } = github.context.repo;
+
+    core.info(`Repository: ${owner}/${repo}`);
+    // Read the UPSTREAM file
+    const upstreamFilePath = path.join('.github', 'UPSTREAM');
+    core.info(`Reading UPSTREAM file from: ${upstreamFilePath}`);
+    const upstreamUrl = fs.readFileSync(upstreamFilePath, 'utf8').trim();
+    core.info(`Upstream URL: ${upstreamUrl}`);
+    const branch = core.getInput('branch') || 'main';
 
     // Configure git
     await exec.exec('git', [
@@ -176,7 +186,7 @@ async function run() {
     ]);
 
     // Add upstream remote
-    await exec.exec('git', ['remote', 'add', 'upstream', upstreamRepo]);
+    await exec.exec('git', ['remote', 'add', 'upstream', upstreamUrl]);
     await exec.exec('git', ['fetch', 'upstream']);
 
     // Checkout a new branch for the merge
@@ -194,9 +204,6 @@ async function run() {
     await exec.exec('git', ['push', 'origin', mergeBranch]);
 
     // Create a pull request
-    const octokit = github.getOctokit(token);
-    const { owner, repo } = github.context.repo;
-
     await octokit.pulls.create({
       owner,
       repo,
