@@ -216,7 +216,7 @@ async function run() {
       `upstream/${branch}`,
     ]);
 
-    // replaceContentAndCommit();
+    replaceContentAndCommit();
 
     // Check for changes
     let diffOutput = '';
@@ -236,7 +236,7 @@ async function run() {
     }
 
     //  Please note token is optional as when we checkout we already checkout with token. But I will leave the token here for more clarity
-    const remoteUrl = `https://github.com/${owner}/${repo}.git`;
+    const remoteUrl = `https://${token}@github.com/${owner}/${repo}.git`;
     core.info(`Setting remote URL to: ${remoteUrl}`);
     await exec.exec('git', ['remote', 'set-url', 'origin', remoteUrl]);
 
