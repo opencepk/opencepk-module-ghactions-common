@@ -35,6 +35,68 @@ module.exports = { setGitActionAccess };
 
 /***/ }),
 
+/***/ 3277:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const fs = __nccwpck_require__(7147);
+const path = __nccwpck_require__(1017);
+const { execSync } = __nccwpck_require__(2081);
+const logger = __nccwpck_require__(5568);
+
+function replaceContentAndCommit() {
+  // Replace all occurrences of opencepk/opencepk-module-ghactions-common with tucowsinc/opencepk-module-ghactions-common in .github/workflows/*.yml
+  logger.info(
+    'Replacing opencepk/opencepk-module-ghactions-common with tucowsinc/opencepk-module-ghactions-common in .github/workflows/*.yml',
+  );
+  const workflowDir = path.join('.github', 'workflows');
+  const files = fs.readdirSync(workflowDir);
+  files.forEach(file => {
+    const filePath = path.join(workflowDir, file);
+    if (filePath.endsWith('.yml') || filePath.endsWith('.yaml')) {
+      let content = fs.readFileSync(filePath, 'utf8');
+      content = content.replace(
+        /opencepk\/opencepk-module-ghactions-common/g,
+        'tucowsinc/opencepk-module-ghactions-common',
+      );
+      fs.writeFileSync(filePath, content);
+    }
+  });
+
+  // Commit the changes after replacement
+  logger.info('Committing changes after replacement');
+  execSync('git add .github/workflows');
+  execSync('git commit -m "Replace opencepk with tucowsinc in workflow files"');
+
+  // Replace all occurrences of git@github.com:opencepk with git@github.com:tucowsinc in .pre-commit-config.yaml
+  logger.info(
+    'Replacing git@github.com:opencepk with git@github.com:tucowsinc in .pre-commit-config.yaml',
+  );
+  const preCommitConfigPath = '.pre-commit-config.yaml';
+  if (fs.existsSync(preCommitConfigPath)) {
+    let preCommitContent = fs.readFileSync(preCommitConfigPath, 'utf8');
+    preCommitContent = preCommitContent.replace(
+      /git@github.com:opencepk/g,
+      'git@github.com:tucowsinc',
+    );
+    fs.writeFileSync(preCommitConfigPath, preCommitContent);
+
+    // Commit the changes after replacement
+    logger.info('Committing changes to .pre-commit-config.yaml');
+    execSync('git add .pre-commit-config.yaml');
+    execSync(
+      'git commit -m "Replace opencepk with tucowsinc in .pre-commit-config.yaml"',
+    );
+  } else {
+    logger.info(
+      '.pre-commit-config.yaml does not exist, skipping replacement.',
+    );
+  }
+}
+
+module.exports = { replaceContentAndCommit };
+
+/***/ }),
+
 /***/ 5568:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -65370,6 +65432,7 @@ const path = __nccwpck_require__(1017);
 const logger = __nccwpck_require__(5568);
 const { setGitActionAccess } = __nccwpck_require__(3907);
 const prefix = 'mirror';
+const { replaceContentAndCommit } = __nccwpck_require__(3277);
 
 async function processRepo(publicRepoUrl, org, token, newRepoName = null) {
   const octokit = github.getOctokit(token);
@@ -65461,54 +65524,55 @@ jobs:
   execSync('git add .github/workflows/sync-with-mirror.yml');
   execSync('git commit -m "Add sync-with-mirror workflow"');
 
-  // Replace all occurrences of opencepk/opencepk-module-ghactions-common with tucowsinc/opencepk-module-ghactions-common in .github/workflows/*.yml
-  logger.info(
-    'Replacing opencepk/opencepk-module-ghactions-common with tucowsinc/opencepk-module-ghactions-common in .github/workflows/*.yml',
-  );
-  const workflowDir = path.join('.github', 'workflows');
-  const files = fs.readdirSync(workflowDir);
-  files.forEach(file => {
-    const filePath = path.join(workflowDir, file);
-    if (filePath.endsWith('.yml') || filePath.endsWith('.yaml')) {
-      let content = fs.readFileSync(filePath, 'utf8');
-      content = content.replace(
-        /opencepk\/opencepk-module-ghactions-common/g,
-        'tucowsinc/opencepk-module-ghactions-common',
-      );
-      fs.writeFileSync(filePath, content);
-    }
-  });
+  // // Replace all occurrences of opencepk/opencepk-module-ghactions-common with tucowsinc/opencepk-module-ghactions-common in .github/workflows/*.yml
+  // logger.info(
+  //   'Replacing opencepk/opencepk-module-ghactions-common with tucowsinc/opencepk-module-ghactions-common in .github/workflows/*.yml',
+  // );
+  // const workflowDir = path.join('.github', 'workflows');
+  // const files = fs.readdirSync(workflowDir);
+  // files.forEach(file => {
+  //   const filePath = path.join(workflowDir, file);
+  //   if (filePath.endsWith('.yml') || filePath.endsWith('.yaml')) {
+  //     let content = fs.readFileSync(filePath, 'utf8');
+  //     content = content.replace(
+  //       /opencepk\/opencepk-module-ghactions-common/g,
+  //       'tucowsinc/opencepk-module-ghactions-common',
+  //     );
+  //     fs.writeFileSync(filePath, content);
+  //   }
+  // });
 
-  // Commit the changes after replacement
-  logger.info('Committing changes after replacement');
-  execSync('git add .github/workflows');
-  execSync('git commit -m "Replace opencepk with tucowsinc in workflow files"');
+  // // Commit the changes after replacement
+  // logger.info('Committing changes after replacement');
+  // execSync('git add .github/workflows');
+  // execSync('git commit -m "Replace opencepk with tucowsinc in workflow files"');
 
-  // Replace all occurrences of git@github.com:opencepk with git@github.com:tucowsinc in .pre-commit-config.yaml
-  logger.info(
-    'Replacing git@github.com:opencepk with git@github.com:tucowsinc in .pre-commit-config.yaml',
-  );
-  const preCommitConfigPath = '.pre-commit-config.yaml';
-  if (fs.existsSync(preCommitConfigPath)) {
-    let preCommitContent = fs.readFileSync(preCommitConfigPath, 'utf8');
-    preCommitContent = preCommitContent.replace(
-      /git@github.com:opencepk/g,
-      'git@github.com:tucowsinc',
-    );
-    fs.writeFileSync(preCommitConfigPath, preCommitContent);
+  // // Replace all occurrences of git@github.com:opencepk with git@github.com:tucowsinc in .pre-commit-config.yaml
+  // logger.info(
+  //   'Replacing git@github.com:opencepk with git@github.com:tucowsinc in .pre-commit-config.yaml',
+  // );
+  // const preCommitConfigPath = '.pre-commit-config.yaml';
+  // if (fs.existsSync(preCommitConfigPath)) {
+  //   let preCommitContent = fs.readFileSync(preCommitConfigPath, 'utf8');
+  //   preCommitContent = preCommitContent.replace(
+  //     /git@github.com:opencepk/g,
+  //     'git@github.com:tucowsinc',
+  //   );
+  //   fs.writeFileSync(preCommitConfigPath, preCommitContent);
 
-    // Commit the changes after replacement
-    logger.info('Committing changes to .pre-commit-config.yaml');
-    execSync('git add .pre-commit-config.yaml');
-    execSync(
-      'git commit -m "Replace opencepk with tucowsinc in .pre-commit-config.yaml"',
-    );
-  } else {
-    logger.info(
-      '.pre-commit-config.yaml does not exist, skipping replacement.',
-    );
-  }
-
+  //   // Commit the changes after replacement
+  //   logger.info('Committing changes to .pre-commit-config.yaml');
+  //   execSync('git add .pre-commit-config.yaml');
+  //   execSync(
+  //     'git commit -m "Replace opencepk with tucowsinc in .pre-commit-config.yaml"',
+  //   );
+  // } else {
+  //   logger.info(
+  //     '.pre-commit-config.yaml does not exist, skipping replacement.',
+  //   );
+  // }
+  // Call the function where needed
+  replaceContentAndCommit();
   // Set the remote URL with the token for authentication
   logger.info('Setting remote URL with token for authentication');
   const remoteUrl = `https://x-access-token:${token}@github.com/${org}/${repoName}.git`;
