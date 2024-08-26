@@ -160,7 +160,6 @@ async function run() {
   try {
     core.info('Starting the sync process...');
     const token = core.getInput('github_token');
-    core.info(`GitHub token retrieved: ${token ? 'Yes' : 'No'}`);
     const octokit = github.getOctokit(token);
     const { owner, repo } = github.context.repo;
 
@@ -171,10 +170,8 @@ async function run() {
     const upstreamUrl = fs.readFileSync(upstreamFilePath, 'utf8').trim();
     core.info(`Upstream URL: ${upstreamUrl}`);
     const branch = core.getInput('branch') || 'main';
-    core.info(`Branch to sync with: ${branch}`);
 
     // Configure git
-    core.info('Configuring git user...');
     await exec.exec('git', [
       'config',
       '--global',
@@ -189,18 +186,14 @@ async function run() {
     ]);
 
     // Add upstream remote
-    core.info('Adding upstream remote...');
     await exec.exec('git', ['remote', 'add', 'upstream', upstreamUrl]);
-    core.info('Fetching upstream...');
     await exec.exec('git', ['fetch', 'upstream']);
 
     // Checkout a new branch for the merge
     const mergeBranch = `merge-upstream-${Date.now()}`;
-    core.info(`Creating and checking out new branch: ${mergeBranch}`);
     await exec.exec('git', ['checkout', '-b', mergeBranch]);
 
     // Merge upstream/main into the current branch, always accepting upstream changes in case of conflicts
-    core.info(`Merging upstream/${branch} into ${mergeBranch} with --allow-unrelated-histories...`);
     await exec.exec('git', [
       'merge',
       '--strategy-option=theirs',
@@ -208,29 +201,10 @@ async function run() {
       `upstream/${branch}`,
     ]);
 
-    // Check if there are any changes after the merge
-    core.info('Checking for changes after merge...');
-    let changes = '';
-    await exec.exec('git', ['diff', '--name-only', 'HEAD', `upstream/${branch}`], {
-      listeners: {
-        stdout: (data) => {
-          changes += data.toString();
-        },
-      },
-    });
-
-    core.info(`Changes detected: ${changes.trim() ? 'Yes' : 'No'}`);
-    if (!changes.trim()) {
-      core.info('No changes to commit. Skipping pull request creation.');
-      return;
-    }
-
     // Push the merge branch to origin
-    core.info(`Pushing branch ${mergeBranch} to origin...`);
     await exec.exec('git', ['push', 'origin', mergeBranch]);
 
     // Create a pull request
-    core.info('Creating pull request...');
     await octokit.pulls.create({
       owner,
       repo,
