@@ -158,6 +158,7 @@ const path = require('path');
 
 async function run() {
   try {
+    const mergeBranch = 'bot-sync-with-mirror';
     core.info('Starting the sync process...');
     const token = core.getInput('github_token');
     const octokit = github.getOctokit(token);
@@ -189,8 +190,21 @@ async function run() {
     await exec.exec('git', ['remote', 'add', 'upstream', upstreamUrl]);
     await exec.exec('git', ['fetch', 'upstream']);
 
+    // Delete the existing bot-sync-with-mirror branch if it exists locally
+    try {
+      await exec.exec('git', ['branch', '-D', mergeBranch]);
+    } catch (error) {
+      core.info('Local branch bot-sync-with-mirror does not exist, skipping deletion.');
+    }
+
+    // Delete the existing bot-sync-with-mirror branch if it exists remotely
+    try {
+      await exec.exec('git', ['push', 'origin', '--delete', mergeBranch]);
+    } catch (error) {
+      core.info(`Remote branch ${mergeBranch} does not exist, skipping deletion.`);
+    }
+
     // Checkout a new branch for the merge
-    const mergeBranch = `merge-upstream-${Date.now()}`;
     await exec.exec('git', ['checkout', '-b', mergeBranch]);
 
     // Merge upstream/main into the current branch, always accepting upstream changes in case of conflicts
@@ -225,7 +239,7 @@ async function run() {
 
     // Push the merge branch to origin
     try {
-      await exec.exec('git', ['push', 'origin', mergeBranch]);
+      await exec.exec('git', ['push', '--force', 'origin', mergeBranch]);
     } catch (error) {
       core.error(`Failed to push to origin: ${error.message}`);
       if (error.message.includes('refusing to allow a GitHub App to create or update workflow')) {
