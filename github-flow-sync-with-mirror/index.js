@@ -201,12 +201,38 @@ async function run() {
       `upstream/${branch}`,
     ]);
 
+    // Check for changes
+    let diffOutput = '';
+    const options = {};
+    options.listeners = {
+      stdout: (data) => {
+        diffOutput += data.toString();
+      },
+    };
+    await exec.exec('git', ['diff', '--name-only'], options);
+
+    if (!diffOutput) {
+      core.info('No changes detected after merge. Exiting without creating a pull request.');
+      return;
+    }
+
     // Set the remote URL to use HTTPS with the token
     const remoteUrl = `https://${token}@github.com/${owner}/${repo}.git`;
+    core.info(`Setting remote URL to: ${remoteUrl}`);
     await exec.exec('git', ['remote', 'set-url', 'origin', remoteUrl]);
 
     // Push the merge branch to origin
-    await exec.exec('git', ['push', 'origin', mergeBranch]);
+    try {
+      await exec.exec('git', ['push', 'origin', mergeBranch]);
+    } catch (error) {
+      core.error(`Failed to push to origin: ${error.message}`);
+      if (error.message.includes('refusing to allow a GitHub App to create or update workflow')) {
+        core.setFailed('The GitHub token does not have the required `workflows` permission to push changes to `.github/workflows`.');
+        return;
+      } else {
+        throw error;
+      }
+    }
 
     // Create a pull request
     await octokit.pulls.create({
