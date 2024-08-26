@@ -35916,6 +35916,21 @@ async function run() {
       `upstream/${branch}`,
     ]);
 
+    // Check if there are any changes after the merge
+    let changes = '';
+    await exec.exec('git', ['status', '--porcelain'], {
+      listeners: {
+        stdout: (data) => {
+          changes += data.toString();
+        },
+      },
+    });
+
+    if (!changes.trim()) {
+      core.info('No changes to commit. Skipping pull request creation.');
+      return;
+    }
+
     // Push the merge branch to origin
     await exec.exec('git', ['push', 'origin', mergeBranch]);
 
@@ -35936,7 +35951,6 @@ async function run() {
 }
 
 run();
-
 })();
 
 module.exports = __webpack_exports__;
