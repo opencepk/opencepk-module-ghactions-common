@@ -35924,7 +35924,7 @@ async function run() {
         diffOutput += data.toString();
       },
     };
-    await exec.exec('git', ['diff', '--name-only'], options);
+    await exec.exec('git', ['diff', 'HEAD~1', '--name-only'], options);
 
     core.info(`Diff output: ${diffOutput}`);
 
