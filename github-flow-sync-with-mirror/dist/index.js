@@ -35948,7 +35948,7 @@ async function run() {
     }
 
     // Set the remote URL to use HTTPS with the token
-    const remoteUrl = `https://${token}@github.com/${owner}/${repo}.git`;
+    const remoteUrl = `https://github.com/${owner}/${repo}.git`;
     core.info(`Setting remote URL to: ${remoteUrl}`);
     await exec.exec('git', ['remote', 'set-url', 'origin', remoteUrl]);
 
