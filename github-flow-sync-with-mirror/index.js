@@ -155,6 +155,7 @@ const exec = require('@actions/exec');
 const github = require('@actions/github');
 const fs = require('fs');
 const path = require('path');
+const { replaceContentAndCommit } = require('../common/localize-mirrored-repo.js');
 
 async function run() {
   try {
@@ -214,6 +215,8 @@ async function run() {
       '--allow-unrelated-histories',
       `upstream/${branch}`,
     ]);
+
+    replaceContentAndCommit();
 
     // Check for changes
     let diffOutput = '';

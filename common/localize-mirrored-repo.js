@@ -25,7 +25,7 @@ function replaceContentAndCommit() {
   // Commit the changes after replacement
   logger.info('Committing changes after replacement');
   execSync('git add .github/workflows');
-  execSync('git commit -m "Replace opencepk with tucowsinc in workflow files"');
+  execSync('git commit -m "chores/update Replace opencepk with tucowsinc in workflow files"');
 
   // Replace all occurrences of git@github.com:opencepk with git@github.com:tucowsinc in .pre-commit-config.yaml
   logger.info(
@@ -44,7 +44,7 @@ function replaceContentAndCommit() {
     logger.info('Committing changes to .pre-commit-config.yaml');
     execSync('git add .pre-commit-config.yaml');
     execSync(
-      'git commit -m "Replace opencepk with tucowsinc in .pre-commit-config.yaml"',
+      'git commit -m "chores/update: Replace opencepk with tucowsinc in .pre-commit-config.yaml"',
     );
   } else {
     logger.info(

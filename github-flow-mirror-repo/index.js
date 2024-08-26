@@ -5,8 +5,9 @@ const fs = require('fs');
 const path = require('path');
 const logger = require('../common/logger.js');
 const { setGitActionAccess } = require('../common/git-operations.js');
-const prefix = 'mirror';
 const { replaceContentAndCommit } = require('../common/localize-mirrored-repo.js');
+const prefix = 'mirror';
+
 
 async function processRepo(publicRepoUrl, org, token, newRepoName = null) {
   const octokit = github.getOctokit(token);
