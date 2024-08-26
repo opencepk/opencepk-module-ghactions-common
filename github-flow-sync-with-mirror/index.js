@@ -216,7 +216,7 @@ async function run() {
       `upstream/${branch}`,
     ]);
 
-    replaceContentAndCommit();
+    // replaceContentAndCommit();
 
     // Check for changes
     let diffOutput = '';
