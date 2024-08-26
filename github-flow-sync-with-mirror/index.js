@@ -201,20 +201,20 @@ async function run() {
       `upstream/${branch}`,
     ]);
 
-    // Check for changes
-    let diffOutput = '';
-    const options = {};
-    options.listeners = {
-      stdout: (data) => {
-        diffOutput += data.toString();
-      },
-    };
-    await exec.exec('git', ['diff', '--name-only'], options);
+    // // Check for changes
+    // let diffOutput = '';
+    // const options = {};
+    // options.listeners = {
+    //   stdout: (data) => {
+    //     diffOutput += data.toString();
+    //   },
+    // };
+    // await exec.exec('git', ['diff', '--name-only'], options);
 
-    if (!diffOutput) {
-      core.info('No changes detected after merge. Exiting without creating a pull request.');
-      return;
-    }
+    // if (!diffOutput) {
+    //   core.info('No changes detected after merge. Exiting without creating a pull request.');
+    //   return;
+    // }
 
     // Set the remote URL to use HTTPS with the token
     const remoteUrl = `https://${token}@github.com/${owner}/${repo}.git`;
