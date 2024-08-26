@@ -65,7 +65,7 @@ function replaceContentAndCommit() {
   // Commit the changes after replacement
   logger.info('Committing changes after replacement');
   execSync('git add .github/workflows');
-  execSync('git commit -m "Replace opencepk with tucowsinc in workflow files"');
+  execSync('git commit -m "chores/update Replace opencepk with tucowsinc in workflow files"');
 
   // Replace all occurrences of git@github.com:opencepk with git@github.com:tucowsinc in .pre-commit-config.yaml
   logger.info(
@@ -84,7 +84,7 @@ function replaceContentAndCommit() {
     logger.info('Committing changes to .pre-commit-config.yaml');
     execSync('git add .pre-commit-config.yaml');
     execSync(
-      'git commit -m "Replace opencepk with tucowsinc in .pre-commit-config.yaml"',
+      'git commit -m "chores/update: Replace opencepk with tucowsinc in .pre-commit-config.yaml"',
     );
   } else {
     logger.info(
@@ -65431,8 +65431,9 @@ const fs = __nccwpck_require__(7147);
 const path = __nccwpck_require__(1017);
 const logger = __nccwpck_require__(5568);
 const { setGitActionAccess } = __nccwpck_require__(3907);
-const prefix = 'mirror';
 const { replaceContentAndCommit } = __nccwpck_require__(3277);
+const prefix = 'mirror';
+
 
 async function processRepo(publicRepoUrl, org, token, newRepoName = null) {
   const octokit = github.getOctokit(token);
