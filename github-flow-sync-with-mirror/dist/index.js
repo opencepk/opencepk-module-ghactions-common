@@ -35916,8 +35916,19 @@ async function run() {
       `upstream/${branch}`,
     ]);
 
+    // // Push the merge branch to origin
+    // await exec.exec('git', ['push', 'origin', mergeBranch]);
+
+    // Temporarily set the remote URL to use HTTPS with the token
+    const originalRemoteUrl = `https://github.com/${owner}/${repo}.git`;
+    const remoteUrlWithToken = `https://${token}@github.com/${owner}/${repo}.git`;
+    await exec.exec('git', ['remote', 'set-url', 'origin', remoteUrlWithToken]);
+
     // Push the merge branch to origin
     await exec.exec('git', ['push', 'origin', mergeBranch]);
+
+    // Reset the remote URL back to the original
+    await exec.exec('git', ['remote', 'set-url', 'origin', originalRemoteUrl]);
 
     // Create a pull request
     await octokit.pulls.create({
