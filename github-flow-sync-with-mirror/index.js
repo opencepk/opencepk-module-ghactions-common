@@ -197,6 +197,7 @@ async function run() {
     await exec.exec('git', [
       'merge',
       '--strategy-option=theirs',
+      '--allow-unrelated-histories',
       `upstream/${branch}`,
     ]);
 
