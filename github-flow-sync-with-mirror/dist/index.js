@@ -35918,7 +35918,7 @@ async function run() {
 
     // Check if there are any changes after the merge
     let changes = '';
-    await exec.exec('git', ['status', '--porcelain'], {
+    await exec.exec('git', ['diff', '--name-only', 'HEAD', `upstream/${branch}`], {
       listeners: {
         stdout: (data) => {
           changes += data.toString();
