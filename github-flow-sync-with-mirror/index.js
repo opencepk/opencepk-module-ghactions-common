@@ -150,10 +150,15 @@ async function run() {
     core.info(`Upstream URL: ${upstreamUrl}`);
     const branch = core.getInput('branch') || 'main';
 
-    // Clone the target repository
+    // // Clone the target repository
+    // await exec.exec('git', [
+    //   'clone',
+    //   `https://${token}@github.com/${repoOwner}/${repoName}.git`,
+    // ]);
+    // Clone the target repository using SSH
     await exec.exec('git', [
       'clone',
-      `https://${token}@github.com/${repoOwner}/${repoName}.git`,
+      `git@github.com:${repoOwner}/${repoName}.git`,
     ]);
     process.chdir(repoName);
 
