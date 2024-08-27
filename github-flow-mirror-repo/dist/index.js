@@ -65535,13 +65535,13 @@ async function processRepo(publicRepoUrl, org, token, newRepoName = null) {
 
   const workflowContent = `
 ---
-name: call-sync-mirror
+name: github-call-sync-with-mirror
 on:
   push:
     branches:
       - main
 jobs:
-  call-github-update-submodule:
+  github-call-sync-with-mirror:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -65561,7 +65561,7 @@ jobs:
         with:
           file: '.github/UPSTREAM'
           file_type: 'file'
-          separator: '/\r?\n/'
+          separator: '/\\r?\\n/'
           output_format: ','
           
       - name: Log upstream
