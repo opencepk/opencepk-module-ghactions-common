@@ -25,7 +25,15 @@ function replaceContentAndCommit() {
   // Commit the changes after replacement
   logger.info('Committing changes after replacement');
   execSync('git add .github/workflows');
-  execSync('git commit -m "chores/update Replace opencepk with tucowsinc in workflow files"');
+  try {
+    execSync('git commit -m "chores/update Replace opencepk with tucowsinc in workflow files"');
+  } catch (error) {
+    if (error.message.includes('nothing to commit')) {
+      logger.info('No changes to commit in workflow files. Proceeding...');
+    } else {
+      throw error;
+    }
+  }
 
   // Replace all occurrences of git@github.com:opencepk with git@github.com:tucowsinc in .pre-commit-config.yaml
   logger.info(
@@ -43,9 +51,18 @@ function replaceContentAndCommit() {
     // Commit the changes after replacement
     logger.info('Committing changes to .pre-commit-config.yaml');
     execSync('git add .pre-commit-config.yaml');
-    execSync(
-      'git commit -m "chores/update: Replace opencepk with tucowsinc in .pre-commit-config.yaml"',
-    );
+    try {
+      execSync(
+        'git commit -m "chores/update: Replace opencepk with tucowsinc in .pre-commit-config.yaml"',
+      );
+    } catch (error) {
+      if (error.message.includes('nothing to commit')) {
+        logger.info('No changes to commit in .pre-commit-config.yaml. Proceeding...');
+      } else {
+        logger.error(`${JSON.stringify(error)}`);
+        logger.setFailed(`Failed to commit changes to .pre-commit-config.yaml: ${error.message}`);
+      }
+    }
   } else {
     logger.info(
       '.pre-commit-config.yaml does not exist, skipping replacement.',
