@@ -84,7 +84,7 @@ async function run() {
       `upstream/${branch}`,
     ]);
     logger.debug('Merged upstream/main into the current branch.');
-    // replaceContentAndCommit();
+    replaceContentAndCommit();
     logger.debug('Replaced content and committed changes.');
     // Check for changes
     let diffOutput = '';
