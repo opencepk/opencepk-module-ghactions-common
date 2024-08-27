@@ -135,7 +135,7 @@ jobs:
         with:
           token: \${{ steps.get_workflow_token.outputs.token }}
           repo: '\${{ github.repository }}'
-          workflow_id: 'sync-with-mirror.yml'
+          workflow_id: 'github-sync-with-mirror.yml'
           ref: 'main'
           inputs: '{"repo":"\${{ github.repository }}", "upstreamUrl":"\${{ steps.read_patterns.outputs.properties }}"}'
     `;
