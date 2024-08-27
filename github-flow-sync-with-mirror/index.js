@@ -84,7 +84,7 @@ async function run() {
       `upstream/${branch}`,
     ]);
     logger.debug('Merged upstream/main into the current branch.');
-    // replaceContentAndCommit();
+    replaceContentAndCommit();
     logger.debug('Replaced content and committed changes.');
     // Check for changes
     let diffOutput = '';
@@ -178,6 +178,22 @@ async function run() {
       } else {
         throw error;
       }
+    }
+
+    // Check if there are commits between the branches before creating a pull request
+    let compareOutput = '';
+    const compareOptions = {
+      listeners: {
+        stdout: data => {
+          compareOutput += data.toString();
+        },
+      },
+    };
+    await exec.exec('git', ['rev-list', '--count', `${branch}..${mergeBranch}`], compareOptions);
+
+    if (parseInt(compareOutput.trim(), 10) === 0) {
+      core.info('No commits between branches. Exiting without creating a pull request.');
+      return;
     }
 
     // Create a pull request
