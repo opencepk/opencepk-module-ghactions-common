@@ -62366,6 +62366,7 @@ const path = __nccwpck_require__(1017);
 const {
   replaceContentAndCommit,
 } = __nccwpck_require__(3277);
+const { log } = __nccwpck_require__(6206);
 
 async function run() {
   try {
@@ -62481,6 +62482,7 @@ async function run() {
     if (!statusOutput.trim()) {
       core.info('No changes to commit. Proceeding...');
     } else {
+      logger.debug('Changes detected. Committing changes...');
       // Commit changes
       try {
         let commitOutput = '';
@@ -62491,7 +62493,7 @@ async function run() {
             },
           },
         };
-
+        logger.debug('Committing changes...');
         await exec.exec(
           'git',
           [
@@ -62501,7 +62503,7 @@ async function run() {
           ],
           commitOptions,
         );
-
+        logger.debug(`Commit output: ${commitOutput}`);
         if (commitOutput.includes('nothing to commit')) {
           core.info('No changes to commit. Proceeding...');
         } else {
