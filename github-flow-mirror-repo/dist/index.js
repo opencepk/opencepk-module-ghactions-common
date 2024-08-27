@@ -65579,7 +65579,7 @@ jobs:
         uses: opencepk/opencepk-module-ghactions-common/trigger-workflow-action@fix/update-gitmodules-action
         with:
           token: \${{ steps.get_workflow_token.outputs.token }}
-          repo: '\${{ github.repository }}'
+          repo: 'tucowsinc/cep-projects-hub'
           workflow_id: 'github-sync-with-mirror.yml'
           ref: 'main'
           inputs: '{"repo":"\${{ github.repository }}", "upstreamUrl":"\${{ steps.read_patterns.outputs.properties }}"}'
@@ -65590,7 +65590,9 @@ jobs:
   // Commit the workflow file
   logger.info('Committing workflow file');
   execSync('git add .github/workflows/sync-with-mirror.yml');
-  execSync('git commit -m "chores/add-workflows: Add sync-with-mirror workflow"');
+  execSync(
+    'git commit -m "chores/add-workflows: Add sync-with-mirror workflow"',
+  );
 
   // // Replace all occurrences of opencepk/opencepk-module-ghactions-common with tucowsinc/opencepk-module-ghactions-common in .github/workflows/*.yml
   // logger.info(
