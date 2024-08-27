@@ -5,9 +5,10 @@ const fs = require('fs');
 const path = require('path');
 const logger = require('../common/logger.js');
 const { setGitActionAccess } = require('../common/git-operations.js');
-const { replaceContentAndCommit } = require('../common/localize-mirrored-repo.js');
+const {
+  replaceContentAndCommit,
+} = require('../common/localize-mirrored-repo.js');
 const prefix = 'mirror';
-
 
 async function processRepo(publicRepoUrl, org, token, newRepoName = null) {
   const octokit = github.getOctokit(token);
@@ -62,7 +63,7 @@ async function processRepo(publicRepoUrl, org, token, newRepoName = null) {
 
   // Add the GitHub Actions workflow file
   logger.info('Adding GitHub Actions workflow file');
-  const workflowContent = `
+  let workflowContent = `
 ---
 name: sync-with-mirror
 on:
@@ -94,10 +95,57 @@ jobs:
   fs.mkdirSync(path.dirname(workflowFilePath), { recursive: true });
   fs.writeFileSync(workflowFilePath, workflowContent);
 
+  workflowContent = `
+---
+name: call-sync-mirror
+on:
+  push:
+    branches:
+      - main
+jobs:
+  call-github-update-submodule:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get Token
+        id: get_workflow_token
+        uses: peter-murray/workflow-application-token-action@v3
+        with:
+          application_id: \${{ secrets.GH_APP_REPO_ACTION_RW_APPLICATION_ID }}
+          application_private_key: \${{ secrets.GH_APP_REPO_ACTION_RW_PRIVATE_KEY }}
+          revoke_token: true
+
+      - name: Read patterns from file
+        id: read_patterns
+        uses: opencepk/opencepk-module-ghactions-common/read-and-stringify-json-action@fix/update-gitmodules-action
+        with:
+          file: '.github/UPSTREAM'
+          file_type: 'file'
+          separator: '/\r?\n/'
+          output_format: ','
+          
+      - name: Log upstream
+        run: |
+          echo "Patterns: \${{ steps.read_patterns.outputs.properties }}"
+
+      - name: Trigger reusable workflow via API
+        uses: opencepk/opencepk-module-ghactions-common/trigger-workflow-action@fix/update-gitmodules-action
+        with:
+          token: \${{ steps.get_workflow_token.outputs.token }}
+          repo: '\${{ github.repository }}'
+          workflow_id: 'sync-with-mirror.yml'
+          ref: 'main'
+          inputs: '{"repo":"\${{ github.repository }}", "upstreamUrl":"\${{ steps.read_patterns.outputs.properties }}"}'
+    `;
+
+  fs.mkdirSync(path.dirname(workflowFilePath), { recursive: true });
+  fs.writeFileSync(workflowFilePath, workflowContent);
   // Commit the workflow file
   logger.info('Committing workflow file');
   execSync('git add .github/workflows/sync-with-mirror.yml');
-  execSync('git commit -m "Add sync-with-mirror workflow"');
+  execSync('git commit -m "chores/add-workflows: Add sync-with-mirror workflow"');
 
   // // Replace all occurrences of opencepk/opencepk-module-ghactions-common with tucowsinc/opencepk-module-ghactions-common in .github/workflows/*.yml
   // logger.info(
