@@ -62414,7 +62414,7 @@ async function run() {
     // Add upstream remote
     await exec.exec('git', ['remote', 'add', 'upstream', upstreamUrl]);
     await exec.exec('git', ['fetch', 'upstream']);
-
+    logger.debug('Upstream remote added successfully.');
     // Delete the existing bot-sync-with-mirror branch if it exists locally
     try {
       await exec.exec('git', ['branch', '-D', mergeBranch]);
@@ -62423,7 +62423,7 @@ async function run() {
         'Local branch bot-sync-with-mirror does not exist, skipping deletion.',
       );
     }
-
+    logger.debug('Local branch cleanup complete.');
     // Delete the existing bot-sync-with-mirror branch if it exists remotely
     try {
       await exec.exec('git', ['push', 'origin', '--delete', mergeBranch]);
@@ -62432,10 +62432,10 @@ async function run() {
         `Remote branch ${mergeBranch} does not exist, skipping deletion.`,
       );
     }
-
+    logger.debug('Branch cleanup complete.');
     // Checkout a new branch for the merge
     await exec.exec('git', ['checkout', '-b', mergeBranch]);
-
+    logger.debug(`Checked out new branch: ${mergeBranch}`);
     // Merge upstream/main into the current branch, always accepting upstream changes in case of conflicts
     await exec.exec('git', [
       'merge',
@@ -62443,9 +62443,9 @@ async function run() {
       '--allow-unrelated-histories',
       `upstream/${branch}`,
     ]);
-
+    logger.debug('Merged upstream/main into the current branch.');
     replaceContentAndCommit();
-
+    logger.debug('Replaced content and committed changes.');
     // Check for changes
     let diffOutput = '';
     const options = {};
@@ -62454,8 +62454,9 @@ async function run() {
         diffOutput += data.toString();
       },
     };
+    logger.debug('Checking for changes...');
     await exec.exec('git', ['diff', 'HEAD~1', '--name-only'], options);
-
+    logger.debug('Changes checked successfully.');
     core.info(`Diff output: ${diffOutput}`);
 
     if (!diffOutput.trim()) {
@@ -62464,10 +62465,10 @@ async function run() {
       );
       return;
     }
-
+    logger.debug('Changes detected. Staging changes...');
     // Stage changes
     await exec.exec('git', ['add', '.']);
-
+    logger.debug('Changes staged successfully.');
     // Check for staged changes
     let statusOutput = '';
     const statusOptions = {
@@ -62556,6 +62557,7 @@ async function run() {
 }
 
 run();
+
 })();
 
 module.exports = __webpack_exports__;
