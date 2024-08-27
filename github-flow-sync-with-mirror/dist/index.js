@@ -62467,35 +62467,50 @@ async function run() {
     // Stage changes
     await exec.exec('git', ['add', '.']);
 
-    // Commit changes
-    try {
-      let commitOutput = '';
-      const commitOptions = {
-        listeners: {
-          stdout: data => {
-            commitOutput += data.toString();
-          },
+    // Check for staged changes
+    let statusOutput = '';
+    const statusOptions = {
+      listeners: {
+        stdout: data => {
+          statusOutput += data.toString();
         },
-      };
+      },
+    };
+    await exec.exec('git', ['status', '--porcelain'], statusOptions);
 
-      await exec.exec(
-        'git',
-        [
-          'commit',
-          '-m',
-          'chores/update: Replace opencepk with tucowsinc in .pre-commit-config.yaml',
-        ],
-        commitOptions,
-      );
+    if (!statusOutput.trim()) {
+      core.info('No changes to commit. Proceeding...');
+    } else {
+      // Commit changes
+      try {
+        let commitOutput = '';
+        const commitOptions = {
+          listeners: {
+            stdout: data => {
+              commitOutput += data.toString();
+            },
+          },
+        };
 
-      if (commitOutput.includes('nothing to commit')) {
-        core.info('No changes to commit. Proceeding...');
-      } else {
-        core.info('Changes committed successfully.');
+        await exec.exec(
+          'git',
+          [
+            'commit',
+            '-m',
+            'chores/update: Replace opencepk with tucowsinc in .pre-commit-config.yaml',
+          ],
+          commitOptions,
+        );
+
+        if (commitOutput.includes('nothing to commit')) {
+          core.info('No changes to commit. Proceeding...');
+        } else {
+          core.info('Changes committed successfully.');
+        }
+      } catch (error) {
+        core.error(`Failed to commit changes: ${error.message}`);
+        return;
       }
-    } catch (error) {
-      core.error(`Failed to commit changes: ${error.message}`);
-      return;
     }
 
     // Set remote URL
@@ -62539,7 +62554,6 @@ async function run() {
 }
 
 run();
-
 })();
 
 module.exports = __webpack_exports__;
