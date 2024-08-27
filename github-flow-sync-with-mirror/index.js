@@ -153,7 +153,7 @@ async function run() {
     // Clone the target repository
     await exec.exec('git', [
       'clone',
-      `https://${token}@github.com/${repoOwner}/${repoName}.git`,
+      `https://@github.com/${repoOwner}/${repoName}.git`,
     ]);
     process.chdir(repoName);
 
