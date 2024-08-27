@@ -32,7 +32,9 @@ function replaceContentAndCommit() {
   logger.info('Committing changes after replacement');
   execSync('git add .github/workflows');
   try {
-    execSync('git commit -m "chores/update Replace opencepk with tucowsinc in workflow files"');
+    execSync(
+      'git commit -m "chores/update Replace opencepk with tucowsinc in workflow files"',
+    );
   } catch (error) {
     if (error.message.includes('nothing to commit')) {
       logger.info('No changes to commit in workflow files. Proceeding...');
@@ -58,12 +60,16 @@ function replaceContentAndCommit() {
     logger.info('Committing changes to .pre-commit-config.yaml');
     execSync('git add .pre-commit-config.yaml');
     try {
+      logger.info('Committing changes to .pre-commit-config.yaml');
       execSync(
         'git commit -m "chores/update: Replace opencepk with tucowsinc in .pre-commit-config.yaml"',
       );
     } catch (error) {
+      logger.error(`${JSON.stringify(error)}`);
       if (error.message.includes('nothing to commit')) {
-        logger.info('No changes to commit in .pre-commit-config.yaml. Proceeding...');
+        logger.info(
+          'No changes to commit in .pre-commit-config.yaml. Proceeding...',
+        );
       } else {
         logger.error(`${JSON.stringify(error)}`);
         // logger.setFailed(`Failed to commit changes to .pre-commit-config.yaml: ${error.message}`);
@@ -77,6 +83,7 @@ function replaceContentAndCommit() {
 }
 
 module.exports = { replaceContentAndCommit };
+
 
 /***/ }),
 
@@ -62460,7 +62467,7 @@ async function run() {
       `upstream/${branch}`,
     ]);
     logger.debug('Merged upstream/main into the current branch.');
-    // replaceContentAndCommit();
+    replaceContentAndCommit();
     logger.debug('Replaced content and committed changes.');
     // Check for changes
     let diffOutput = '';
