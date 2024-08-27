@@ -100,15 +100,9 @@ function replaceContentAndCommit() {
       );
     } catch (error) {
       logger.warn(`${JSON.stringify(error)}`);
-      logger.error(`stdout: ${error.stdout.toString()}`);
-      logger.error(`stderr: ${error.stderr.toString()}`);
-      if (error.message.includes('nothing to commit')) {
-        logger.info(
-          'No changes to commit in .pre-commit-config.yaml. Proceeding...',
-        );
-      } else {
-        logger.error(`${JSON.stringify(error)}`);
-      }
+      logger.info(
+        'No changes to commit in .pre-commit-config.yaml. Proceeding...',
+      );
     }
   } else {
     logger.info(
