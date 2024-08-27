@@ -62469,11 +62469,30 @@ async function run() {
 
     // Commit changes
     try {
-      await exec.exec('git', [
-        'commit',
-        '-m',
-        'chores/update: Replace opencepk with tucowsinc in .pre-commit-config.yaml',
-      ]);
+      let commitOutput = '';
+      const commitOptions = {
+        listeners: {
+          stdout: data => {
+            commitOutput += data.toString();
+          },
+        },
+      };
+
+      await exec.exec(
+        'git',
+        [
+          'commit',
+          '-m',
+          'chores/update: Replace opencepk with tucowsinc in .pre-commit-config.yaml',
+        ],
+        commitOptions,
+      );
+
+      if (commitOutput.includes('nothing to commit')) {
+        core.info('No changes to commit. Proceeding...');
+      } else {
+        core.info('Changes committed successfully.');
+      }
     } catch (error) {
       core.error(`Failed to commit changes: ${error.message}`);
       return;
@@ -62520,6 +62539,7 @@ async function run() {
 }
 
 run();
+
 })();
 
 module.exports = __webpack_exports__;
