@@ -65563,7 +65563,7 @@ jobs:
           file_type: 'file'
           separator: '/\\r?\\n/'
           output_format: ','
-          
+                    
       - name: Log upstream
         run: |
           echo "Patterns: \${{ steps.read_patterns.outputs.properties }}"
@@ -65576,13 +65576,10 @@ jobs:
           workflow_id: 'github-sync-with-mirror.yml'
           ref: 'main'
           inputs: '{"repo":"\${{ github.repository }}", "upstreamUrl":"\${{ steps.read_patterns.outputs.properties }}"}'
+
     `;
-  const workflowFileName= 'github-call-sync-with-mirror.yml';
-  const workflowFilePath = path.join(
-    '.github',
-    'workflows',
-    workflowFileName,
-  );
+  const workflowFileName = 'github-call-sync-with-mirror.yml';
+  const workflowFilePath = path.join('.github', 'workflows', workflowFileName);
   fs.mkdirSync(path.dirname(workflowFilePath), { recursive: true });
   fs.writeFileSync(workflowFilePath, workflowContent);
 
