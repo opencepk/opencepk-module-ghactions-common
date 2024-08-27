@@ -5,6 +5,12 @@ inputs:
   github_token:
     description: 'GitHub token'
     required: true
+  upstream_url:
+    description: 'The URL of the upstream repository'
+    required: true
+  repo:
+    description: 'The org/repo'
+    required: true
 runs:
   using: 'node20'
   main: 'dist/index.js'
