@@ -62557,20 +62557,20 @@ async function run() {
     }
 
     // Check if there are commits between the branches before creating a pull request
-    let compareOutput = '';
-    const compareOptions = {
-      listeners: {
-        stdout: data => {
-          compareOutput += data.toString();
-        },
-      },
-    };
-    await exec.exec('git', ['rev-list', '--count', `${branch}..${mergeBranch}`], compareOptions);
+    // let compareOutput = '';
+    // const compareOptions = {
+    //   listeners: {
+    //     stdout: data => {
+    //       compareOutput += data.toString();
+    //     },
+    //   },
+    // };
+    // await exec.exec('git', ['rev-list', '--count', `${branch}..${mergeBranch}`], compareOptions);
 
-    if (parseInt(compareOutput.trim(), 10) === 0) {
-      core.info('No commits between branches. Exiting without creating a pull request.');
-      return;
-    }
+    // if (parseInt(compareOutput.trim(), 10) === 0) {
+    //   core.info('No commits between branches. Exiting without creating a pull request.');
+    //   return;
+    // }
 
     // Create a pull request
     await octokit.pulls.create({
