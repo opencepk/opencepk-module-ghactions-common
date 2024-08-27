@@ -5,7 +5,7 @@ inputs:
   github_token:
     description: 'GitHub token'
     required: true
-  upstream_url:
+  upstreamUrl:
     description: 'The URL of the upstream repository'
     required: true
   repo:
