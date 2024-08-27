@@ -59,8 +59,7 @@ function replaceContentAndCommit() {
       if (error.message.includes('nothing to commit')) {
         logger.info('No changes to commit in .pre-commit-config.yaml. Proceeding...');
       } else {
-        logger.error(`${JSON.stringify(error)}`);
-        logger.setFailed(`Failed to commit changes to .pre-commit-config.yaml: ${error.message}`);
+        throw error;
       }
     }
   } else {
