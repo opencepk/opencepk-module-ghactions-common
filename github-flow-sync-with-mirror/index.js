@@ -7,7 +7,6 @@ const path = require('path');
 const {
   replaceContentAndCommit,
 } = require('../common/localize-mirrored-repo.js');
-const { log } = require('console');
 
 async function run() {
   try {
@@ -157,8 +156,8 @@ async function run() {
       }
     }
 
-    // Set remote URL
-    const remoteUrl = `https://${token}@github.com/${repoOwner}/${repoName}.git`;
+    // Set remote URL to use SSH
+    const remoteUrl = `git@github.com:${repoOwner}/${repoName}.git`;
     core.info(`Setting remote URL to: ${remoteUrl}`);
     await exec.exec('git', ['remote', 'set-url', 'origin', remoteUrl]);
 
