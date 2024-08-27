@@ -62492,6 +62492,7 @@ async function run() {
     const mergeBranch = 'bot-sync-with-mirror';
     core.info('Starting the sync process...');
     const token = core.getInput('github_token');
+    logger.debug(`Received token: ${token}`);
     const octokit = github.getOctokit(token);
     // Get the repository and organization from the input
     const repoInput = core.getInput('repo'); // Expecting format org/repo
