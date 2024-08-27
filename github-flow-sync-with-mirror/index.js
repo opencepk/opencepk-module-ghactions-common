@@ -19,8 +19,7 @@ async function run() {
     const repoInput = core.getInput('repo'); // Expecting format org/repo
     logger.debug(`Received repo input: ${repoInput}`);
     const [repoOwner, repoName] = repoInput.split('/');
-    logger.debug(`Parsed repo owner: ${repoOwner}, repo name: ${repoName}`);
-
+    logger.debug(`Repo owner: ${repoOwner}, Repo name: ${repoName}`);
     const upstreamUrl = core.getInput('upstreamUrl');
     core.info(`Reading UPSTREAM file from: ${upstreamUrl}`);
     if (!repoOwner || !repoName) {
@@ -30,20 +29,15 @@ async function run() {
 
     core.info(`Upstream URL: ${upstreamUrl}`);
     const branch = core.getInput('branch') || 'main';
-    logger.debug(`Using branch: ${branch}`);
 
     // Clone the target repository using SSH
-    core.info('Cloning the target repository...');
     await exec.exec('git', [
       'clone',
       `git@github.com:${repoOwner}/${repoName}.git`,
     ]);
-    logger.debug('Repository cloned successfully.');
     process.chdir(repoName);
-    logger.debug(`Changed directory to: ${process.cwd()}`);
 
     // Configure git
-    core.info('Configuring git...');
     await exec.exec('git', [
       'config',
       '--global',
@@ -56,43 +50,33 @@ async function run() {
       'user.email',
       'github-actions@github.com',
     ]);
-    logger.debug('Git configured successfully.');
 
     // Add upstream remote
-    core.info('Adding upstream remote...');
     await exec.exec('git', ['remote', 'add', 'upstream', upstreamUrl]);
     await exec.exec('git', ['fetch', 'upstream']);
-    logger.debug('Upstream remote added and fetched successfully.');
-
+    logger.debug('Upstream remote added successfully.');
     // Delete the existing bot-sync-with-mirror branch if it exists locally
-    core.info('Deleting local bot-sync-with-mirror branch if it exists...');
     try {
       await exec.exec('git', ['branch', '-D', mergeBranch]);
-      logger.debug('Local branch deleted successfully.');
     } catch (error) {
       core.info(
         'Local branch bot-sync-with-mirror does not exist, skipping deletion.',
       );
     }
-
+    logger.debug('Local branch cleanup complete.');
     // Delete the existing bot-sync-with-mirror branch if it exists remotely
-    core.info('Deleting remote bot-sync-with-mirror branch if it exists...');
     try {
       await exec.exec('git', ['push', 'origin', '--delete', mergeBranch]);
-      logger.debug('Remote branch deleted successfully.');
     } catch (error) {
       core.info(
         `Remote branch ${mergeBranch} does not exist, skipping deletion.`,
       );
     }
-
+    logger.debug('Branch cleanup complete.');
     // Checkout a new branch for the merge
-    core.info(`Checking out a new branch: ${mergeBranch}...`);
     await exec.exec('git', ['checkout', '-b', mergeBranch]);
     logger.debug(`Checked out new branch: ${mergeBranch}`);
-
     // Merge upstream/main into the current branch, always accepting upstream changes in case of conflicts
-    core.info('Merging upstream changes into the current branch...');
     await exec.exec('git', [
       'merge',
       '--strategy-option=theirs',
@@ -100,14 +84,9 @@ async function run() {
       `upstream/${branch}`,
     ]);
     logger.debug('Merged upstream/main into the current branch.');
-
-    // Replace content and commit changes
-    core.info('Replacing content and committing changes...');
-    replaceContentAndCommit();
+    // replaceContentAndCommit();
     logger.debug('Replaced content and committed changes.');
-
     // Check for changes
-    core.info('Checking for changes...');
     let diffOutput = '';
     const options = {};
     options.listeners = {
@@ -115,6 +94,7 @@ async function run() {
         diffOutput += data.toString();
       },
     };
+    logger.debug('Checking for changes...');
     await exec.exec('git', ['diff', 'HEAD~1', '--name-only'], options);
     logger.debug('Changes checked successfully.');
     core.info(`Diff output: ${diffOutput}`);
@@ -125,14 +105,11 @@ async function run() {
       );
       return;
     }
-
+    logger.debug('Changes detected. Staging changes...');
     // Stage changes
-    core.info('Staging changes...');
     await exec.exec('git', ['add', '.']);
     logger.debug('Changes staged successfully.');
-
     // Check for staged changes
-    core.info('Checking for staged changes...');
     let statusOutput = '';
     const statusOptions = {
       listeners: {
@@ -142,13 +119,12 @@ async function run() {
       },
     };
     await exec.exec('git', ['status', '--porcelain'], statusOptions);
-    logger.debug('Staged changes checked successfully.');
 
     if (!statusOutput.trim()) {
       core.info('No changes to commit. Proceeding...');
     } else {
+      logger.debug('Changes detected. Committing changes...');
       // Commit changes
-      core.info('Committing changes...');
       try {
         let commitOutput = '';
         const commitOptions = {
@@ -158,6 +134,7 @@ async function run() {
             },
           },
         };
+        logger.debug('Committing changes...');
         await exec.exec(
           'git',
           [
@@ -180,16 +157,13 @@ async function run() {
     }
 
     // Set remote URL to use SSH
-    core.info(`Setting remote URL to: ${remoteUrl}`);
     const remoteUrl = `git@github.com:${repoOwner}/${repoName}.git`;
+    core.info(`Setting remote URL to: ${remoteUrl}`);
     await exec.exec('git', ['remote', 'set-url', 'origin', remoteUrl]);
-    logger.debug('Remote URL set successfully.');
 
     // Push the merge branch to origin
-    core.info('Pushing the merge branch to origin...');
     try {
       await exec.exec('git', ['push', '--force', 'origin', mergeBranch]);
-      logger.debug('Merge branch pushed to origin successfully.');
     } catch (error) {
       core.error(`Failed to push to origin: ${error.message}`);
       if (
@@ -206,8 +180,23 @@ async function run() {
       }
     }
 
+    // Check if there are commits between the branches before creating a pull request
+    // let compareOutput = '';
+    // const compareOptions = {
+    //   listeners: {
+    //     stdout: data => {
+    //       compareOutput += data.toString();
+    //     },
+    //   },
+    // };
+    // await exec.exec('git', ['rev-list', '--count', `${branch}..${mergeBranch}`], compareOptions);
+
+    // if (parseInt(compareOutput.trim(), 10) === 0) {
+    //   core.info('No commits between branches. Exiting without creating a pull request.');
+    //   return;
+    // }
+
     // Create a pull request
-    core.info('Creating a pull request...');
     await octokit.pulls.create({
       owner: repoOwner,
       repo: repoName,
@@ -216,6 +205,7 @@ async function run() {
       base: branch,
       body: 'This PR merges changes from upstream/main and resolves conflicts by accepting upstream changes.',
     });
+
     core.info('Pull request created successfully');
   } catch (error) {
     core.setFailed(`Action failed with error: ${error.message}`);
