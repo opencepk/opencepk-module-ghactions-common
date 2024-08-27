@@ -132,17 +132,18 @@ jobs:
           ref: 'main'
           inputs: '{"repo":"\${{ github.repository }}", "upstreamUrl":"\${{ steps.read_patterns.outputs.properties }}"}'
     `;
+  const workflowFileName= 'github-call-sync-with-mirror.yml';
   const workflowFilePath = path.join(
     '.github',
     'workflows',
-    'github-call-sync-with-mirror.yml',
+    workflowFileName,
   );
   fs.mkdirSync(path.dirname(workflowFilePath), { recursive: true });
   fs.writeFileSync(workflowFilePath, workflowContent);
 
   // Commit the workflow file
   logger.info('Committing workflow file');
-  execSync('git add .github/workflows/sync-with-mirror.yml');
+  execSync(`git add .github/workflows/${workflowFileName}`);
   execSync(
     'git commit -m "chores/add-workflows: Add sync-with-mirror workflow"',
   );
