@@ -65508,39 +65508,32 @@ async function processRepo(publicRepoUrl, org, token, newRepoName = null) {
 
   // Add the GitHub Actions workflow file
   logger.info('Adding GitHub Actions workflow file');
-  let workflowContent = `
----
-name: sync-with-mirror
-on:
-  schedule:
-    - cron: '*/10 * * * *'
-  workflow_dispatch:
-jobs:
-  sync:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          token: \${{ secrets.GITHUB_TOKEN }}
-      - name: Setup SSH Agent
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: \${{ secrets.SSH_KEY_ICE_MODULES_READONLY }}
-      - name: Sync with Upstream
-        uses: ${org}/mirror-opencepk-module-ghactions-common/github-flow-sync-with-mirror@fix/update-gitmodules-action
-        with:
-          github_token: \${{ secrets.GITHUB_TOKEN }}
-    `;
-  const workflowFilePath = path.join(
-    '.github',
-    'workflows',
-    'sync-with-mirror.yml',
-  );
-  fs.mkdirSync(path.dirname(workflowFilePath), { recursive: true });
-  fs.writeFileSync(workflowFilePath, workflowContent);
+  //   let workflowContent = `
+  // ---
+  // name: sync-with-mirror
+  // on:
+  //   schedule:
+  //     - cron: '*/10 * * * *'
+  //   workflow_dispatch:
+  // jobs:
+  //   sync:
+  //     runs-on: ubuntu-latest
+  //     steps:
+  //       - name: Checkout repository
+  //         uses: actions/checkout@v4
+  //         with:
+  //           token: \${{ secrets.GITHUB_TOKEN }}
+  //       - name: Setup SSH Agent
+  //         uses: webfactory/ssh-agent@v0.9.0
+  //         with:
+  //           ssh-private-key: \${{ secrets.SSH_KEY_ICE_MODULES_READONLY }}
+  //       - name: Sync with Upstream
+  //         uses: ${org}/mirror-opencepk-module-ghactions-common/github-flow-sync-with-mirror@fix/update-gitmodules-action
+  //         with:
+  //           github_token: \${{ secrets.GITHUB_TOKEN }}
+  //     `;
 
-  workflowContent = `
+  const workflowContent = `
 ---
 name: call-sync-mirror
 on:
@@ -65584,9 +65577,14 @@ jobs:
           ref: 'main'
           inputs: '{"repo":"\${{ github.repository }}", "upstreamUrl":"\${{ steps.read_patterns.outputs.properties }}"}'
     `;
-
+  const workflowFilePath = path.join(
+    '.github',
+    'workflows',
+    'github-call-sync-with-mirror.yml',
+  );
   fs.mkdirSync(path.dirname(workflowFilePath), { recursive: true });
   fs.writeFileSync(workflowFilePath, workflowContent);
+
   // Commit the workflow file
   logger.info('Committing workflow file');
   execSync('git add .github/workflows/sync-with-mirror.yml');
