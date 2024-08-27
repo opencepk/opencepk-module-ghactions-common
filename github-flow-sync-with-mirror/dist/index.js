@@ -62383,7 +62383,6 @@ const path = __nccwpck_require__(1017);
 const {
   replaceContentAndCommit,
 } = __nccwpck_require__(3277);
-const { log } = __nccwpck_require__(6206);
 
 async function run() {
   try {
@@ -62533,8 +62532,8 @@ async function run() {
       }
     }
 
-    // Set remote URL
-    const remoteUrl = `https://${token}@github.com/${repoOwner}/${repoName}.git`;
+    // Set remote URL to use SSH
+    const remoteUrl = `git@github.com:${repoOwner}/${repoName}.git`;
     core.info(`Setting remote URL to: ${remoteUrl}`);
     await exec.exec('git', ['remote', 'set-url', 'origin', remoteUrl]);
 
@@ -62574,7 +62573,6 @@ async function run() {
 }
 
 run();
-
 })();
 
 module.exports = __webpack_exports__;
