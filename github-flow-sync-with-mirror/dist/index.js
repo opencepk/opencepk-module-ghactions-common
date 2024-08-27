@@ -62357,126 +62357,6 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
-// const core = require('@actions/core');
-// const exec = require('@actions/exec');
-// const github = require('@actions/github');
-// const fs = require('fs');
-// const path = require('path');
-// const { replaceContentAndCommit } = require('../common/localize-mirrored-repo.js');
-
-// async function run() {
-//   try {
-//     const mergeBranch = 'bot-sync-with-mirror';
-//     core.info('Starting the sync process...');
-//     const token = core.getInput('github_token');
-//     const octokit = github.getOctokit(token);
-//     const { owner, repo } = github.context.repo;
-
-//     core.info(`Repository: ${owner}/${repo}`);
-//     // Read the UPSTREAM file
-//     const upstreamFilePath = path.join('.github', 'UPSTREAM');
-//     core.info(`Reading UPSTREAM file from: ${upstreamFilePath}`);
-//     const upstreamUrl = fs.readFileSync(upstreamFilePath, 'utf8').trim();
-//     core.info(`Upstream URL: ${upstreamUrl}`);
-//     const branch = core.getInput('branch') || 'main';
-
-//     // Configure git
-//     await exec.exec('git', [
-//       'config',
-//       '--global',
-//       'user.name',
-//       'github-actions',
-//     ]);
-//     await exec.exec('git', [
-//       'config',
-//       '--global',
-//       'user.email',
-//       'github-actions@github.com',
-//     ]);
-
-//     // Add upstream remote
-//     await exec.exec('git', ['remote', 'add', 'upstream', upstreamUrl]);
-//     await exec.exec('git', ['fetch', 'upstream']);
-
-//     // Delete the existing bot-sync-with-mirror branch if it exists locally
-//     try {
-//       await exec.exec('git', ['branch', '-D', mergeBranch]);
-//     } catch (error) {
-//       core.info('Local branch bot-sync-with-mirror does not exist, skipping deletion.');
-//     }
-
-//     // Delete the existing bot-sync-with-mirror branch if it exists remotely
-//     try {
-//       await exec.exec('git', ['push', 'origin', '--delete', mergeBranch]);
-//     } catch (error) {
-//       core.info(`Remote branch ${mergeBranch} does not exist, skipping deletion.`);
-//     }
-
-//     // Checkout a new branch for the merge
-//     await exec.exec('git', ['checkout', '-b', mergeBranch]);
-
-//     // Merge upstream/main into the current branch, always accepting upstream changes in case of conflicts
-//     await exec.exec('git', [
-//       'merge',
-//       '--strategy-option=theirs',
-//       '--allow-unrelated-histories',
-//       `upstream/${branch}`,
-//     ]);
-
-//     replaceContentAndCommit();
-
-//     // Check for changes
-//     let diffOutput = '';
-//     const options = {};
-//     options.listeners = {
-//       stdout: (data) => {
-//         diffOutput += data.toString();
-//       },
-//     };
-//     await exec.exec('git', ['diff', 'HEAD~1', '--name-only'], options);
-
-//     core.info(`Diff output: ${diffOutput}`);
-
-//     if (!diffOutput.trim()) {
-//       core.info('No changes detected after merge. Exiting without creating a pull request.');
-//       return;
-//     }
-
-//     //  Please note token is optional as when we checkout we already checkout with token. But I will leave the token here for more clarity
-//     const remoteUrl = `https://${token}@github.com/${owner}/${repo}.git`;
-//     core.info(`Setting remote URL to: ${remoteUrl}`);
-//     await exec.exec('git', ['remote', 'set-url', 'origin', remoteUrl]);
-
-//     // Push the merge branch to origin
-//     try {
-//       await exec.exec('git', ['push', '--force', 'origin', mergeBranch]);
-//     } catch (error) {
-//       core.error(`Failed to push to origin: ${error.message}`);
-//       if (error.message.includes('refusing to allow a GitHub App to create or update workflow')) {
-//         core.setFailed('The GitHub token does not have the required `workflows` permission to push changes to `.github/workflows`.');
-//         return;
-//       } else {
-//         throw error;
-//       }
-//     }
-
-//     // Create a pull request
-//     await octokit.pulls.create({
-//       owner,
-//       repo,
-//       title: 'Merge upstream changes',
-//       head: mergeBranch,
-//       base: branch,
-//       body: 'This PR merges changes from upstream/main and resolves conflicts by accepting upstream changes.',
-//     });
-
-//     core.info('Pull request created successfully');
-//   } catch (error) {
-//     core.setFailed(`Action failed with error: ${error.message}`);
-//   }
-// }
-
-// run();
 const logger = __nccwpck_require__(5568);
 const core = __nccwpck_require__(2186);
 const exec = __nccwpck_require__(1514);
@@ -62509,11 +62389,6 @@ async function run() {
     core.info(`Upstream URL: ${upstreamUrl}`);
     const branch = core.getInput('branch') || 'main';
 
-    // // Clone the target repository
-    // await exec.exec('git', [
-    //   'clone',
-    //   `https://${token}@github.com/${repoOwner}/${repoName}.git`,
-    // ]);
     // Clone the target repository using SSH
     await exec.exec('git', [
       'clone',
@@ -62589,7 +62464,22 @@ async function run() {
       return;
     }
 
-    //  Please note token is optional as when we checkout we already checkout with token. But I will leave the token here for more clarity
+    // Stage changes
+    await exec.exec('git', ['add', '.']);
+
+    // Commit changes
+    try {
+      await exec.exec('git', [
+        'commit',
+        '-m',
+        'chores/update: Replace opencepk with tucowsinc in .pre-commit-config.yaml',
+      ]);
+    } catch (error) {
+      core.error(`Failed to commit changes: ${error.message}`);
+      return;
+    }
+
+    // Set remote URL
     const remoteUrl = `https://${token}@github.com/${repoOwner}/${repoName}.git`;
     core.info(`Setting remote URL to: ${remoteUrl}`);
     await exec.exec('git', ['remote', 'set-url', 'origin', remoteUrl]);
@@ -62615,8 +62505,8 @@ async function run() {
 
     // Create a pull request
     await octokit.pulls.create({
-      repoOwner,
-      repoName,
+      owner: repoOwner,
+      repo: repoName,
       title: 'Merge upstream changes',
       head: mergeBranch,
       base: branch,
@@ -62630,7 +62520,6 @@ async function run() {
 }
 
 run();
-
 })();
 
 module.exports = __webpack_exports__;
