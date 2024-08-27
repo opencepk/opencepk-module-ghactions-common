@@ -62583,12 +62583,17 @@ async function run() {
     });
 
     core.info('Pull request created successfully');
-  } catch (error) {
-    core.setFailed(`Action failed with error: ${error.message}`);
+  } catch (e) {
+    if (e.message.includes('No commits between')) {
+      core.info('No changes to commit. Proceeding...');
+    } else {
+      core.setFailed(`Action failed with error: ${e.message}`);
+    }
   }
 }
 
 run();
+
 })();
 
 module.exports = __webpack_exports__;
