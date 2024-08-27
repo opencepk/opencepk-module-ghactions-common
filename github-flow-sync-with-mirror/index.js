@@ -7,6 +7,7 @@ const path = require('path');
 const {
   replaceContentAndCommit,
 } = require('../common/localize-mirrored-repo.js');
+const { log } = require('console');
 
 async function run() {
   try {
@@ -122,6 +123,7 @@ async function run() {
     if (!statusOutput.trim()) {
       core.info('No changes to commit. Proceeding...');
     } else {
+      logger.debug('Changes detected. Committing changes...');
       // Commit changes
       try {
         let commitOutput = '';
@@ -132,7 +134,7 @@ async function run() {
             },
           },
         };
-
+        logger.debug('Committing changes...');
         await exec.exec(
           'git',
           [
@@ -142,7 +144,7 @@ async function run() {
           ],
           commitOptions,
         );
-
+        logger.debug(`Commit output: ${commitOutput}`);
         if (commitOutput.includes('nothing to commit')) {
           core.info('No changes to commit. Proceeding...');
         } else {
