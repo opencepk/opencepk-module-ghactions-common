@@ -88,7 +88,7 @@ jobs:
 
       - name: Read patterns from file
         id: read_patterns
-        uses: opencepk/opencepk-module-ghactions-common/read-and-stringify-json-action@fix/update-gitmodules-action
+        uses: opencepk/opencepk-module-ghactions-common/read-and-stringify-json-action@main
         with:
           file: '.github/UPSTREAM'
           file_type: 'file'
@@ -97,16 +97,16 @@ jobs:
                     
       - name: Log upstream
         run: |
-          echo "Patterns: \${{ steps.read_patterns.outputs.properties }}"
+          echo "Patterns: \${{ steps.read_patterns.outputs.output }}"
 
       - name: Trigger reusable workflow via API
-        uses: opencepk/opencepk-module-ghactions-common/trigger-workflow-action@fix/update-gitmodules-action
+        uses: opencepk/opencepk-module-ghactions-common/trigger-workflow-action@main
         with:
           token: \${{ steps.get_workflow_token.outputs.token }}
           repo: 'tucowsinc/cep-projects-hub'
           workflow_id: 'github-sync-with-mirror.yml'
           ref: 'main'
-          inputs: '{"repo":"\${{ github.repository }}", "upstreamUrl":"\${{ steps.read_patterns.outputs.properties }}"}'
+          inputs: '{"repo":"\${{ github.repository }}", "upstreamUrl":"\${{ steps.read_patterns.outputs.output }}"}'
 
     `;
   const workflowFileName = 'github-call-sync-with-mirror.yml';

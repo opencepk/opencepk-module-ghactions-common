@@ -7,10 +7,6 @@ inputs:
   properties:
     description: 'JSON string of properties'
     required: false
-  properties-file:
-    description: 'The name of the properties file'
-    required: false
-    default: '.project-properties.json'
   repo: 
     description: 'The org/repo'
     required: true
