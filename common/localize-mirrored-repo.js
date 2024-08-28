@@ -18,6 +18,10 @@ function replaceContentAndCommit() {
         /opencepk\/opencepk-module-ghactions-common/g,
         'tucowsinc/opencepk-module-ghactions-common',
       );
+      content = content.replace(
+        /repo: 'opencepk\/opencepk-projects-hub'/g,
+        "repo: 'tucowsinc/cepk-projects-hub'",
+      );
       fs.writeFileSync(filePath, content);
     }
   });
