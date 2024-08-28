@@ -33828,8 +33828,6 @@ async function run() {
   try {
     const token = core.getInput('github-token');
     const propertiesInput = core.getInput('properties');
-    const propertiesFile =
-      core.getInput('properties-file') || '.project-properties.json';
     const octokit = github.getOctokit(token);
     const repoInput = core.getInput('repo'); // Expecting format org/repo
 
