@@ -59,7 +59,7 @@ async function processRepo(publicRepoUrl, org, token, newRepoName = null) {
   // Commit the UPSTREAM file
   logger.info('Committing UPSTREAM file');
   execSync('git add .github/UPSTREAM');
-  execSync('git commit -m "Add UPSTREAM file"');
+  execSync('git commit -m "chores/add-upstream: Add UPSTREAM file"');
 
   // Add the GitHub Actions workflow file
   logger.info('Adding GitHub Actions workflow file');

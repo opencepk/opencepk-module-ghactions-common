@@ -33,7 +33,7 @@ function replaceContentAndCommit() {
   execSync('git add .github/workflows');
   try {
     execSync(
-      'git commit -m "chores/update Replace opencepk with tucowsinc in workflow files"',
+      'git commit -m "chores/cleanup: Replace opencepk with tucowsinc in workflow files"',
     );
   } catch (error) {
     if (error.message.includes('nothing to commit')) {
@@ -57,7 +57,7 @@ function replaceContentAndCommit() {
     fs.writeFileSync(preCommitConfigPath, preCommitContent);
 
     // Commit the changes after replacement
-    logger.info('Committing changes to .pre-commit-config.yaml');
+    logger.info('chores/cleanup: Committing changes to .pre-commit-config.yaml');
     execSync('git add .pre-commit-config.yaml');
     try {
       logger.info('Committing changes to .pre-commit-config.yaml');

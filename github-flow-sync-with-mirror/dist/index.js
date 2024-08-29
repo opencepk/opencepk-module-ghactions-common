@@ -37,7 +37,7 @@ function replaceContentAndCommit() {
   execSync('git add .github/workflows');
   try {
     execSync(
-      'git commit -m "chores/update Replace opencepk with tucowsinc in workflow files"',
+      'git commit -m "chores/update: Replace opencepk with tucowsinc in workflow files"',
     );
   } catch (error) {
     if (error.message.includes('nothing to commit')) {
