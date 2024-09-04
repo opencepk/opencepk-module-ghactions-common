@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 const core = require('@actions/core');
 const fs = require('fs');
 const path = require('path');
@@ -61,7 +62,9 @@ async function run() {
 
     core.info(`Processed properties: ${propertiesStringified}`);
     core.setOutput('output', propertiesStringified);
-    core.info(`Successfully read and processed ${fileType} data from ${filePath}`);
+    core.info(
+      `Successfully read and processed ${fileType} data from ${filePath}`,
+    );
   } catch (error) {
     core.setFailed(error.message);
   }

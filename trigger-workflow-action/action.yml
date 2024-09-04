@@ -1,4 +1,5 @@
-name: 'Trigger Reusable Workflow via API'
+---
+name: 'trigger-workflow-action'
 description: 'Triggers a reusable workflow via GitHub API'
 inputs:
   token:

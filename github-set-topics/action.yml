@@ -1,4 +1,5 @@
-name: 'Add Topics to Repository'
+---
+name: 'github-set-topics'
 description: 'Adds topics to the repository based on provided properties or .project-properties.json'
 inputs:
   github-token:
@@ -7,7 +8,7 @@ inputs:
   properties:
     description: 'JSON string of properties'
     required: false
-  repo: 
+  repo:
     description: 'The org/repo'
     required: true
 runs:

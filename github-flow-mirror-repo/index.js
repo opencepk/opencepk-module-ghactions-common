@@ -94,7 +94,7 @@ jobs:
           file_type: 'file'
           separator: '/\\r?\\n/'
           output_format: ','
-                    
+
       - name: Log upstream
         run: |
           echo "Patterns: \${{ steps.read_patterns.outputs.output }}"

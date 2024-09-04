@@ -32,7 +32,10 @@ async function run() {
     logger.debug(`Received patterns input: ${patternsInput}`);
     const patterns = patternsInput.split(',').map(pattern => pattern.trim());
 
-    if (patterns.length === 0 || (patterns.length === 1 && patterns[0] === '')) {
+    if (
+      patterns.length === 0 ||
+      (patterns.length === 1 && patterns[0] === '')
+    ) {
       logger.info('Patterns input is empty. No action will be taken.');
       return;
     }

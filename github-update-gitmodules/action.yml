@@ -1,5 +1,6 @@
+---
 name: 'github-update-gitmodules'
-description: 'Reads pattern from META-REPO-PATTERNS, searches for matching repositories, adds them as submodules, and creates a pull request.'
+description: 'Reads pattern from META-REPO-PATTERNS/searches for matching repositories/adds submodules/creates PR.'
 inputs:
   token:
     description: 'GitHub Token'
