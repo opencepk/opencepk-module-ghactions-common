@@ -20,12 +20,16 @@ function replaceContentAndCommit() {
     const filePath = path.join(workflowDir, file);
     if (filePath.endsWith('.yml') || filePath.endsWith('.yaml')) {
       let content = fs.readFileSync(filePath, 'utf8');
-      logger.info(`Replacing content from opencepk/opencepk-module-ghactions-common to tucowsinc/opencepk-module-ghactions-common in ${filePath}`);
+      logger.info(
+        `Replacing content from opencepk/opencepk-module-ghactions-common to tucowsinc/opencepk-module-ghactions-common in ${filePath}`,
+      );
       content = content.replace(
         /opencepk\/opencepk-module-ghactions-common/g,
         'tucowsinc/opencepk-module-ghactions-common',
       );
-      logger.info(`Replacing content from opencepk/opencepk-projects-hub to tucowsinc/cepk-projects-hub in ${filePath}`);
+      logger.info(
+        `Replacing content from opencepk/opencepk-projects-hub to tucowsinc/cepk-projects-hub in ${filePath}`,
+      );
       content = content.replace(
         /repo: 'opencepk\/opencepk-projects-hub'/g,
         "repo: 'tucowsinc/cepk-projects-hub'",
@@ -63,7 +67,9 @@ function replaceContentAndCommit() {
     fs.writeFileSync(preCommitConfigPath, preCommitContent);
 
     // Commit the changes after replacement
-    logger.info('chores/cleanup: Committing changes to .pre-commit-config.yaml');
+    logger.info(
+      'chores/cleanup: Committing changes to .pre-commit-config.yaml',
+    );
     execSync('git add .pre-commit-config.yaml');
     try {
       logger.info('Committing changes to .pre-commit-config.yaml');

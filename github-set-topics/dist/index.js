@@ -33832,7 +33832,9 @@ async function run() {
     const repoInput = core.getInput('repo'); // Expecting format org/repo
 
     if (!repoInput) {
-      core.setFailed('Input "repo" is required and should be in the format org/repo');
+      core.setFailed(
+        'Input "repo" is required and should be in the format org/repo',
+      );
       return;
     }
 
@@ -33877,6 +33879,7 @@ async function run() {
 }
 
 run();
+
 })();
 
 module.exports = __webpack_exports__;

@@ -30927,6 +30927,7 @@ module.exports = parseParams
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
+/* eslint-disable indent */
 const core = __nccwpck_require__(2186);
 const fs = __nccwpck_require__(7147);
 const path = __nccwpck_require__(1017);
@@ -30990,13 +30991,16 @@ async function run() {
 
     core.info(`Processed properties: ${propertiesStringified}`);
     core.setOutput('output', propertiesStringified);
-    core.info(`Successfully read and processed ${fileType} data from ${filePath}`);
+    core.info(
+      `Successfully read and processed ${fileType} data from ${filePath}`,
+    );
   } catch (error) {
     core.setFailed(error.message);
   }
 }
 
 run();
+
 })();
 
 module.exports = __webpack_exports__;
