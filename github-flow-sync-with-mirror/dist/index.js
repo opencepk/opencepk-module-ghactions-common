@@ -10,9 +10,9 @@ const { execSync } = __nccwpck_require__(2081);
 const logger = __nccwpck_require__(5568);
 
 function replaceContentAndCommit() {
-  // Replace all occurrences of opencepk/opencepk-module-ghactions-common with tucowsinc/opencepk-module-ghactions-common in .github/workflows/*.yml
+  // Replace all occurrences of opencepk/opencepk-module-ghactions-common with in .github/workflows/*.yml
   logger.info(
-    'Replacing opencepk/opencepk-module-ghactions-common with tucowsinc/opencepk-module-ghactions-common in .github/workflows/*.yml',
+    'Replacing opencepk/opencepk-module-ghactions-common in .github/workflows/*.yml',
   );
   const workflowDir = path.join('.github', 'workflows');
   const files = fs.readdirSync(workflowDir);
@@ -55,7 +55,7 @@ function replaceContentAndCommit() {
 
   // Replace all occurrences of git@github.com:opencepk with git@github.com:tucowsinc in .pre-commit-config.yaml
   logger.info(
-    'Replacing git@github.com:opencepk with git@github.com:tucowsinc in .pre-commit-config.yaml',
+    'Replacing git@github.com:opencepk in .pre-commit-config.yaml',
   );
   const preCommitConfigPath = '.pre-commit-config.yaml';
   if (fs.existsSync(preCommitConfigPath)) {
@@ -74,7 +74,7 @@ function replaceContentAndCommit() {
     try {
       logger.info('Committing changes to .pre-commit-config.yaml');
       execSync(
-        'git commit -m "chores/update: Replace opencepk with tucowsinc in .pre-commit-config.yaml"',
+        'git commit -m "chores/update: Replace org opencepk in .pre-commit-config.yaml"',
       );
     } catch (error) {
       logger.warn(`${JSON.stringify(error)}`);
