@@ -165,7 +165,7 @@ async function run() {
     try {
       logger.info('Committing changes...');
       execSync(
-        'git commit -m "chore/bot-update-submodule Update submodules for matching repositories"',
+        `git commit -m "chore/${branchName} Update submodules for matching repositories"`,
       );
       logger.info('Changes committed successfully.');
     } catch (error) {
@@ -175,7 +175,7 @@ async function run() {
     }
 
     const prTitle =
-      'chore/bot-update-submodule Update submodules for matching repositories';
+      `chore/${branchName} Update submodules for matching repositories`;
     const prBody =
       'This PR updates submodules for repositories matching the pattern in META-REPO-PATTERNS.';
 
