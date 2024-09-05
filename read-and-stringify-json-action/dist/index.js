@@ -30967,7 +30967,7 @@ async function run() {
         case 'yml':
         case 'yaml':
           properties = yaml.load(fileContent);
-          core.info(`Parsed YAML properties: ${JSON.stringify(properties)}`);
+          core.info(`Parsed YAML properties: ${properties}`);
           break;
         case 'file':
         default:
@@ -30983,7 +30983,7 @@ async function run() {
     }
 
     let propertiesStringified;
-    if (fileType === 'json' || fileType === 'yml' || fileType === 'yaml') {
+    if (fileType === 'json') {
       propertiesStringified = JSON.stringify(properties).replace(/"/g, '\\"');
     } else {
       propertiesStringified = properties.join(outputFormat);
