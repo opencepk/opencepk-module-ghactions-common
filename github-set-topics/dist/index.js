@@ -33854,10 +33854,10 @@ async function run() {
       core.setFailed('No properties found');
       return;
     }
-
+    // Validate topics as Github topic has a naming rule: 1-50 length/include - but not start and end with it/only lowercase
     const topics = properties
       .map(prop => prop.replacement)
-      .filter(topic => /^[a-z0-9][a-z0-9-]{0,49}$/.test(topic)); // Validate topics
+      .filter(topic => /^[a-z0-9][a-z0-9-]{0,49}$/.test(topic));
 
     if (topics.length === 0) {
       core.setFailed('No valid topics found');
