@@ -21,14 +21,14 @@ function replaceContentAndCommit() {
     if (filePath.endsWith('.yml') || filePath.endsWith('.yaml')) {
       let content = fs.readFileSync(filePath, 'utf8');
       logger.info(
-        `Replacing content from opencepk/opencepk-module-ghactions-common to tucowsinc/opencepk-module-ghactions-common in ${filePath}`,
+        `Replacing content from opencepk/opencepk-module-ghactions-common to {{internal repo owner}}/opencepk-module-ghactions-common in ${filePath}`,
       );
       content = content.replace(
         /opencepk\/opencepk-module-ghactions-common/g,
         'tucowsinc/opencepk-module-ghactions-common',
       );
       logger.info(
-        `Replacing content from opencepk/opencepk-projects-hub to tucowsinc/cepk-projects-hub in ${filePath}`,
+        `Replacing content from opencepk/opencepk-projects-hub to {{internal repo owner}}/cepk-projects-hub in ${filePath}`,
       );
       content = content.replace(
         /repo: 'opencepk\/opencepk-projects-hub'/g,
@@ -43,7 +43,7 @@ function replaceContentAndCommit() {
   execSync('git add .github/workflows');
   try {
     execSync(
-      'git commit -m "chores/cleanup: Replace opencepk with tucowsinc in workflow files"',
+      'git commit -m "chores/cleanup: Replace opencepk with internal repo owner in workflow files"',
     );
   } catch (error) {
     if (error.message.includes('nothing to commit')) {
@@ -53,7 +53,7 @@ function replaceContentAndCommit() {
     }
   }
 
-  // Replace all occurrences of git@github.com:opencepk with git@github.com:tucowsinc in .pre-commit-config.yaml
+  // Replace all occurrences of git@github.com:opencepk with git@github.com:{{internal repo owner}} in .pre-commit-config.yaml
   logger.info(
     'Replacing git@github.com:opencepk in .pre-commit-config.yaml',
   );
@@ -62530,7 +62530,7 @@ async function run() {
           [
             'commit',
             '-m',
-            'chores/update: Replace opencepk with tucowsinc in .pre-commit-config.yaml',
+            'chores/update: Replace opencepk with internal repo owner in .pre-commit-config.yaml',
           ],
           commitOptions,
         );
