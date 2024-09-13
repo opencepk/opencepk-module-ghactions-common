@@ -5,6 +5,9 @@ const fs = require('fs');
 const path = require('path');
 const logger = require('../common/logger.js');
 const { setGitActionAccess } = require('../common/git-operations.js');
+const {
+  replaceContentAndCommit,
+} = require('../common/localize-mirrored-repo.js');
 const prefix = 'mirror';
 
 async function processRepo(publicRepoUrl, org, token, newRepoName = null) {
@@ -56,45 +59,69 @@ async function processRepo(publicRepoUrl, org, token, newRepoName = null) {
   // Commit the UPSTREAM file
   logger.info('Committing UPSTREAM file');
   execSync('git add .github/UPSTREAM');
-  execSync('git commit -m "Add UPSTREAM file"');
+  execSync('git commit -m "chores/add-upstream: Add UPSTREAM file"');
 
   // Add the GitHub Actions workflow file
   logger.info('Adding GitHub Actions workflow file');
+
   const workflowContent = `
 ---
-name: sync-with-mirror
+name: github-call-sync-with-mirror
 on:
-  schedule:
-    - cron: '*/10 * * * *'
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 jobs:
-  sync:
+  github-call-sync-with-mirror:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Setup SSH Agent
-        uses: webfactory/ssh-agent@v0.9.0
+
+      - name: Get Token
+        id: get_workflow_token
+        uses: peter-murray/workflow-application-token-action@v3
         with:
-          ssh-private-key: \${{ secrets.SSH_KEY_ICE_MODULES_READONLY }}
-      - name: Sync with Upstream
-        uses: ${org}/mirror-opencepk-module-ghactions-common/github-flow-sync-with-mirror@main
+          application_id: \${{ secrets.GH_APP_REPO_ACTION_RW_APPLICATION_ID }}
+          application_private_key: \${{ secrets.GH_APP_REPO_ACTION_RW_PRIVATE_KEY }}
+          revoke_token: true
+
+      - name: Read patterns from file
+        id: read_patterns
+        uses: opencepk/opencepk-module-ghactions-common/read-and-stringify-json-action@main
         with:
-          github_token: \${{ secrets.GITHUB_TOKEN }}
+          file: '.github/UPSTREAM'
+          file_type: 'file'
+          separator: '/\\r?\\n/'
+          output_format: ','
+
+      - name: Log upstream
+        run: |
+          echo "Patterns: \${{ steps.read_patterns.outputs.output }}"
+
+      - name: Trigger reusable workflow via API
+        uses: opencepk/opencepk-module-ghactions-common/trigger-workflow-action@main
+        with:
+          token: \${{ steps.get_workflow_token.outputs.token }}
+          repo: 'tucowsinc/cep-projects-hub'
+          workflow_id: 'github-sync-with-mirror.yml'
+          ref: 'main'
+          inputs: '{"repo":"\${{ github.repository }}", "upstreamUrl":"\${{ steps.read_patterns.outputs.output }}"}'
+
     `;
-  const workflowFilePath = path.join(
-    '.github',
-    'workflows',
-    'sync-with-mirror.yml',
-  );
+  const workflowFileName = 'github-call-sync-with-mirror.yml';
+  const workflowFilePath = path.join('.github', 'workflows', workflowFileName);
   fs.mkdirSync(path.dirname(workflowFilePath), { recursive: true });
   fs.writeFileSync(workflowFilePath, workflowContent);
 
   // Commit the workflow file
   logger.info('Committing workflow file');
-  execSync('git add .github/workflows/sync-with-mirror.yml');
-  execSync('git commit -m "Add sync-with-mirror workflow"');
+  execSync(`git add .github/workflows/${workflowFileName}`);
+  execSync(
+    'git commit -m "chores/add-workflows: Add sync-with-mirror workflow"',
+  );
 
+  replaceContentAndCommit();
   // Set the remote URL with the token for authentication
   logger.info('Setting remote URL with token for authentication');
   const remoteUrl = `https://x-access-token:${token}@github.com/${org}/${repoName}.git`;

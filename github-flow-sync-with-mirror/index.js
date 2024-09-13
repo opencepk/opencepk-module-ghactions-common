@@ -1,146 +1,202 @@
+const logger = require('../common/logger');
 const core = require('@actions/core');
+const exec = require('@actions/exec');
 const github = require('@actions/github');
-const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const logger = require('../common/logger.js');
+const {
+  replaceContentAndCommit,
+} = require('../common/localize-mirrored-repo.js');
 
 async function run() {
   try {
-    logger.info('Starting the sync process...');
+    const mergeBranch = 'bot-sync-with-mirror';
+    core.info('Starting the sync process...');
     const token = core.getInput('github_token');
+    logger.debug(`Received token: ${token}`);
     const octokit = github.getOctokit(token);
-    const context = github.context;
-    const repo = context.repo.repo;
-    const owner = context.repo.owner;
-
-    logger.info(`Repository: ${owner}/${repo}`);
-    // Read the UPSTREAM file
-    const upstreamFilePath = path.join('.github', 'UPSTREAM');
-    logger.info(`Reading UPSTREAM file from: ${upstreamFilePath}`);
-    const upstreamUrl = fs.readFileSync(upstreamFilePath, 'utf8').trim();
-    logger.info(`Upstream URL: ${upstreamUrl}`);
-
-    // Clone the upstream repository
-    logger.info('Cloning the upstream repository...');
-    execSync(`git clone ${upstreamUrl} upstream-repo`);
-    process.chdir('upstream-repo');
-
-    // Fetch the latest changes from the upstream repository
-    logger.info('Fetching latest changes from the upstream repository...');
-    execSync('git fetch origin');
-    const upstreamCommit = execSync('git rev-parse origin/main')
-      .toString()
-      .trim();
-    logger.info(`Upstream commit: ${upstreamCommit}`);
-
-    // Go back to the original repository
-    process.chdir('..');
-
-    // Clone the private repository
-    logger.info('Cloning the private repository...');
-    execSync(
-      `git clone https://x-access-token:${token}@github.com/${owner}/${repo}.git private-repo`,
-    );
-    process.chdir('private-repo');
-
-    // Fetch the latest changes from the private repository
-    logger.info('Fetching latest changes from the private repository...');
-    execSync('git fetch origin');
-    const privateCommit = execSync('git rev-parse origin/main')
-      .toString()
-      .trim();
-    logger.info(`Private commit: ${privateCommit}`);
-
-    // Check if there are new changes in the upstream repository
-    if (upstreamCommit === privateCommit) {
-      logger.info('No new changes in the upstream repository.');
+    // Get the repository and organization from the input
+    const repoInput = core.getInput('repo'); // Expecting format org/repo
+    logger.debug(`Received repo input: ${repoInput}`);
+    const [repoOwner, repoName] = repoInput.split('/');
+    logger.debug(`Repo owner: ${repoOwner}, Repo name: ${repoName}`);
+    const upstreamUrl = core.getInput('upstreamUrl');
+    core.info(`Reading UPSTREAM file from: ${upstreamUrl}`);
+    if (!repoOwner || !repoName) {
+      logger.setFailed('Invalid repo format. Expected format: org/repo');
       return;
     }
 
-    // Close all open pull requests in the private repository
-    logger.info('Closing all open pull requests in the private repository...');
-    const { data: pullRequests } = await octokit.pulls.list({
-      owner,
-      repo,
-      state: 'open',
-    });
+    core.info(`Upstream URL: ${upstreamUrl}`);
+    const branch = core.getInput('branch') || 'main';
 
-    for (const pr of pullRequests) {
-      await octokit.pulls.update({
-        owner,
-        repo,
-        pull_number: pr.number,
-        state: 'closed',
-      });
-      logger.info(`Closed PR #${pr.number}`);
+    // Clone the target repository using SSH
+    await exec.exec('git', [
+      'clone',
+      `git@github.com:${repoOwner}/${repoName}.git`,
+    ]);
+    process.chdir(repoName);
+
+    // Configure git
+    await exec.exec('git', [
+      'config',
+      '--global',
+      'user.name',
+      'github-actions',
+    ]);
+    await exec.exec('git', [
+      'config',
+      '--global',
+      'user.email',
+      'github-actions@github.com',
+    ]);
+
+    // Add upstream remote
+    await exec.exec('git', ['remote', 'add', 'upstream', upstreamUrl]);
+    await exec.exec('git', ['fetch', 'upstream']);
+    logger.debug('Upstream remote added successfully.');
+    // Delete the existing bot-sync-with-mirror branch if it exists locally
+    try {
+      await exec.exec('git', ['branch', '-D', mergeBranch]);
+    } catch (error) {
+      core.info(
+        'Local branch bot-sync-with-mirror does not exist, skipping deletion.',
+      );
+    }
+    logger.debug('Local branch cleanup complete.');
+    // Delete the existing bot-sync-with-mirror branch if it exists remotely
+    try {
+      await exec.exec('git', ['push', 'origin', '--delete', mergeBranch]);
+    } catch (error) {
+      core.info(
+        `Remote branch ${mergeBranch} does not exist, skipping deletion.`,
+      );
+    }
+    logger.debug('Branch cleanup complete.');
+    // Checkout a new branch for the merge
+    await exec.exec('git', ['checkout', '-b', mergeBranch]);
+    logger.debug(`Checked out new branch: ${mergeBranch}`);
+    // Merge upstream/main into the current branch, always accepting upstream changes in case of conflicts
+    await exec.exec('git', [
+      'merge',
+      '--strategy-option=theirs',
+      '--allow-unrelated-histories',
+      `upstream/${branch}`,
+    ]);
+    logger.debug('Merged upstream/main into the current branch.');
+    replaceContentAndCommit();
+    logger.debug('Replaced content and committed changes.');
+    // Check for changes
+    let diffOutput = '';
+    const options = {};
+    options.listeners = {
+      stdout: data => {
+        diffOutput += data.toString();
+      },
+    };
+    logger.debug('Checking for changes...');
+    await exec.exec('git', ['diff', 'HEAD~1', '--name-only'], options);
+    logger.debug('Changes checked successfully.');
+    core.info(`Diff output: ${diffOutput}`);
+
+    if (!diffOutput.trim()) {
+      core.info(
+        'No changes detected after merge. Exiting without creating a pull request.',
+      );
+      return;
+    }
+    logger.debug('Changes detected. Staging changes...');
+    // Stage changes
+    await exec.exec('git', ['add', '.']);
+    logger.debug('Changes staged successfully.');
+    // Check for staged changes
+    let statusOutput = '';
+    const statusOptions = {
+      listeners: {
+        stdout: data => {
+          statusOutput += data.toString();
+        },
+      },
+    };
+    await exec.exec('git', ['status', '--porcelain'], statusOptions);
+
+    if (!statusOutput.trim()) {
+      core.info('No changes to commit. Proceeding...');
+    } else {
+      logger.debug('Changes detected. Committing changes...');
+      // Commit changes
+      try {
+        let commitOutput = '';
+        const commitOptions = {
+          listeners: {
+            stdout: data => {
+              commitOutput += data.toString();
+            },
+          },
+        };
+        logger.debug('Committing changes...');
+        await exec.exec(
+          'git',
+          [
+            'commit',
+            '-m',
+            'chores/update: Replace opencepk with internal repo owner in .pre-commit-config.yaml',
+          ],
+          commitOptions,
+        );
+        logger.debug(`Commit output: ${commitOutput}`);
+        if (commitOutput.includes('nothing to commit')) {
+          core.info('No changes to commit. Proceeding...');
+        } else {
+          core.info('Changes committed successfully.');
+        }
+      } catch (error) {
+        core.error(`Failed to commit changes: ${error.message}`);
+        return;
+      }
     }
 
-    // Create a new branch for the changes
-    const branchName = `bot-sync-upstream`;
-    // Ensure the branch is deleted remotely
-    logger.info(`Deleting remote branch if it exists: ${branchName}`);
-    execSync(`git push origin --delete ${branchName} || true`);
+    // Set remote URL to use SSH
+    const remoteUrl = `git@github.com:${repoOwner}/${repoName}.git`;
+    core.info(`Setting remote URL to: ${remoteUrl}`);
+    await exec.exec('git', ['remote', 'set-url', 'origin', remoteUrl]);
 
-    // Delete the local branch
-    logger.info(`Deleting local branch if it exists: ${branchName}`);
-    execSync(`git branch -D ${branchName} || true`);
-
-    logger.info(`Creating a new branch: ${branchName}`);
-    execSync(`git checkout -b ${branchName}`);
-
-    // Configure Git user globally
-    logger.info('Configuring Git user...');
-    execSync(
-      'git config --global user.email "github-actions[bot]@users.noreply.github.com"',
-    );
-    execSync('git config --global user.name "github-actions[bot]"');
-
-    // Merge the changes from the upstream repository
+    // Push the merge branch to origin
     try {
-      logger.info('Adding and fetching the upstream repository...');
-      execSync(`git remote add upstream ../upstream-repo`);
-      execSync('git fetch upstream');
-      logger.info('Merging changes from the upstream repository...');
-      execSync('git merge upstream/main --allow-unrelated-histories');
-    } catch (e) {
-      logger.debug('Error during merge process');
-      logger.debug(JSON.stringify(e));
-      if (e.message.includes('No commits between')) {
-        logger.info('No new commits to create a pull request.');
+      await exec.exec('git', ['push', '--force', 'origin', mergeBranch]);
+    } catch (error) {
+      core.error(`Failed to push to origin: ${error.message}`);
+      if (
+        error.message.includes(
+          'refusing to allow a GitHub App to create or update workflow',
+        )
+      ) {
+        core.setFailed(
+          'The GitHub token does not have the required `workflows` permission to push changes to `.github/workflows`.',
+        );
         return;
       } else {
-        throw e;
+        throw error;
       }
     }
 
-    // Push the new branch to the private repository
-    logger.info(`Pushing the new branch: ${branchName}`);
-    execSync(`git push origin ${branchName}`);
+    // Create a pull request
+    await octokit.pulls.create({
+      owner: repoOwner,
+      repo: repoName,
+      title: 'Merge upstream changes',
+      head: mergeBranch,
+      base: branch,
+      body: 'This PR merges changes from upstream/main and resolves conflicts by accepting upstream changes.',
+    });
 
-    try {
-      // Create a new pull request with the changes
-      logger.info('Creating a new pull request...');
-      const { data: newPr } = await octokit.pulls.create({
-        owner,
-        repo,
-        title: 'Sync with upstream',
-        head: branchName,
-        base: 'main',
-        body: 'This PR brings in the latest changes from the upstream repository.',
-      });
-      logger.info(`Created new PR #${newPr.number}`);
-    } catch (e) {
-      logger.debug('Error during pull request creation');
-      logger.debug(JSON.stringify(e));
-      if (e.message.includes('No commits between')) {
-        logger.info('No new commits to create a pull request.');
-      } else {
-        throw e;
-      }
+    core.info('Pull request created successfully');
+  } catch (e) {
+    if (e.message.includes('No commits between')) {
+      core.info('No changes to commit. Proceeding...');
+    } else {
+      core.setFailed(`Action failed with error: ${e.message}`);
     }
-  } catch (error) {
-    logger.setFailed(error.message);
   }
 }
 

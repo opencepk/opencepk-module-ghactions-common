@@ -1,16 +1,19 @@
 {
-  "name": "sync-with-mirror",
+  "name": "trigger-workflow-action",
   "version": "1.0.0",
+  "description": "trigger-workflow-action",
   "main": "index.js",
   "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rm -rf dist && ncc build index.js -o dist"
   },
   "dependencies": {
     "@actions/core": "^1.2.6",
-    "@actions/exec": "^1.1.1",
     "@actions/github": "^4.0.0"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.38.1"
-  }
+  },
+  "author": "",
+  "license": "ISC"
 }
