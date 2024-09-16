@@ -1,0 +1,16 @@
+---
+name: 'github-update-gitmodules'
+description: 'Reads pattern from META-REPO-PATTERNS/searches for matching repositories/adds submodules/creates PR.'
+inputs:
+  token:
+    description: 'GitHub Token'
+    required: true
+  repo:
+    description: 'Repository in the format org/repo'
+    required: true
+  patterns:
+    description: 'Comma-separated list of patterns to match repositories'
+    required: true
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

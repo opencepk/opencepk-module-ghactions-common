@@ -1,0 +1,22 @@
+---
+name: 'trigger-workflow-action'
+description: 'Triggers a reusable workflow via GitHub API'
+inputs:
+  token:
+    description: 'GitHub token'
+    required: true
+  repo:
+    description: 'Repository in the format owner/repo'
+    required: true
+  workflow_id:
+    description: 'ID of the workflow to trigger'
+    required: true
+  ref:
+    description: 'Git reference (branch or tag) to use'
+    required: true
+  inputs:
+    description: 'Inputs to pass to the workflow'
+    required: true
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

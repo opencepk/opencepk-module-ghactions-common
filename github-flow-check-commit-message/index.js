@@ -1,6 +1,8 @@
 const core = require('@actions/core');
 const exec = require('@actions/exec');
 const github = require('@actions/github');
+const path = require('path');
+const fs = require('fs').promises;
 
 async function run() {
   try {
@@ -18,7 +20,37 @@ async function run() {
       },
     };
     const baseRef = github.context.payload.pull_request.base.ref;
-    const upstreamRepo = 'git@github.com:tucowsinc/cepk-template-base.git';
+    const repoOwner = github.context.repo.owner;
+    core.info(`repoOwner is: ${repoOwner}`);
+    let upstreamRepo = '';
+    // Check if .github/UPSTREAM file exists and read its content
+    const upstreamFilePath = path.join('.github', 'UPSTREAM');
+    try {
+      const upstreamFileContent = await fs.readFile(upstreamFilePath, 'utf8');
+      const lines = upstreamFileContent.split('\n').filter(Boolean);
+      if (lines.length > 0) {
+        upstreamRepo = lines[0];
+        core.info(`Using upstream repo from .github/UPSTREAM: ${upstreamRepo}`);
+      } else {
+        throw new Error('.github/UPSTREAM file is empty');
+      }
+    } catch (err) {
+      // If the file does not exist or is empty, fall back to the existing logic
+      core.warning(
+        `Error reading .github/UPSTREAM file: ${JSON.stringify(err)}`,
+      );
+      if (err.code === 'ENOENT') {
+        core.info('.github/UPSTREAM file does not exist, using default logic');
+      } else {
+        core.warning(`Error reading .github/UPSTREAM file: ${err.message}`);
+      }
+
+      if (repoOwner === 'opencepk') {
+        upstreamRepo = `git@github.com:${repoOwner}/opencepk-template-base.git`;
+      } else {
+        upstreamRepo = `git@github.com:${repoOwner}/mirror-opencepk-template-base.git`;
+      }
+    }
 
     // Fetch the latest changes from the origin repository
     await exec.exec('git', ['fetch', 'origin']);
