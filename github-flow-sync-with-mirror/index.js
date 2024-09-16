@@ -4,8 +4,10 @@ const exec = require('@actions/exec');
 const github = require('@actions/github');
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 const {
   replaceContentAndCommit,
+  replaceCodeownersFile,
 } = require('../common/localize-mirrored-repo.js');
 
 async function run() {
@@ -84,7 +86,25 @@ async function run() {
       `upstream/${branch}`,
     ]);
     logger.debug('Merged upstream/main into the current branch.');
-    replaceContentAndCommit();
+
+    // Restore .github/CODEOWNERS from the current branch
+    await exec.exec('git', [
+      'checkout',
+      'HEAD@{1}',
+      '--',
+      '.github/CODEOWNERS',
+    ]);
+    logger.debug('Restored .github/CODEOWNERS from the current branch.');
+
+    try {
+      logger.info('Restoring .github/CODEOWNERS');
+      execSync('git commit -m "chores/update: Restoring .github/CODEOWNERS"');
+    } catch (error) {
+      logger.warn(`${JSON.stringify(error)}`);
+      logger.info('No changes to commit for .github/CODEOWNERS. Proceeding...');
+    }
+
+    replaceContentAndCommit(repoOwner);
     logger.debug('Replaced content and committed changes.');
     // Check for changes
     let diffOutput = '';
