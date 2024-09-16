@@ -13,7 +13,6 @@ export default {
     '<rootDir>/common/**/*.{js,jsx,ts,tsx}',
     '<rootDir>/git-upstream-set-check-pr-block/**/*.{js,jsx,ts,tsx}',
     '<rootDir>/git-upstream-set-create-pr/**/*.{js,jsx,ts,tsx}',
-    '<rootDir>/github-actions-set-permissions/**/*.{js,jsx,ts,tsx}',
     '<rootDir>/github-flow-check-branch-name/**/*.{js,jsx,ts,tsx}',
     '<rootDir>/github-flow-mirror-repo/**/*.{js,jsx,ts,tsx}',
     '<rootDir>/github-flow-update-pr-title/**/*.{js,jsx,ts,tsx}',

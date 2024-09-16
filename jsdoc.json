@@ -8,15 +8,13 @@
        "common",
        "git-upstream-set-check-pr-block",
        "git-upstream-set-create-pr",
-       "github-actions-set-permissions",
        "github-flow-check-branch-name",
        "github-flow-check-commit-message",
        "github-flow-mirror-repo",
        "github-flow-sync-with-mirror",
        "github-flow-update-pr-title",
        "github-flow-update-release-notes",
-       "github-set-actions-permissions",
-       "update-release-notes"
+       "github-set-actions-permissions"
      ],
      "includePattern": ".+\\.js(doc|x)?$",
      "excludePattern": "(^|\\/|\\\\)_|dist|node_modules"
