@@ -35,7 +35,7 @@ repos:
   # Standard pre-commit-hooks for general all-purpose formatting and validation
   # -----------------------------
   - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
-    rev: v9.17.0
+    rev: v9.18.0
     hooks:
       - id: commitlint
         stages: [commit-msg]
@@ -48,7 +48,7 @@ repos:
   #   some_non_secret_value = a1b2c3d4e5f6g7h8i9j0 # gitleaks:allow
   # -----------------------------
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.18.4
+    rev: v8.19.2
     hooks:
       - id: gitleaks
   # -----------------------------

@@ -48,9 +48,7 @@ function replaceContentAndCommit() {
   }
 
   // Replace all occurrences of git@github.com:opencepk with git@github.com:{{internal repo owner}} in .pre-commit-config.yaml
-  logger.info(
-    'Replacing git@github.com:opencepk in .pre-commit-config.yaml',
-  );
+  logger.info('Replacing git@github.com:opencepk in .pre-commit-config.yaml');
   const preCommitConfigPath = '.pre-commit-config.yaml';
   if (fs.existsSync(preCommitConfigPath)) {
     let preCommitContent = fs.readFileSync(preCommitConfigPath, 'utf8');
