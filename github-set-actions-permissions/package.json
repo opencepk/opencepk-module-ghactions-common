@@ -1,10 +1,10 @@
 {
-  "name": "git-actions-set-permissions",
+  "name": "github-set-actions-permissions",
   "version": "1.0.0",
   "description": "A custom GitHub Action to set the access level for a repository",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest ../../jest.config.mjs",
     "build": "rm -rf dist && ncc build index.js -o dist"
   },
   "dependencies": {

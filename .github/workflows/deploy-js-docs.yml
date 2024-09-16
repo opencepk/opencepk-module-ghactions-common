@@ -1,0 +1,104 @@
+---
+name: deploy-js-docs
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  js-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Clean up existing artifacts
+        run: rm -rf docs
+
+      - name: Run jsdocs generation
+        run: npm run docs
+
+      - name: Upload jsdocs report
+        uses: actions/upload-artifact@v3
+        with:
+          name: jsdocs-report
+          path: docs
+
+  deploy-js-docs:
+    needs: js-docs
+    runs-on: ubuntu-latest
+    env:
+      DOCS_PREFIX: "jsdocs"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+
+      - name: Fetch all branches
+        run: git fetch --all
+
+      - name: Checkout gh-pages branch
+        run: git checkout gh-pages
+
+      - name: Detect TARGET_DIR
+        id: detect-target-dir
+        run: |
+          BRANCH_NAME=${GITHUB_REF##*/}
+          SANITIZED_BRANCH_NAME=$(echo $BRANCH_NAME | tr '/' '-')
+          echo "TARGET_DIR=${{ env.DOCS_PREFIX }}-$SANITIZED_BRANCH_NAME" >> $GITHUB_ENV
+
+      - name: delete existing coverage folder
+        env:
+          TARGET_DIR: ${{ env.TARGET_DIR }}
+        run: |
+          rm -rf "$TARGET_DIR"
+          rm -rf docs
+
+
+      - name: Download jsdocs report
+        uses: actions/download-artifact@v3
+        with:
+          name: jsdocs-report
+          path: docs
+
+      - name: Copy new docs to gh-pages
+        run: |
+          mkdir -p "$TARGET_DIR"
+          cp -r docs/* "$TARGET_DIR/"
+          git add .
+          git commit -m "Deploy js docs report for branch $BRANCH_NAME" || true
+          git push origin gh-pages || true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TARGET_DIR: ${{ env.TARGET_DIR }}
+
+      - name: Print Coverage Report URL
+        id: print-url
+        env:
+          TARGET_DIR: ${{ env.TARGET_DIR }}
+        run: |
+          REPOSITORY_OWNER=${{ github.repository_owner }}
+          REPOSITORY_NAME=${{ github.event.repository.name }}
+          BRANCH_NAME=${GITHUB_REF##*/}
+          SANITIZED_BRANCH_NAME=$(echo $BRANCH_NAME | tr '/' '-')
+          URL="https://$REPOSITORY_OWNER.github.io/$REPOSITORY_NAME/$TARGET_DIR/"
+          echo "It is deployed to: $URL"
+          echo "url=$URL" >> $GITHUB_OUTPUT
+
+      - name: Add Coverage Report URL to Job Summary
+        run: |
+          echo "[${{ steps.print-url.outputs.url }}](${{ steps.print-url.outputs.url }})" >> $GITHUB_STEP_SUMMARY

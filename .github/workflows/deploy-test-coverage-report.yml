@@ -1,0 +1,104 @@
+---
+name: deploy-test-coverage-report
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Clean up existing artifacts
+        run: rm -rf coverage
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage/lcov-report
+
+  deploy-coverage:
+    needs: unit-tests
+    runs-on: ubuntu-latest
+    env:
+      DOCS_PREFIX: 'coverage'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+
+      - name: Fetch all branches
+        run: git fetch --all
+
+      - name: Checkout gh-pages branch
+        run: git checkout gh-pages
+
+      - name: Detect TARGET_DIR
+        id: detect-target-dir
+        run: |
+          BRANCH_NAME=${GITHUB_REF##*/}
+          SANITIZED_BRANCH_NAME=$(echo $BRANCH_NAME | tr '/' '-')
+          echo "TARGET_DIR=${{ env.DOCS_PREFIX }}-$SANITIZED_BRANCH_NAME" >> $GITHUB_ENV
+
+      - name: delete existing coverage folder
+        env:
+          TARGET_DIR: ${{ env.TARGET_DIR }}
+        run: |
+          rm -rf "$TARGET_DIR"
+          rm -rf coverage
+
+      - name: Download coverage report
+        uses: actions/download-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage
+
+      - name: Copy new coverage to coverage folder
+        env:
+          TARGET_DIR: ${{ env.TARGET_DIR }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p "$TARGET_DIR"
+          cp -r coverage/* "$TARGET_DIR/"
+          git add .
+          git commit -m "Deploy js docs report for branch $BRANCH_NAME" || true
+          git push origin gh-pages || true
+
+
+      - name: Print Coverage Report URL
+        id: print-url
+        env:
+          TARGET_DIR: ${{ env.TARGET_DIR }}
+        run: |
+          REPOSITORY_OWNER=${{ github.repository_owner }}
+          REPOSITORY_NAME=${{ github.event.repository.name }}
+          BRANCH_NAME=${GITHUB_REF##*/}
+          SANITIZED_BRANCH_NAME=$(echo $BRANCH_NAME | tr '/' '-')
+          URL="https://$REPOSITORY_OWNER.github.io/$REPOSITORY_NAME/$TARGET_DIR/"
+          echo "It is deployed to: $URL"
+          echo "url=$URL" >> $GITHUB_OUTPUT
+
+      - name: Add Coverage Report URL to Job Summary
+        run: |
+          echo "[${{ steps.print-url.outputs.url }}](${{ steps.print-url.outputs.url }})" >> $GITHUB_STEP_SUMMARY

@@ -1,8 +1,9 @@
 {
-  "name": "sync-with-mirror",
+  "name": "github-flow-sync-with-mirror",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "test": "jest ../../jest.config.mjs",
     "build": "rm -rf dist && ncc build index.js -o dist"
   },
   "dependencies": {

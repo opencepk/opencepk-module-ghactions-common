@@ -1,0 +1,33 @@
+{
+   "tags": {
+     "allowUnknownTags": true
+   },
+   "source": {
+     "include": [
+       "check-commit-message",
+       "common",
+       "git-upstream-set-check-pr-block",
+       "git-upstream-set-create-pr",
+       "github-actions-set-permissions",
+       "github-flow-check-branch-name",
+       "github-flow-check-commit-message",
+       "github-flow-mirror-repo",
+       "github-flow-sync-with-mirror",
+       "github-flow-update-pr-title",
+       "github-flow-update-release-notes",
+       "github-set-actions-permissions",
+       "update-release-notes"
+     ],
+     "includePattern": ".+\\.js(doc|x)?$",
+     "excludePattern": "(^|\\/|\\\\)_|dist|node_modules"
+   },
+   "opts": {
+     "destination": "./docs",
+     "recurse": true,
+     "template": "node_modules/docdash"
+   },
+   "templates": {
+     "cleverLinks": true,
+     "monospaceLinks": true
+   }
+ }

@@ -1,0 +1,22 @@
+---
+name: 'Detect TARGET_DIR'
+description: 'Detects the target directory based on the branch name'
+outputs:
+  target_dir:
+    description: 'The target directory'
+    value: ${{ steps.detect-target-dir.outputs.target_dir }}
+runs:
+  using: 'composite'
+  steps:
+    - name: Detect TARGET_DIR
+      id: detect-target-dir
+      shell: bash
+      run: |
+        BRANCH_NAME=${GITHUB_REF##*/}
+        SANITIZED_BRANCH_NAME=$(echo $BRANCH_NAME | tr '/' '-')
+        echo "TARGET_DIR=${{ inputs.docs_prefix }}-$SANITIZED_BRANCH_NAME" >> $GITHUB_ENV
+        echo "target_dir=${{ inputs.docs_prefix }}-$SANITIZED_BRANCH_NAME" >> $GITHUB_OUTPUT
+inputs:
+  docs_prefix:
+    description: 'Prefix for the documentation directory'
+    required: true
