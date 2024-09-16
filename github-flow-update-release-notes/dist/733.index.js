@@ -3553,7 +3553,7 @@ legacyRestEndpointMethods.VERSION = plugin_rest_endpoint_methods_dist_src_versio
 //# sourceMappingURL=index.js.map
 
 ;// CONCATENATED MODULE: ../node_modules/@octokit/rest/dist-src/version.js
-const rest_dist_src_version_VERSION = "21.0.1";
+const rest_dist_src_version_VERSION = "21.0.2";
 
 
 ;// CONCATENATED MODULE: ../node_modules/@octokit/rest/dist-src/index.js
