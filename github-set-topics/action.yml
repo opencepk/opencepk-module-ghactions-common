@@ -1,0 +1,16 @@
+---
+name: 'github-set-topics'
+description: 'Adds topics to the repository based on provided properties or .project-properties.json'
+inputs:
+  github-token:
+    description: 'GitHub token'
+    required: true
+  properties:
+    description: 'JSON string of properties'
+    required: false
+  repo:
+    description: 'The org/repo'
+    required: true
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

@@ -35,7 +35,104 @@ module.exports = { setGitActionAccess };
 
 /***/ }),
 
+<<<<<<< HEAD
 /***/ 8413:
+=======
+/***/ 3277:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const fs = __nccwpck_require__(7147);
+const path = __nccwpck_require__(1017);
+const { execSync } = __nccwpck_require__(2081);
+const logger = __nccwpck_require__(5568);
+
+function replaceContentAndCommit() {
+  // Replace all occurrences of opencepk/opencepk-module-ghactions-common with in .github/workflows/*.yml
+  logger.info(
+    'Replacing opencepk/opencepk-module-ghactions-common in .github/workflows/*.yml',
+  );
+  const workflowDir = path.join('.github', 'workflows');
+  const files = fs.readdirSync(workflowDir);
+  files.forEach(file => {
+    const filePath = path.join(workflowDir, file);
+    if (filePath.endsWith('.yml') || filePath.endsWith('.yaml')) {
+      let content = fs.readFileSync(filePath, 'utf8');
+      logger.info(
+        `Replacing content from opencepk/opencepk-module-ghactions-common to {{internal repo owner}}/opencepk-module-ghactions-common in ${filePath}`,
+      );
+      content = content.replace(
+        /opencepk\/opencepk-module-ghactions-common/g,
+        'tucowsinc/opencepk-module-ghactions-common',
+      );
+      logger.info(
+        `Replacing content from opencepk/opencepk-projects-hub to {{internal repo owner}}/cepk-projects-hub in ${filePath}`,
+      );
+      content = content.replace(
+        /repo: 'opencepk\/opencepk-projects-hub'/g,
+        "repo: 'tucowsinc/cepk-projects-hub'",
+      );
+      fs.writeFileSync(filePath, content);
+    }
+  });
+
+  // Commit the changes after replacement
+  logger.info('Committing changes after replacement');
+  execSync('git add .github/workflows');
+  try {
+    execSync(
+      'git commit -m "chores/cleanup: Replace opencepk with internal repo owner in workflow files"',
+    );
+  } catch (error) {
+    if (error.message.includes('nothing to commit')) {
+      logger.info('No changes to commit in workflow files. Proceeding...');
+    } else {
+      throw error;
+    }
+  }
+
+  // Replace all occurrences of git@github.com:opencepk with git@github.com:{{internal repo owner}} in .pre-commit-config.yaml
+  logger.info(
+    'Replacing git@github.com:opencepk in .pre-commit-config.yaml',
+  );
+  const preCommitConfigPath = '.pre-commit-config.yaml';
+  if (fs.existsSync(preCommitConfigPath)) {
+    let preCommitContent = fs.readFileSync(preCommitConfigPath, 'utf8');
+    preCommitContent = preCommitContent.replace(
+      /git@github.com:opencepk/g,
+      'git@github.com:tucowsinc',
+    );
+    fs.writeFileSync(preCommitConfigPath, preCommitContent);
+
+    // Commit the changes after replacement
+    logger.info(
+      'chores/cleanup: Committing changes to .pre-commit-config.yaml',
+    );
+    execSync('git add .pre-commit-config.yaml');
+    try {
+      logger.info('Committing changes to .pre-commit-config.yaml');
+      execSync(
+        'git commit -m "chores/update: Replace org opencepk in .pre-commit-config.yaml"',
+      );
+    } catch (error) {
+      logger.warn(`${JSON.stringify(error)}`);
+      logger.info(
+        'No changes to commit in .pre-commit-config.yaml. Proceeding...',
+      );
+    }
+  } else {
+    logger.info(
+      '.pre-commit-config.yaml does not exist, skipping replacement.',
+    );
+  }
+}
+
+module.exports = { replaceContentAndCommit };
+
+
+/***/ }),
+
+/***/ 5568:
+>>>>>>> bc22877 (fix/update-gitmodules-action (#19))
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 /**
@@ -46,6 +143,7 @@ const core = __nccwpck_require__(5316);
 const red = '\x1b[31m';
 const blue = '\x1b[34m';
 const green = '\x1b[32m';
+const yellow = '\x1b[33m';
 const reset = '\x1b[0m';
 
 /**
@@ -58,12 +156,19 @@ function error(message) {
   core.error(`${red}${message}${reset}`);
 }
 
+<<<<<<< HEAD
 /**
  * Logs an informational message.
  *
  * @memberof logger
  * @param {string} message - The informational message to log.
  */
+=======
+function warn(message) {
+  core.warning(`${yellow}${message}${reset}`);
+}
+
+>>>>>>> bc22877 (fix/update-gitmodules-action (#19))
 function info(message) {
   core.info(`${blue}${message}${reset}`);
 }
@@ -90,6 +195,7 @@ function setFailed(message) {
 
 module.exports = {
   error,
+  warn,
   info,
   debug,
   setFailed,
@@ -38684,6 +38790,7 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
+<<<<<<< HEAD
 /******/ 	
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
@@ -38691,5 +38798,181 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /******/ 	var __webpack_exports__ = __nccwpck_require__(3500);
 /******/ 	module.exports = __webpack_exports__;
 /******/ 	
+=======
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+(() => {
+const core = __nccwpck_require__(2186);
+const github = __nccwpck_require__(5438);
+const { execSync } = __nccwpck_require__(2081);
+const fs = __nccwpck_require__(7147);
+const path = __nccwpck_require__(1017);
+const logger = __nccwpck_require__(5568);
+const { setGitActionAccess } = __nccwpck_require__(3907);
+const {
+  replaceContentAndCommit,
+} = __nccwpck_require__(3277);
+const prefix = 'mirror';
+
+async function processRepo(publicRepoUrl, org, token, newRepoName = null) {
+  const octokit = github.getOctokit(token);
+  let repoName = newRepoName
+    ? newRepoName
+    : publicRepoUrl.split('/').pop().replace('.git', '');
+  repoName = `${prefix}-${repoName}`;
+  // Check if the private repository already exists
+  try {
+    await octokit.repos.get({
+      owner: org,
+      repo: repoName,
+    });
+    logger.info(`Repository ${org}/${repoName} already exists.`);
+    return;
+  } catch (error) {
+    if (error.status !== 404) {
+      throw error;
+    }
+  }
+  core.info(`Creating private repository ${repoName} in ${org}...`);
+  // Create a private repository in the organization
+  const { data: privateRepo } = await octokit.repos.createInOrg({
+    org,
+    name: repoName,
+    visibility: 'internal',
+  });
+
+  // Clone the public repository
+  execSync(`git clone ${publicRepoUrl} public-repo`);
+  process.chdir('public-repo');
+  logger.info('Configured Git user');
+  // Configure Git user
+  execSync(
+    'git config user.email "41898282+github-actions[bot]@users.noreply.github.com"',
+  );
+  execSync('git config user.name "github-actions[bot]"');
+
+  // Add UPSTREAM file
+  logger.info('Adding UPSTREAM file');
+  const upstreamContent = `git@github.com:${
+    publicRepoUrl.split('https://github.com/')[1]
+  }.git`;
+  const upstreamFilePath = path.join('.github', 'UPSTREAM');
+  fs.mkdirSync(path.dirname(upstreamFilePath), { recursive: true });
+  fs.writeFileSync(upstreamFilePath, upstreamContent);
+
+  // Commit the UPSTREAM file
+  logger.info('Committing UPSTREAM file');
+  execSync('git add .github/UPSTREAM');
+  execSync('git commit -m "chores/add-upstream: Add UPSTREAM file"');
+
+  // Add the GitHub Actions workflow file
+  logger.info('Adding GitHub Actions workflow file');
+
+  const workflowContent = `
+---
+name: github-call-sync-with-mirror
+on:
+  push:
+    branches:
+      - main
+jobs:
+  github-call-sync-with-mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get Token
+        id: get_workflow_token
+        uses: peter-murray/workflow-application-token-action@v3
+        with:
+          application_id: \${{ secrets.GH_APP_REPO_ACTION_RW_APPLICATION_ID }}
+          application_private_key: \${{ secrets.GH_APP_REPO_ACTION_RW_PRIVATE_KEY }}
+          revoke_token: true
+
+      - name: Read patterns from file
+        id: read_patterns
+        uses: opencepk/opencepk-module-ghactions-common/read-and-stringify-json-action@main
+        with:
+          file: '.github/UPSTREAM'
+          file_type: 'file'
+          separator: '/\\r?\\n/'
+          output_format: ','
+
+      - name: Log upstream
+        run: |
+          echo "Patterns: \${{ steps.read_patterns.outputs.output }}"
+
+      - name: Trigger reusable workflow via API
+        uses: opencepk/opencepk-module-ghactions-common/trigger-workflow-action@main
+        with:
+          token: \${{ steps.get_workflow_token.outputs.token }}
+          repo: 'tucowsinc/cep-projects-hub'
+          workflow_id: 'github-sync-with-mirror.yml'
+          ref: 'main'
+          inputs: '{"repo":"\${{ github.repository }}", "upstreamUrl":"\${{ steps.read_patterns.outputs.output }}"}'
+
+    `;
+  const workflowFileName = 'github-call-sync-with-mirror.yml';
+  const workflowFilePath = path.join('.github', 'workflows', workflowFileName);
+  fs.mkdirSync(path.dirname(workflowFilePath), { recursive: true });
+  fs.writeFileSync(workflowFilePath, workflowContent);
+
+  // Commit the workflow file
+  logger.info('Committing workflow file');
+  execSync(`git add .github/workflows/${workflowFileName}`);
+  execSync(
+    'git commit -m "chores/add-workflows: Add sync-with-mirror workflow"',
+  );
+
+  replaceContentAndCommit();
+  // Set the remote URL with the token for authentication
+  logger.info('Setting remote URL with token for authentication');
+  const remoteUrl = `https://x-access-token:${token}@github.com/${org}/${repoName}.git`;
+  execSync(`git remote set-url origin ${remoteUrl}`);
+  execSync('git push --all');
+  execSync('git push --tags');
+
+  core.setOutput('private_repo_url', privateRepo.html_url);
+  const response = await setGitActionAccess(
+    token,
+    org,
+    repoName,
+    'organization',
+  );
+  core.info(`Response: ${response}`);
+}
+
+async function run() {
+  try {
+    const token = core.getInput('github_token');
+    const gitRepos = core.getInput('github_repos');
+    const repos = JSON.parse(gitRepos);
+    const errors = [];
+    for (const repo of repos) {
+      const { repo: publicRepoUrl, org, newRepoName = null } = repo;
+      try {
+        await processRepo(publicRepoUrl, org, token, newRepoName);
+      } catch (e) {
+        errors.push({ publicRepoUrl, error: `${JSON.stringify(e)}` });
+        logger.error(`Error processing ${publicRepoUrl}: ${JSON.stringify(e)}`);
+      }
+    }
+    if (errors.length > 0) {
+      logger.setFailed(
+        `Errors processing ${errors.length} repositories: ${JSON.stringify(errors)}`,
+      );
+    }
+  } catch (error) {
+    logger.error(`Error: ${JSON.stringify(error)}`);
+    logger.setFailed(error.message);
+  }
+}
+run();
+
+})();
+
+module.exports = __webpack_exports__;
+>>>>>>> bc22877 (fix/update-gitmodules-action (#19))
 /******/ })()
 ;
