@@ -14,7 +14,9 @@
        "github-flow-sync-with-mirror",
        "github-flow-update-pr-title",
        "github-flow-update-release-notes",
-       "github-set-actions-permissions"
+       "github-set-actions-permissions",
+        "github-update-gitmodules",
+        "github-set-topics"
      ],
      "includePattern": ".+\\.js(doc|x)?$",
      "excludePattern": "(^|\\/|\\\\)_|dist|node_modules"

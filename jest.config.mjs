@@ -18,6 +18,8 @@ export default {
     '<rootDir>/github-flow-update-pr-title/**/*.{js,jsx,ts,tsx}',
     '<rootDir>/github-flow-update-release-notes/**/*.{js,jsx,ts,tsx}',
     '<rootDir>/github-set-actions-permissions/**/*.{js,jsx,ts,tsx}',
+    '<rootDir>/github-update-gitmodules/**/*.{js,jsx,ts,tsx}',
+    '<rootDir>/github-set-topics/**/*.{js,jsx,ts,tsx}',
   ],
   testMatch: [
     '**/tests/**/*.[jt]s?(x)',
