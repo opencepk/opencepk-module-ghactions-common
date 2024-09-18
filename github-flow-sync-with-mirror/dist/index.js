@@ -9,10 +9,10 @@ const path = __nccwpck_require__(1017);
 const { execSync } = __nccwpck_require__(2081);
 const logger = __nccwpck_require__(5568);
 
-function replaceContentAndCommit() {
+function replaceContentAndCommit(org=null) {
   // Replace all occurrences of opencepk/opencepk-module-ghactions-common with in .github/workflows/*.yml
   logger.info(
-    'Replacing opencepk/opencepk-module-ghactions-common in .github/workflows/*.yml',
+    `Replacing opencepk/opencepk-module-ghactions-common in .github/workflows/*.yml in the following org ${org}`,
   );
   const workflowDir = path.join('.github', 'workflows');
   const files = fs.readdirSync(workflowDir);
@@ -21,18 +21,18 @@ function replaceContentAndCommit() {
     if (filePath.endsWith('.yml') || filePath.endsWith('.yaml')) {
       let content = fs.readFileSync(filePath, 'utf8');
       logger.info(
-        `Replacing content from opencepk/opencepk-module-ghactions-common to {{internal repo owner}}/opencepk-module-ghactions-common in ${filePath}`,
+        `Replacing content from opencepk/opencepk-module-ghactions-common to ${org}/opencepk-module-ghactions-common in ${filePath}`,
       );
       content = content.replace(
         /opencepk\/opencepk-module-ghactions-common/g,
-        'tucowsinc/opencepk-module-ghactions-common',
+        `${org}/opencepk-module-ghactions-common`,
       );
       logger.info(
-        `Replacing content from opencepk/opencepk-projects-hub to {{internal repo owner}}/cepk-projects-hub in ${filePath}`,
+        `Replacing content from opencepk/opencepk-projects-hub to ${org}/cepk-projects-hub in ${filePath}`,
       );
       content = content.replace(
         /repo: 'opencepk\/opencepk-projects-hub'/g,
-        "repo: 'tucowsinc/cepk-projects-hub'",
+        `repo: '${org}/cepk-projects-hub'`,
       );
       fs.writeFileSync(filePath, content);
     }
@@ -54,9 +54,7 @@ function replaceContentAndCommit() {
   }
 
   // Replace all occurrences of git@github.com:opencepk with git@github.com:{{internal repo owner}} in .pre-commit-config.yaml
-  logger.info(
-    'Replacing git@github.com:opencepk in .pre-commit-config.yaml',
-  );
+  logger.info('Replacing git@github.com:opencepk in .pre-commit-config.yaml');
   const preCommitConfigPath = '.pre-commit-config.yaml';
   if (fs.existsSync(preCommitConfigPath)) {
     let preCommitContent = fs.readFileSync(preCommitConfigPath, 'utf8');
@@ -89,7 +87,41 @@ function replaceContentAndCommit() {
   }
 }
 
-module.exports = { replaceContentAndCommit };
+function replaceCodeownersFile(codeOwners = null) {
+  const codeownersPath = path.join('.github', 'CODEOWNERS');
+  if (fs.existsSync(codeownersPath)) {
+    if (codeOwners) {
+      logger.info(
+        'Replacing .github/CODEOWNERS file content with provided codeOwners',
+      );
+      const content = codeOwners.join('\n');
+      logger.info(`codeowners content to be added: ${content}`);
+      fs.writeFileSync(codeownersPath, content);
+    } else {
+      logger.info('Emptying .github/CODEOWNERS file');
+      fs.writeFileSync(codeownersPath, '');
+    }
+    logger.info('Committing changes to .github/CODEOWNERS');
+    execSync('git add .github/CODEOWNERS');
+    try {
+      execSync(
+        `git commit -m "chores/cleanup: ${codeOwners ? 'Replace' : 'Empty'} .github/CODEOWNERS file"`,
+      );
+    } catch (error) {
+      if (error.message.includes('nothing to commit')) {
+        logger.info(
+          `No changes to commit in .github/CODEOWNERS. Proceeding...`,
+        );
+      } else {
+        throw error;
+      }
+    }
+  } else {
+    logger.info('.github/CODEOWNERS does not exist, skipping emptying.');
+  }
+}
+
+module.exports = { replaceContentAndCommit, replaceCodeownersFile };
 
 
 /***/ }),
@@ -62394,8 +62426,10 @@ const exec = __nccwpck_require__(1514);
 const github = __nccwpck_require__(5438);
 const fs = __nccwpck_require__(7147);
 const path = __nccwpck_require__(1017);
+const { execSync } = __nccwpck_require__(2081);
 const {
   replaceContentAndCommit,
+  replaceCodeownersFile,
 } = __nccwpck_require__(3277);
 
 async function run() {
@@ -62474,7 +62508,25 @@ async function run() {
       `upstream/${branch}`,
     ]);
     logger.debug('Merged upstream/main into the current branch.');
-    replaceContentAndCommit();
+
+    // Restore .github/CODEOWNERS from the current branch
+    await exec.exec('git', [
+      'checkout',
+      'HEAD@{1}',
+      '--',
+      '.github/CODEOWNERS',
+    ]);
+    logger.debug('Restored .github/CODEOWNERS from the current branch.');
+
+    try {
+      logger.info('Restoring .github/CODEOWNERS');
+      execSync('git commit -m "chores/update: Restoring .github/CODEOWNERS"');
+    } catch (error) {
+      logger.warn(`${JSON.stringify(error)}`);
+      logger.info('No changes to commit for .github/CODEOWNERS. Proceeding...');
+    }
+
+    replaceContentAndCommit(repoOwner);
     logger.debug('Replaced content and committed changes.');
     // Check for changes
     let diffOutput = '';
