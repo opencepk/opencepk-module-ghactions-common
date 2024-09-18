@@ -54,7 +54,7 @@ function replaceContentAndCommit(org=null) {
     let preCommitContent = fs.readFileSync(preCommitConfigPath, 'utf8');
     preCommitContent = preCommitContent.replace(
       /git@github.com:opencepk/g,
-      'git@github.com:tucowsinc',
+      `git@github.com:${org}`,
     );
     fs.writeFileSync(preCommitConfigPath, preCommitContent);
 
