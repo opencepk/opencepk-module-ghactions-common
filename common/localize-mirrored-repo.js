@@ -15,18 +15,18 @@ function replaceContentAndCommit(org=null) {
     if (filePath.endsWith('.yml') || filePath.endsWith('.yaml')) {
       let content = fs.readFileSync(filePath, 'utf8');
       logger.info(
-        `Replacing content from opencepk/opencepk-module-ghactions-common to ${org}/opencepk-module-ghactions-common in ${filePath}`,
+        `Replacing content from opencepk/opencepk-module-ghactions-common to ${org}/mirror-opencepk-module-ghactions-common in ${filePath}`,
       );
       content = content.replace(
         /opencepk\/opencepk-module-ghactions-common/g,
-        `${org}/opencepk-module-ghactions-common`,
+        `${org}/mirror-opencepk-module-ghactions-common`,
       );
       logger.info(
-        `Replacing content from opencepk/opencepk-projects-hub to ${org}/cepk-projects-hub in ${filePath}`,
+        `Replacing content from opencepk/opencepk-projects-hub to ${org}/cep-projects-hub in ${filePath}`,
       );
       content = content.replace(
         /repo: 'opencepk\/opencepk-projects-hub'/g,
-        `repo: '${org}/cepk-projects-hub'`,
+        `repo: '${org}/cep-projects-hub'`,
       );
       fs.writeFileSync(filePath, content);
     }
