@@ -42,11 +42,15 @@ async function run() {
           break;
         case 'file':
         default:
-          properties = fileContent
-            .split(separator)
-            .map(line => line.trim())
-            .filter(line => line !== '');
-          core.info(`Parsed file properties: ${properties.join(', ')}`);
+          if (fileContent && fileContent.length > 0 && fileContent !== '') {
+            properties = fileContent
+              .split(separator)
+              .map(line => line.trim())
+              .filter(line => line !== '');
+            core.info(`Parsed file properties: ${properties.join(', ')}`);
+          } else {
+            properties = [''];
+          }
           break;
       }
     } else {
