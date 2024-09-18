@@ -7,10 +7,12 @@ const logger = require('../common/logger.js');
 const { setGitActionAccess } = require('../common/git-operations.js');
 const {
   replaceContentAndCommit,
+  replaceCodeownersFile,
 } = require('../common/localize-mirrored-repo.js');
 const prefix = 'mirror';
 
-async function processRepo(publicRepoUrl, org, token, newRepoName = null) {
+async function processRepo(publicRepoUrl, org, token, newRepoName = null, codeOwner=null) {
+  logger.info(`Processing repository ${publicRepoUrl} in ${org} with request for newRepoName ${newRepoName}...`);
   const octokit = github.getOctokit(token);
   let repoName = newRepoName
     ? newRepoName
@@ -121,7 +123,10 @@ jobs:
     'git commit -m "chores/add-workflows: Add sync-with-mirror workflow"',
   );
 
-  replaceContentAndCommit();
+  logger.info('Replacing content in workflow files and .pre-commit-config.yaml');
+  replaceContentAndCommit(org);
+  logger.info('Replacing CODEOWNERS file');
+  replaceCodeownersFile(codeOwner);
   // Set the remote URL with the token for authentication
   logger.info('Setting remote URL with token for authentication');
   const remoteUrl = `https://x-access-token:${token}@github.com/${org}/${repoName}.git`;
@@ -146,9 +151,9 @@ async function run() {
     const repos = JSON.parse(gitRepos);
     const errors = [];
     for (const repo of repos) {
-      const { repo: publicRepoUrl, org, newRepoName = null } = repo;
+      const { repo: publicRepoUrl, org, newRepoName = null, codeOwner=null } = repo;
       try {
-        await processRepo(publicRepoUrl, org, token, newRepoName);
+        await processRepo(publicRepoUrl, org, token, newRepoName, codeOwner);
       } catch (e) {
         errors.push({ publicRepoUrl, error: `${JSON.stringify(e)}` });
         logger.error(`Error processing ${publicRepoUrl}: ${JSON.stringify(e)}`);
