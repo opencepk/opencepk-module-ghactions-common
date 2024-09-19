@@ -73,6 +73,9 @@ on:
   push:
     branches:
       - main
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
 jobs:
   github-call-sync-with-mirror:
     runs-on: ubuntu-latest
