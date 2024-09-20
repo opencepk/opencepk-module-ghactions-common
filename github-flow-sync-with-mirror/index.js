@@ -204,7 +204,7 @@ async function run() {
     await octokit.pulls.create({
       owner: repoOwner,
       repo: repoName,
-      title: 'Merge upstream changes',
+      title: `${mergeBranch}: Sync with mirror repository`,
       head: mergeBranch,
       base: branch,
       body: 'This PR merges changes from upstream/main and resolves conflicts by accepting upstream changes.',
