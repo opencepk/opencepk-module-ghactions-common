@@ -83,7 +83,7 @@ function replaceContentAndCommit(org=null) {
     if (error.message.includes('nothing to commit')) {
       logger.info('No changes to commit in workflow files. Proceeding...');
     } else {
-      throw error;
+      logger.info(`Committing changes for workflows failed: ${JSON.stringify(error)}`);
     }
   }
 
@@ -147,7 +147,7 @@ function replaceCodeownersFile(codeOwners = null) {
           `No changes to commit in .github/CODEOWNERS. Proceeding...`,
         );
       } else {
-        throw error;
+        logger.info(`Committing changes for codeowners failed: ${JSON.stringify(error)}`);
       }
     }
   } else {
