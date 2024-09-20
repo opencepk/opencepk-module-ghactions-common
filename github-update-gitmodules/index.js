@@ -174,8 +174,7 @@ async function run() {
       return;
     }
 
-    const prTitle =
-      `chore/${branchName} Update submodules for matching repositories`;
+    const prTitle = `chore/${branchName} Update submodules for matching repositories`;
     const prBody =
       'This PR updates submodules for repositories matching the pattern in META-REPO-PATTERNS.';
 

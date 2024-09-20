@@ -11,8 +11,16 @@ const {
 } = require('../common/localize-mirrored-repo.js');
 const prefix = 'mirror';
 
-async function processRepo(publicRepoUrl, org, token, newRepoName = null, codeOwner=null) {
-  logger.info(`Processing repository ${publicRepoUrl} in ${org} with request for newRepoName ${newRepoName}...`);
+async function processRepo(
+  publicRepoUrl,
+  org,
+  token,
+  newRepoName = null,
+  codeOwner = null,
+) {
+  logger.info(
+    `Processing repository ${publicRepoUrl} in ${org} with request for newRepoName ${newRepoName}...`,
+  );
   const octokit = github.getOctokit(token);
   let repoName = newRepoName
     ? newRepoName
@@ -126,7 +134,9 @@ jobs:
     'git commit -m "chores/add-workflows: Add sync-with-mirror workflow"',
   );
 
-  logger.info('Replacing content in workflow files and .pre-commit-config.yaml');
+  logger.info(
+    'Replacing content in workflow files and .pre-commit-config.yaml',
+  );
   replaceContentAndCommit(org);
   logger.info('Replacing CODEOWNERS file');
   replaceCodeownersFile(codeOwner);
@@ -154,7 +164,12 @@ async function run() {
     const repos = JSON.parse(gitRepos);
     const errors = [];
     for (const repo of repos) {
-      const { repo: publicRepoUrl, org, newRepoName = null, codeOwner=null } = repo;
+      const {
+        repo: publicRepoUrl,
+        org,
+        newRepoName = null,
+        codeOwner = null,
+      } = repo;
       try {
         await processRepo(publicRepoUrl, org, token, newRepoName, codeOwner);
       } catch (e) {
