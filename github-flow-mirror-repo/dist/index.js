@@ -43,7 +43,7 @@ const path = __nccwpck_require__(1017);
 const { execSync } = __nccwpck_require__(2081);
 const logger = __nccwpck_require__(5568);
 
-function replaceContentAndCommit(org=null) {
+function replaceContentAndCommit(org = null) {
   // Replace all occurrences of opencepk/opencepk-module-ghactions-common with in .github/workflows/*.yml
   logger.info(
     `Replacing opencepk/opencepk-module-ghactions-common in .github/workflows/*.yml in the following org ${org}`,
@@ -83,7 +83,9 @@ function replaceContentAndCommit(org=null) {
     if (error.message.includes('nothing to commit')) {
       logger.info('No changes to commit in workflow files. Proceeding...');
     } else {
-      logger.info(`Committing changes for workflows failed: ${JSON.stringify(error)}`);
+      logger.info(
+        `Committing changes for workflows failed: ${JSON.stringify(error)}`,
+      );
     }
   }
 
@@ -147,7 +149,9 @@ function replaceCodeownersFile(codeOwners = null) {
           `No changes to commit in .github/CODEOWNERS. Proceeding...`,
         );
       } else {
-        logger.info(`Committing changes for codeowners failed: ${JSON.stringify(error)}`);
+        logger.info(
+          `Committing changes for codeowners failed: ${JSON.stringify(error)}`,
+        );
       }
     }
   } else {
@@ -65500,8 +65504,16 @@ const {
 } = __nccwpck_require__(3277);
 const prefix = 'mirror';
 
-async function processRepo(publicRepoUrl, org, token, newRepoName = null, codeOwner=null) {
-  logger.info(`Processing repository ${publicRepoUrl} in ${org} with request for newRepoName ${newRepoName}...`);
+async function processRepo(
+  publicRepoUrl,
+  org,
+  token,
+  newRepoName = null,
+  codeOwner = null,
+) {
+  logger.info(
+    `Processing repository ${publicRepoUrl} in ${org} with request for newRepoName ${newRepoName}...`,
+  );
   const octokit = github.getOctokit(token);
   let repoName = newRepoName
     ? newRepoName
@@ -65615,7 +65627,9 @@ jobs:
     'git commit -m "chores/add-workflows: Add sync-with-mirror workflow"',
   );
 
-  logger.info('Replacing content in workflow files and .pre-commit-config.yaml');
+  logger.info(
+    'Replacing content in workflow files and .pre-commit-config.yaml',
+  );
   replaceContentAndCommit(org);
   logger.info('Replacing CODEOWNERS file');
   replaceCodeownersFile(codeOwner);
@@ -65643,7 +65657,12 @@ async function run() {
     const repos = JSON.parse(gitRepos);
     const errors = [];
     for (const repo of repos) {
-      const { repo: publicRepoUrl, org, newRepoName = null, codeOwner=null } = repo;
+      const {
+        repo: publicRepoUrl,
+        org,
+        newRepoName = null,
+        codeOwner = null,
+      } = repo;
       try {
         await processRepo(publicRepoUrl, org, token, newRepoName, codeOwner);
       } catch (e) {

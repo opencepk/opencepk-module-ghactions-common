@@ -9,7 +9,7 @@ const path = __nccwpck_require__(1017);
 const { execSync } = __nccwpck_require__(2081);
 const logger = __nccwpck_require__(5568);
 
-function replaceContentAndCommit(org=null) {
+function replaceContentAndCommit(org = null) {
   // Replace all occurrences of opencepk/opencepk-module-ghactions-common with in .github/workflows/*.yml
   logger.info(
     `Replacing opencepk/opencepk-module-ghactions-common in .github/workflows/*.yml in the following org ${org}`,
@@ -49,7 +49,9 @@ function replaceContentAndCommit(org=null) {
     if (error.message.includes('nothing to commit')) {
       logger.info('No changes to commit in workflow files. Proceeding...');
     } else {
-      logger.info(`Committing changes for workflows failed: ${JSON.stringify(error)}`);
+      logger.info(
+        `Committing changes for workflows failed: ${JSON.stringify(error)}`,
+      );
     }
   }
 
@@ -113,7 +115,9 @@ function replaceCodeownersFile(codeOwners = null) {
           `No changes to commit in .github/CODEOWNERS. Proceeding...`,
         );
       } else {
-        logger.info(`Committing changes for codeowners failed: ${JSON.stringify(error)}`);
+        logger.info(
+          `Committing changes for codeowners failed: ${JSON.stringify(error)}`,
+        );
       }
     }
   } else {
