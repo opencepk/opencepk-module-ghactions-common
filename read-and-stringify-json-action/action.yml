@@ -5,6 +5,10 @@ inputs:
   file:
     description: 'Path to the JSON file'
     required: true
+  root_json_key:
+    description: 'Root JSON key to be inserted when outputting'
+    required: false
+    default: ''
 outputs:
   properties:
     description: 'Stringified JSON data'

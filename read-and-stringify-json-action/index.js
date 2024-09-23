@@ -8,6 +8,7 @@ async function run() {
   try {
     const filePath = core.getInput('file');
     const fileType = core.getInput('file_type');
+    const rootJsonKey = core.getInput('root_json_key');
     let separator = core.getInput('separator') || '/\r?\n/';
     const outputFormat = core.getInput('output_format') || ',';
     const absolutePath = path.resolve(filePath);
@@ -55,9 +56,14 @@ async function run() {
 
     let propertiesStringified;
     if (fileType === 'json') {
-      propertiesStringified = JSON.stringify({
-        github_repos: properties,
-      }).replace(/"/g, '\\"');
+      if (rootJsonKey) {
+        const jsonContentWithCustomRoot = {};
+        jsonContentWithCustomRoot[rootJsonKey] = properties;
+        propertiesStringified = JSON.stringify(jsonContentWithCustomRoot).replace(/"/g, '\\"');
+      } else {
+        propertiesStringified = JSON.stringify(properties).replace(/"/g, '\\"');
+      }
+
       // Making sure JSON is fully stringified to avoid issues with when parsing back
       propertiesStringified = `"${propertiesStringified}"`;
     } else {
