@@ -56,7 +56,7 @@ async function run() {
 
     let propertiesStringified;
     if (fileType === 'json') {
-      if (rootJsonKey) {
+      if (rootJsonKey && rootJsonKey !== '') {
         const jsonContentWithCustomRoot = {};
         jsonContentWithCustomRoot[rootJsonKey] = properties;
         propertiesStringified = JSON.stringify(jsonContentWithCustomRoot).replace(/"/g, '\\"');
