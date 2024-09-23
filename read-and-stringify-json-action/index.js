@@ -3,6 +3,7 @@ const core = require('@actions/core');
 const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
+const github = require('@actions/github');
 
 async function run() {
   try {
@@ -11,7 +12,9 @@ async function run() {
     const rootJsonKey = core.getInput('root_json_key');
     let separator = core.getInput('separator') || '/\r?\n/';
     const outputFormat = core.getInput('output_format') || ',';
+    const shouldIncludeCallingRepo = (core.getInput('include_current_repo') === true) || false;
     const absolutePath = path.resolve(filePath);
+    const { owner, repo } = github.context.repo;
 
     core.info(`File path: ${filePath}`);
     core.info(`File type: ${fileType}`);
@@ -59,7 +62,13 @@ async function run() {
       if (rootJsonKey && rootJsonKey !== '') {
         const jsonContentWithCustomRoot = {};
         jsonContentWithCustomRoot[rootJsonKey] = properties;
-        propertiesStringified = JSON.stringify(jsonContentWithCustomRoot).replace(/"/g, '\\"');
+        if (shouldIncludeCallingRepo) {
+          jsonContentWithCustomRoot['repo'] = `${owner}/${repo}`;
+        }
+
+        propertiesStringified = JSON.stringify(
+          jsonContentWithCustomRoot,
+        ).replace(/"/g, '\\"');
       } else {
         propertiesStringified = JSON.stringify(properties).replace(/"/g, '\\"');
       }
