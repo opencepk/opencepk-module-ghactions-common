@@ -21,6 +21,8 @@ async function run() {
     logger.info(`Repository owner: ${owner} Repository name: ${repoName}`);
     const octokit = github.getOctokit(token);
     logger.info(`Triggering workflow ${workflow_id} on ${repo}`);
+    // Log the JSON string before parsing
+    logger.debug(`JSON string before parsing: ${inputs}`);
     await octokit.rest.actions.createWorkflowDispatch({
       owner,
       repo: repoName,
