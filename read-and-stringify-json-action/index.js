@@ -12,7 +12,7 @@ async function run() {
     const rootJsonKey = core.getInput('root_json_key');
     let separator = core.getInput('separator') || '/\r?\n/';
     const outputFormat = core.getInput('output_format') || ',';
-    const shouldIncludeCallingRepo = (core.getInput('include_current_repo') === true) || false;
+    const shouldIncludeCallingRepo = (core.getInput('include_current_repo') === "true") || false;
     logger.info(`include_current_repo is:  ${shouldIncludeCallingRepo} so shouldIncludeCallingRepo is: ${shouldIncludeCallingRepo}`);
     const absolutePath = path.resolve(filePath);
     const { owner, repo } = github.context.repo;
