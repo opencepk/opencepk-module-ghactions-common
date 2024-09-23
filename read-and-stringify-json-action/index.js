@@ -55,7 +55,7 @@ async function run() {
 
     let propertiesStringified;
     if (fileType === 'json') {
-      propertiesStringified = JSON.stringify(properties).replace(/"/g, '\\"');
+      propertiesStringified = JSON.stringify({"github_repos": properties}).replace(/"/g, '\\"');
     } else {
       propertiesStringified = properties.join(outputFormat);
     }
