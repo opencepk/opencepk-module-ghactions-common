@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 const github = require('@actions/github');
-
+const logger = require('../common/logger');
 async function run() {
   try {
     const filePath = core.getInput('file');
