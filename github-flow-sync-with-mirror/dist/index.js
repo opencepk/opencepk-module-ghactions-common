@@ -61,8 +61,8 @@ function replaceContentAndCommit(org = null) {
   if (fs.existsSync(preCommitConfigPath)) {
     let preCommitContent = fs.readFileSync(preCommitConfigPath, 'utf8');
     preCommitContent = preCommitContent.replace(
-      /git@github.com:opencepk\/(.*?\.git)/g,
-      `git@github.com:${org}/mirror-opencepk/$1`
+      /git@github.com:opencepk\/(opencepk-.*?)\.git/g,
+      `git@github.com:${org}/mirror-$1.git`
     );
     fs.writeFileSync(preCommitConfigPath, preCommitContent);
 
