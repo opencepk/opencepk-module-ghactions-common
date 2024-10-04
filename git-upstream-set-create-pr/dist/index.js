@@ -33936,7 +33936,7 @@ async function run() {
       : 'main';
     const botCommitMessage = core.getInput('bot-commit-message')
       ? core.getInput('bot-commit-message')
-      : 'Automatically add UPSTREAM file';
+      : 'fix/add-upstream: Automatically add UPSTREAM file';
     const octokit = github.getOctokit(token);
     const { owner, repo } = github.context.repo;
 
