@@ -96,7 +96,7 @@ function replaceContentAndCommit(org = null) {
     let preCommitContent = fs.readFileSync(preCommitConfigPath, 'utf8');
     preCommitContent = preCommitContent.replace(
       /git@github.com:opencepk\/(opencepk-.*?)\.git/g,
-      `git@github.com:${org}/mirror-$1.git`
+      `git@github.com:${org}/mirror-$1.git`,
     );
     fs.writeFileSync(preCommitConfigPath, preCommitContent);
 
@@ -65567,8 +65567,7 @@ async function processRepo(
   // Add the GitHub Actions workflow file
   logger.info('Adding GitHub Actions workflow file');
 
-  const workflowContent = `
----
+  const workflowContent = `---
 name: github-call-sync-with-mirror
 on:
   push:
