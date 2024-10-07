@@ -62438,7 +62438,7 @@ const {
 
 async function run() {
   try {
-    const mergeBranch = 'fix/bot-sync-with-mirror';
+    const mergeBranch = 'chore/bot-sync-with-mirror';
     core.info('Starting the sync process...');
     const token = core.getInput('github_token');
     logger.debug(`Received token: ${token}`);
