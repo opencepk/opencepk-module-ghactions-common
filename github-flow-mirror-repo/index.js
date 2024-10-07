@@ -74,8 +74,7 @@ async function processRepo(
   // Add the GitHub Actions workflow file
   logger.info('Adding GitHub Actions workflow file');
 
-  const workflowContent = `
----
+  const workflowContent = `---
 name: github-call-sync-with-mirror
 on:
   push:
